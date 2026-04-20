@@ -15,7 +15,49 @@ var phrase = "";
 var annotation_stage = "";
 var annotation_set_id = "";
 
+function setAnnotationDistributionLoading(isLoading) {
+    $("#annotation_distribution_loading").toggle(!!isLoading);
+}
+
+function getAnnotationFrequencyGridWidth() {
+    return Math.max($("#annotation_frequency .annotation-distribution-flexigrid").innerWidth() || 0, 280);
+}
+
+function buildAnnotationFrequencyColModel(gridWidth) {
+    var noWidth = 26;
+    var countWidth = 48;
+    var docsWidth = 48;
+    var typeWidth = Math.max(76, Math.floor(gridWidth * 0.24));
+    var baseWidth = Math.max(104, gridWidth - noWidth - countWidth - docsWidth - typeWidth - 18);
+
+    return [
+        {display: "No.", name : "no", width : noWidth, sortable : false, align: 'right'},
+        {display: "Base", name : "text", width : baseWidth, sortable : false, align: 'left'},
+        {display: "Type", name : "type_name", width : typeWidth, sortable : false, align: 'left'},
+        {display: "Count", name : "c", width : countWidth, sortable : false, align: 'right'},
+        {display: "Docs", name : "docs", width : docsWidth, sortable : false, align: 'right'}
+    ];
+}
+
 $(document).ready(function() {
+
+    $("#chart_link").on("click", function(event){
+        var href = $(this).attr("href");
+        if (!href || href === "#") {
+            event.preventDefault();
+        }
+    });
+
+    function adjustAnnotationFrequencyHeight() {
+        var $grid = $("#annotation_frequency .annotation-distribution-flexigrid .flexigrid");
+        var $body = $grid.find("div.bDiv");
+        var $rows = $body.find("tbody tr:visible");
+        var visibleRows = $rows.length;
+        var rowHeight = Math.max(18, Math.ceil($rows.first().outerHeight() || row_height || 22));
+        var bodyHeight = (Math.max(1, Math.min(rows_per_page, visibleRows || rows_per_page)) * rowHeight) + 2;
+
+        $body.css("height", bodyHeight + "px");
+    }
 	
 	/* Do zmiany trybu zliczania */
     var countby = $.cookie(COOKIE_COUNTBY);
@@ -33,13 +75,8 @@ $(document).ready(function() {
     })
 	
     /* Tabelka z frekwencją */
-    var colModel = [
-            {display: "No.", name : "no", width : 30, sortable : false, align: 'right'},
-            {display: "Base", name : "text", width : 160, sortable : false, align: 'left'},
-            {display: "Type", name : "type_name", width : 120, sortable : false, align: 'left'},
-            {display: "Count", name : "c", width : 30, sortable : false, align: 'right'},
-            {display: "Docs", name : "docs", width : 30, sortable : false, align: 'right'},
-    ];      
+    var gridWidth = getAnnotationFrequencyGridWidth();
+    var colModel = buildAnnotationFrequencyColModel(gridWidth);
     
     var ctag = $("select[name=ctag] option:selected").val();
     var subcorpus_id = $("select[name=subcorpus_id] option:selected").val();
@@ -48,11 +85,12 @@ $(document).ready(function() {
     phrase = $("input[name=phrase]").val();
     annotation_set_id = $("select[name=annotation_set_id] option:selected").val();
 
-    var row_height = $("#annotation_frequency tr:last").outerHeight(true) + 11;
+    var row_height = Math.max(18, ($("#annotation_frequency_table tr:last").outerHeight(true) || 22));
     $("#annotation_frequency").hide();
     $("#annotations_per_subcorpus").hide();
-    var flexi_height = $(window).height() - $("body").outerHeight(true) - 100;
-    var rows_per_page = Math.floor(flexi_height / row_height); 
+    setAnnotationDistributionLoading(true);
+    var rows_per_page = 15;
+    var flexi_height = (row_height * rows_per_page) + 12;
     
     flex = $("#annotation_frequency_table").flexigrid({
         url: 'index.php',
@@ -76,14 +114,17 @@ $(document).ready(function() {
         rp: rows_per_page,
         showTableToggleBtn: false,
         showToggleBtn: false,
-        width: $(".flexigrid").innerWidth() + "px",
+        width: gridWidth + "px",
         height: flexi_height,
         resizable: false,
         onSuccess: function(){
-        	$("#annotations_per_subcorpus").text("Loading ...");
+            adjustAnnotationFrequencyHeight();
+            setAnnotationDistributionLoading(true);
         	loadAnnotationFrequencyPerCorpus();
         }
     });
+
+    setTimeout(adjustAnnotationFrequencyHeight, 0);
     
     /* Pozostałe */
     $("#annotation_frequency").show();
@@ -109,6 +150,9 @@ function loadAnnotationFrequencyPerCorpus(){
 	var subcorpus_ids_text = {};
 	var count = $("#countby a.active").attr("type");
 
+    setAnnotationDistributionLoading(true);
+    $("#chart_link").hide().attr("href", "#");
+
 	$("table#annotation_frequency_table tbody tr").each(function(){
 		var text = $(this).find("td:nth-child(2)").text().trim();
 		var type = $(this).find("td:nth-child(3)").text().trim();
@@ -125,6 +169,7 @@ function loadAnnotationFrequencyPerCorpus(){
 	});
 	if ( texts.length == 0 ){
 		$("#annotations_per_subcorpus").text("No annotation found");
+        setAnnotationDistributionLoading(false);
 		return;
 	}
 	
@@ -167,6 +212,10 @@ function loadAnnotationFrequencyPerCorpus(){
 			}
 
 			var data = google.visualization.arrayToDataTable(freq);
+                var chartContainer = $("#annotations_per_subcorpus");
+                var chartContainerWidth = Math.max(chartContainer.width(), 320);
+                var chartLeft = Math.max(120, Math.min(168, Math.round(chartContainerWidth * 0.28)));
+                var chartWidth = Math.max(chartContainerWidth - chartLeft - 28, 160);
       			var options = {
       				title: "inforex.clarin-pl.eu",
       				titlePosition: 'bottom',
@@ -175,13 +224,17 @@ function loadAnnotationFrequencyPerCorpus(){
 			        bar: { groupWidth: '75%' },
 			        isStacked: "relative",
 			        fontSize: 12,
-			        chartArea:{left:200,top:20,width:$("#annotations_per_subcorpus").width()-220,height:$("#annotation_frequency_table").height()}
+			        chartArea:{left:chartLeft,top:20,width:chartWidth,height:$("#annotation_frequency_table").height()}
 				
 		      };
 		      var chart = new google.visualization.BarChart(document.getElementById('annotations_per_subcorpus'));
 		      google.visualization.events.addListener(chart, 'ready', function () {
-		    	    var link = '<a href="' + chart.getImageURI() + '" target="_blank">Open chart as a PNG file</a>';
-		    	    $("#chart_link").html(link);
+				var exportName = "annotation-distribution-corpus-" + corpus_id + ".png";
+				$("#chart_link")
+                    .attr("href", chart.getImageURI())
+                    .attr("download", exportName)
+                    .show();
+                setAnnotationDistributionLoading(false);
 		      });
 		      chart.draw(data, options);
 		},

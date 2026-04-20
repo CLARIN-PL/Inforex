@@ -1,0 +1,346 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.row-report {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.report-anaphora-view-content-column,
+.report-anaphora-view-relations-column,
+#col-flags {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-anaphora-view-panel.administration-content-panel,
+#col-flags .report-flags-side-panel {
+    background: #fff;
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+    margin: 0 0 8px;
+    overflow: hidden;
+}
+
+.report-anaphora-view-heading.administration-content-heading,
+#col-flags .report-flags-side-heading {
+    align-items: center;
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69 !important;
+    display: flex;
+    font-size: 10px;
+    font-weight: bold;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-anaphora-view-heading-icon.administration-content-heading-icon {
+    align-items: center;
+    background: #e7f2f5;
+    border: 1px solid #cfe1e8;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #176d7d;
+    display: inline-flex;
+    font-size: 10px;
+    height: 16px;
+    justify-content: center;
+    width: 16px;
+}
+
+.report-anaphora-view-document-content,
+.report-anaphora-view-relations-body {
+    background: #fbfdfe;
+}
+
+.report-anaphora-view-document-content {
+    background:
+        linear-gradient(90deg, rgba(23, 109, 125, 0.04) 0, rgba(23, 109, 125, 0) 18px),
+        #fff;
+    color: #263f4c;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 9px 11px 13px;
+}
+
+.report-anaphora-view-document-content * {
+    line-height: inherit;
+}
+
+.report-anaphora-view-document-content sup.rel {
+    background: #eef6f8;
+    border: 1px solid #d4e6ed;
+    border-radius: 4px;
+    color: #176d7d;
+    font-size: 9px;
+    font-weight: 700;
+    margin: 0 1px;
+    padding: 0 3px;
+}
+
+.report-anaphora-view-relations-body {
+    padding: 7px;
+}
+
+.report-anaphora-view-relations-table {
+    color: #2f4754;
+    font-size: 10px;
+    margin-bottom: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.report-anaphora-view-relations-table > thead > tr > th {
+    background: #eaf3f7;
+    border-bottom: 1px solid #d7e4ea;
+    color: #496572;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    line-height: 1.15;
+    padding: 5px 6px;
+    text-transform: uppercase;
+}
+
+.report-anaphora-view-relations-table > tbody > tr > td {
+    border-top: 1px solid #edf3f6;
+    line-height: 1.2;
+    padding: 5px 6px;
+    vertical-align: middle;
+}
+
+.report-anaphora-view-relations-table th:nth-child(1),
+.report-anaphora-view-relations-table td:nth-child(1),
+.report-anaphora-view-relations-table th:nth-child(3),
+.report-anaphora-view-relations-table td:nth-child(3) {
+    width: 34%;
+}
+
+.report-anaphora-view-relations-table th:nth-child(2),
+.report-anaphora-view-relations-table td:nth-child(2) {
+    width: 32%;
+}
+
+.report-anaphora-view-relations-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.report-anaphora-view-relations-table.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f8fbfc;
+}
+
+.report-anaphora-view-relations-table > tbody > tr:hover {
+    background-color: #dff2f7;
+}
+
+.report-anaphora-view-empty {
+    background:
+        linear-gradient(135deg, #ffffff 0%, #f1f8fb 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 38%);
+    border: 1px dashed #bfd7e0 !important;
+    border-radius: 10px;
+    color: #607985;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 14px !important;
+    text-align: center;
+}
+
+.report-anaphora-view-document-content,
+.report-anaphora-view-relations-body,
+#col-flags .scrolling,
+#col-flags .scrollingAccordion {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-anaphora-view-document-content::-webkit-scrollbar,
+.report-anaphora-view-relations-body::-webkit-scrollbar,
+#col-flags .scrolling::-webkit-scrollbar,
+#col-flags .scrollingAccordion::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-anaphora-view-document-content::-webkit-scrollbar-track,
+.report-anaphora-view-relations-body::-webkit-scrollbar-track,
+#col-flags .scrolling::-webkit-scrollbar-track,
+#col-flags .scrollingAccordion::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-anaphora-view-document-content::-webkit-scrollbar-thumb,
+.report-anaphora-view-relations-body::-webkit-scrollbar-thumb,
+#col-flags .scrolling::-webkit-scrollbar-thumb,
+#col-flags .scrollingAccordion::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-anaphora-view-document-content::-webkit-scrollbar-thumb:hover,
+.report-anaphora-view-relations-body::-webkit-scrollbar-thumb:hover,
+#col-flags .scrolling::-webkit-scrollbar-thumb:hover,
+#col-flags .scrollingAccordion::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+#col-flags .panel-group,
+#accordionFlags {
+    margin-top: 0;
+}
+
+#col-flags .panel-title {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+}
+
+#col-flags .panel-title > a {
+    align-items: center;
+    color: #174f69;
+    display: flex;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.1;
+    text-decoration: none;
+}
+
+#col-flags .panel-body,
+#col-flags .scrollingAccordion {
+    background: #fbfdfe;
+}
+
+#col-flags .report-flags-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px;
+}
+
+#col-flags .report-flag-item {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 6px;
+    color: #345462;
+    cursor: pointer;
+    display: flex;
+    gap: 4px;
+    min-height: 22px;
+    overflow: hidden;
+    padding: 3px 4px;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+    white-space: nowrap;
+    width: 100%;
+}
+
+#col-flags .report-flag-item:hover,
+#col-flags .report-flag-item:focus {
+    background: #eef8fb;
+    border-color: #2393a6;
+    color: #176d7d;
+    transform: translateX(1px);
+}
+
+#col-flags .report-flag-state-empty {
+    background: #f7fafc;
+    color: #687d88;
+}
+
+#col-flags .report-flag-icon {
+    align-items: center;
+    background: #f2f7f9;
+    border: 1px solid #e0ebf0;
+    border-radius: 4px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 15px;
+    justify-content: center;
+    width: 15px;
+}
+
+#col-flags .report-flag-icon img {
+    display: block;
+    max-height: 11px;
+    max-width: 11px;
+}
+
+#col-flags .report-flag-short {
+    display: block;
+    flex: 1 1 auto;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.2;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#col-flags .report-flags-empty {
+    align-items: center;
+    background: #ffffff;
+    border: 1px dashed #d8e4eb;
+    border-radius: 7px;
+    color: #6f8490;
+    display: flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 6px;
+    justify-content: center;
+    padding: 8px 6px;
+}
+
+#col-flags #actionList .scrollingAccordion {
+    padding: 6px !important;
+    text-align: center;
+}
+
+#col-flags .report-action-delete-button {
+    align-items: center;
+    background: #fff4f3;
+    border: 1px solid #e6b9b4;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #a33f35;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    justify-content: center;
+    line-height: 1.1;
+    margin: 0;
+    padding: 5px 8px;
+    width: 100%;
+}
+
+#col-flags .report-action-delete-button:hover,
+#col-flags .report-action-delete-button:focus {
+    background: #c84f43;
+    border-color: #b84439;
+    color: #ffffff;
+}
+
+@media (max-width: 991px) {
+    #main-content > .container-fluid {
+        padding: 8px;
+    }
+
+    .report-anaphora-view-document-content {
+        font-size: 13px;
+        padding: 12px;
+    }
+}

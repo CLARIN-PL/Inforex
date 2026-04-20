@@ -205,7 +205,7 @@ function createRelation(relation_id){
 					'<td><span class="'+$source.attr('title').split(":")[1]+'" title="an#'+sourceId+':'+$source.attr('title').split(":")[1]+'"> '+$source.text()+'</span></td>'+
 					'<td>'+$("span.addRelation[relation_id='"+relation_id+"']").text()+'</td>'+
 					'<td><span class="'+$target.attr('title').split(":")[1]+'" title="an#'+targetId +':'+$target.attr('title').split(":")[1]+'"> '+$target.text()+'</span></td>'+
-					'<td class="relationDelete" source_id="'+sourceId+'" target_id="'+targetId+'" relation_id="'+data.relation_id+'" type_id="'+relation_id+'"  style="cursor:pointer">X</td>'+
+					'<td class="relationDelete" source_id="'+sourceId+'" target_id="'+targetId+'" relation_id="'+data.relation_id+'" type_id="'+relation_id+'" title="Delete relation"><i class="fa fa-trash" aria-hidden="true"></i></td>'+
 				'</tr>'	
 			);
 			$("#content .selectedSource").after("<sup class='rel' target='"+targetId+"'>↦</sup>");

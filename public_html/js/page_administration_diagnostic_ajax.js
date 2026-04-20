@@ -7,9 +7,18 @@
 $(document).ready(function(){
     $("#administration-diagnostic-ajax-filter").on("keyup", function() {
         var value = $(this).val().toLowerCase();
+        var visibleRows = 0;
+
         $("#administration-diagnostic-ajax-table tbody tr").filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            var isVisible = $(this).text().toLowerCase().indexOf(value) > -1;
+            $(this).toggle(isVisible);
+
+            if (isVisible) {
+                visibleRows++;
+            }
         });
+
+        $("#administration-diagnostic-ajax-visible-count").text(visibleRows);
     });
 
 });

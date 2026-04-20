@@ -14,104 +14,99 @@
 <div class="selected_status_id" id= {$status}></div>
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
-        <h5 style="float: left;">Common filters</h5>
+        <h5 style="float: left;"><i class="fa fa-filter" aria-hidden="true"></i> Filters</h5>
         <button style="float: right;" class="btn btn-default" id="copy_url" data-toggle="modal"
-                data-target="#url_modal">Copy URL
+                data-target="#url_modal"><i class="fa fa-link" aria-hidden="true"></i> Copy URL
         </button>
-        <button style="float: right;" class="btn btn-default" id="reset_filters">Reset filters</button>
+        <button style="float: right;" class="btn btn-default" id="reset_filters"><i class="fa fa-refresh" aria-hidden="true"></i> Reset</button>
     </div>
     <div class="panel-body scrolling" style="padding: 5px">
 
         {capture name=link_ext_filters assign=link_ext_filters}{foreach from=$filters item=filter}{if $filter.selected}&amp;filter_{$filter.name}={$filter.selected}{/if}{/foreach}{/capture}
 
-        <table class="table table-stripped" cellspacing="1">
-            {if $statuses}
-                <tr>
-                    <th>Status:</th>
-                    <td>
-                        {foreach from=$statuses item=s}
-                            {if $s.id == $selected_filters.status}
-                                <em class="selected_status" id="{$s.id}">{$s.status}</em>
-                            {else}
-                                <a class="status_link" href="#" id="{$s.id}">{$s.status}</a>
-                            {/if},
-                        {/foreach}
-                        {if $selected_filters.status==0}
-                            <em>all</em>
+        {if $statuses}
+            <div class="annotation-statistics-filter-section">
+                <div class="annotation-statistics-filter-section-title">Status</div>
+                <div class="annotation-statistics-statuses">
+                    {if $selected_filters.status==0}
+                        <em>All</em>
+                    {else}
+                        <a class="status_link" href="#" id="0">All</a>
+                    {/if}
+                    {foreach from=$statuses item=s}
+                        {if $s.id == $selected_filters.status}
+                            <em class="selected_status" id="{$s.id}">{$s.status}</em>
                         {else}
-                            <a class="status_link" href="#" id="0">all</a>
+                            <a class="status_link" href="#" id="{$s.id}">{$s.status}</a>
                         {/if}
-                    </td>
-                </tr>
-            {/if}
-            {if $flags}
-                <tr>
-                    <th>Flags:</th>
-                    <td>
-                        <select name="corpus_flag_id" class="corpus_flag_id" style="font-size: 12px">
-                            <option value="-" style="font-style: italic">Select flag</option>
-                            {foreach from=$corpus_flags item=flag}
-                                <option value="{$flag.corpora_flag_id}"
-                                        {if $flag.corpora_flag_id==$selected_filters.flags.flag}selected="selected"{/if}
-                                        title="{$flag.name}"><em>{$flag.short}</em></option>
-                            {/foreach}
-                        </select>
-                        <select name="flag_id" class="flag_type" style="font-size: 12px">
-                            <option value="-" style="font-style: italic">type</option>
-                            {foreach from=$flags item=flag}
-                                <option value="{$flag.flag_id}"
-                                        style="background-image:url(gfx/flag_{$flag.flag_id}.png); background-repeat: no-repeat; padding-left: 20px;"
-                                        {if $flag.flag_id==$selected_filters.flags.flag_status}selected="selected"{/if}>{$flag.name}</option>
-                            {/foreach}
-                        </select>
-                        {if $flag_set}
-                            <i class="fa fa-times cancel_flags" aria-hidden="true"></i>
-                        {/if}
-                    </td>
-                </tr>
-            {/if}
-            {if $features}
-                {foreach from=$features item=feature}
-                    <tr>
-                        {assign var=field_name  value=$feature.field}
-                        <th>{$feature.field}:</th>
-                        <td>
-                            {if $feature.type == 'text'}
-                                {foreach from = $feature.data item = meta}
-                                    {if $selected_filters.metadata.$field_name == $meta.name}
-                                        <em class="selected_metadata" id="{$feature.field}">{$meta.name}</em>
-                                        ,
-                                    {else}
-                                        <a class="metadata_link" id="{$feature.field}" href="#">{$meta.name}</a>
-                                        ,
-                                    {/if}
-                                {/foreach}
-                                {if $selected_filters.metadata.$field_name == "0" || !isset($selected_filters.metadata.$field_name)}
-                                    <em>all</em>
-                                {else}
-                                    <a class="metadata_link" id="{$feature.field}" href="#">all</a>
-                                {/if}
+                    {/foreach}
+                </div>
+            </div>
+        {/if}
+        {if $flags}
+            <div class="annotation-statistics-filter-section">
+                <div class="annotation-statistics-filter-section-title">Flags</div>
+                <div class="annotation-statistics-filter-controls">
+                    <select name="corpus_flag_id" class="corpus_flag_id" style="font-size: 12px">
+                        <option value="-" style="font-style: italic">Select flag</option>
+                        {foreach from=$corpus_flags item=flag}
+                            <option value="{$flag.corpora_flag_id}"
+                                    {if $flag.corpora_flag_id==$selected_filters.flags.flag}selected="selected"{/if}
+                                    title="{$flag.name}"><em>{$flag.short}</em></option>
+                        {/foreach}
+                    </select>
+                    <select name="flag_id" class="flag_type" style="font-size: 12px">
+                        <option value="-" style="font-style: italic">type</option>
+                        {foreach from=$flags item=flag}
+                            <option value="{$flag.flag_id}"
+                                    style="background-image:url(gfx/flag_{$flag.flag_id}.png); background-repeat: no-repeat; padding-left: 20px;"
+                                    {if $flag.flag_id==$selected_filters.flags.flag_status}selected="selected"{/if}>{$flag.name}</option>
+                        {/foreach}
+                    </select>
+                    {if $flag_set}
+                        <i class="fa fa-times cancel_flags" aria-hidden="true"></i>
+                    {/if}
+                </div>
+            </div>
+        {/if}
+
+        {if $features}
+            {foreach from=$features item=feature}
+                {assign var=field_name  value=$feature.field}
+                <div class="annotation-statistics-filter-section">
+                    <div class="annotation-statistics-filter-section-title">{$feature.field}</div>
+                    <div class="annotation-statistics-filter-values">
+                        {if $feature.type == 'text'}
+                            {if $selected_filters.metadata.$field_name == "0" || !isset($selected_filters.metadata.$field_name)}
+                                <em>All</em>
                             {else}
-                                {foreach from = $feature.field_values item = value}
-                                    {if $selected_filters.metadata.$field_name == $value}
-                                        <em class="selected_metadata" id="{$feature.field}">{$value}</em>
-                                        ,
-                                    {else}
-                                        <a class="metadata_link" id="{$feature.field}" href="#">{$value}</a>
-                                        ,
-                                    {/if}
-                                {/foreach}
-                                {if $selected_filters.metadata.$field_name == "0" || !isset($selected_filters.metadata.$field_name)}
-                                    <em>all</em>
-                                {else}
-                                    <a class="metadata_link" id="{$feature.field}" href="#">all</a>
-                                {/if}
+                                <a class="metadata_link" id="{$feature.field}" href="#">All</a>
                             {/if}
-                        </td>
-                    </tr>
-                {/foreach}
-            {/if}
-        </table>
+                            {foreach from = $feature.data item = meta}
+                                {if $selected_filters.metadata.$field_name == $meta.name}
+                                    <em class="selected_metadata" id="{$feature.field}">{$meta.name|capitalize}</em>
+                                {else}
+                                    <a class="metadata_link" id="{$feature.field}" href="#">{$meta.name|capitalize}</a>
+                                {/if}
+                            {/foreach}
+                        {else}
+                            {if $selected_filters.metadata.$field_name == "0" || !isset($selected_filters.metadata.$field_name)}
+                                <em>All</em>
+                            {else}
+                                <a class="metadata_link" id="{$feature.field}" href="#">All</a>
+                            {/if}
+                            {foreach from = $feature.field_values item = value}
+                                {if $selected_filters.metadata.$field_name == $value}
+                                    <em class="selected_metadata" id="{$feature.field}">{$value|capitalize}</em>
+                                {else}
+                                    <a class="metadata_link" id="{$feature.field}" href="#">{$value|capitalize}</a>
+                                {/if}
+                            {/foreach}
+                        {/if}
+                    </div>
+                </div>
+            {/foreach}
+        {/if}
 
         {if $filters|@count>0}
             <h2>Custom filters</h2>
@@ -150,7 +145,7 @@
 
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
-        <h5 style="float: left;">Annotation filters</h5>
+        <h5 style="float: left;"><i class="fa fa-tags" aria-hidden="true"></i> Annotation filters</h5>
     </div>
     <div class="panel-body scrolling" style="padding: 5px">
         {capture name=link_ext_filters assign=link_ext_filters}
@@ -158,49 +153,46 @@
                 {if $filter.selected}&amp;filter_{$filter.name}={$filter.selected}{/if}
             {/foreach}
         {/capture}
-        <table class="table table-stripped" cellspacing="1">
-            <tr>
-                <th>Stage:</th>
-                <td>
-                    <select name="annotation_stage" class="annotation_stage" style="font-size: 12px">
-                        <option value="-"
-                                style="font-style: italic">Select stage
+        <div class="annotation-statistics-filter-section">
+            <div class="annotation-statistics-filter-section-title">Stage</div>
+            <div class="annotation-statistics-filter-controls">
+                <select name="annotation_stage" class="annotation_stage" style="font-size: 12px">
+                    <option value="-"
+                            style="font-style: italic">Select stage
+                    </option>
+                    <option value="new" {if 'new' == $selected_filters.annotation.stage}selected="selected"{/if}
+                            style="font-style: italic">New
+                    </option>
+                    <option value="agreement" {if 'agreement'==$selected_filters.annotation.stage} selected="selected"{/if}
+                            style="font-style: italic">Agreement
+                    </option>
+                    <option value="bootstrapping" {if 'bootstrapping'==$selected_filters.annotation.stage} selected="selected"{/if}
+                            style="font-style: italic">Bootstrapping
+                    </option>
+                    <option value="final" {if 'final'==$selected_filters.annotation.stage} selected="selected"{/if}
+                            style="font-style: italic">Final
+                    </option>
+                </select>
+                {if $stage_set}
+                    <i class="fa fa-times cancel_stage" aria-hidden="true"></i>
+                {/if}
+            </div>
+        </div>
+        <div class="annotation-statistics-filter-section">
+            <div class="annotation-statistics-filter-section-title">User</div>
+            <div class="annotation-statistics-filter-controls">
+                <select name="annotation_user" class="annotation_user" style="font-size: 12px">
+                    <option value="-" style="font-style: italic">Select user</option>
+                    {foreach from=$corpus_users item=user}
+                        <option value="{$user.user_id}" {if $user.user_id==$selected_filters.annotation.user} selected="selected"{/if}
+                                style="font-style: italic"> {$user.screename}
                         </option>
-                        <option value="new" {if 'new' == $selected_filters.annotation.stage}selected="selected"{/if}
-                                style="font-style: italic">New
-                        </option>
-                        <option value="agreement" {if 'agreement'==$selected_filters.annotation.stage} selected="selected"{/if}
-                                style="font-style: italic">Agreement
-                        </option>
-                        <option value="bootstrapping" {if 'bootstrapping'==$selected_filters.annotation.stage} selected="selected"{/if}
-                                style="font-style: italic">Bootstrapping
-                        </option>
-                        <option value="final" {if 'final'==$selected_filters.annotation.stage} selected="selected"{/if}
-                                style="font-style: italic">Final
-                        </option>
-                    </select>
-                    {if $stage_set}
-                        <i class="fa fa-times cancel_stage" aria-hidden="true"></i>
-                    {/if}
-                </td>
-            </tr>
-            <tr>
-                <th>User:</th>
-                <td>
-                    <select name="annotation_user" class="annotation_user" style="font-size: 12px">
-                        <option value="-" style="font-style: italic">Select user</option>
-                        {foreach from=$corpus_users item=user}
-                            <option value="{$user.user_id}" {if $user.user_id==$selected_filters.annotation.user} selected="selected"{/if}
-                                    style="font-style: italic"> {$user.screename}
-                            </option>
-                        {/foreach}
-                    </select>
-                    {if $user_set}
-                        <i class="fa fa-times cancel_user" aria-hidden="true"></i>
-                    {/if}
-                </td>
-            </tr>
-        </table>
+                    {/foreach}
+                </select>
+                {if $user_set}
+                    <i class="fa fa-times cancel_user" aria-hidden="true"></i>
+                {/if}
+            </div>
+        </div>
     </div>
 </div>
-

@@ -1,0 +1,267 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.row-report {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.report-relation-agreement-column,
+.report-relation-agreement-content-column,
+.report-relation-agreement-config-column,
+#col-flags {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-relation-agreement-panel,
+.report-relation-agreement-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-relation-agreement-heading,
+.report-relation-agreement-content-heading {
+    border-bottom-width: 1px;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-relation-agreement-heading-icon {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 10px;
+    height: 16px;
+    width: 16px;
+}
+
+.report-relation-agreement-body,
+.report-relation-agreement-content-body {
+    background: #fbfdfe;
+    padding: 0;
+}
+
+.report-relation-agreement-table-wrapper,
+.report-relation-agreement-content-scroll,
+.report-config-scroll {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-relation-agreement-table-wrapper::-webkit-scrollbar,
+.report-relation-agreement-content-scroll::-webkit-scrollbar,
+.report-config-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-relation-agreement-table-wrapper::-webkit-scrollbar-track,
+.report-relation-agreement-content-scroll::-webkit-scrollbar-track,
+.report-config-scroll::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-relation-agreement-table-wrapper::-webkit-scrollbar-thumb,
+.report-relation-agreement-content-scroll::-webkit-scrollbar-thumb,
+.report-config-scroll::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-relation-agreement-table-wrapper::-webkit-scrollbar-thumb:hover,
+.report-relation-agreement-content-scroll::-webkit-scrollbar-thumb:hover,
+.report-config-scroll::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.report-relation-agreement-table {
+    color: #2f4754;
+    font-size: 10px;
+    margin-bottom: 0;
+}
+
+.report-relation-agreement-table > thead > tr > th {
+    background: #eaf3f7;
+    border-bottom: 1px solid #d7e4ea;
+    color: #496572;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    line-height: 1.15;
+    padding: 4px 5px;
+    text-transform: uppercase;
+}
+
+.report-relation-agreement-table > tbody > tr > td {
+    border-top: 1px solid #edf3f6;
+    line-height: 1.25;
+    padding: 4px 5px;
+    vertical-align: top;
+}
+
+.report-relation-agreement-table > tbody > tr:nth-child(odd) {
+    background: #f8fbfc;
+}
+
+.report-relation-agreement-table > tbody > tr:hover,
+.report-relation-agreement-table > tbody > tr.selected {
+    background: #dff2f7;
+}
+
+.report-relation-agreement-table .source,
+.report-relation-agreement-table .target {
+    color: #263f4c;
+    font-weight: 700;
+}
+
+.report-relation-agreement-actions-cell {
+    width: 250px;
+}
+
+.report-relation-agreement-toggle {
+    float: right;
+    font-size: 10px;
+}
+
+.report-relation-agreement-toggle a {
+    color: #176d7d;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.report-relation-agreement-toggle a:hover,
+.report-relation-agreement-toggle a:focus {
+    color: #124f5c;
+    text-decoration: underline;
+}
+
+.report-relation-agreement-table .agreement_actions ul {
+    margin: 0;
+    padding: 0;
+}
+
+.report-relation-agreement-table .agreement_actions li {
+    line-height: 1.25;
+    margin-bottom: 4px;
+}
+
+.report-relation-agreement-table input[type="radio"],
+.report-relation-agreement-table input[type="checkbox"] {
+    accent-color: #1f6f93;
+    height: 12px;
+    margin: 0 4px 0 0;
+    width: 12px;
+}
+
+.report-relation-agreement-table .agreement_list {
+    margin-top: 3px;
+}
+
+.report-relation-agreement-table .relation_checkbox {
+    min-height: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.report-relation-agreement-footer {
+    align-items: center;
+    background: #f5fafc;
+    border-top: 1px solid #dce9ee;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 7px 8px;
+}
+
+.report-relation-agreement-apply-button,
+.report-config-apply-button {
+    align-items: center;
+    background: #2f7d57;
+    border: 1px solid #276948;
+    border-radius: 5px;
+    box-shadow: 0 6px 14px rgba(47, 125, 87, 0.18);
+    color: #fff;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1.1;
+    padding: 5px 10px;
+}
+
+.report-relation-agreement-apply-button:hover,
+.report-relation-agreement-apply-button:focus,
+.report-config-apply-button:hover,
+.report-config-apply-button:focus {
+    background: #276948;
+    border-color: #1f573b;
+    color: #fff;
+}
+
+.report-relation-agreement-filters {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    font-size: 10px;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+.report-relation-agreement-filters span {
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+
+.report-relation-agreement-filters a {
+    color: #263f4c;
+    text-decoration: none;
+}
+
+.report-relation-agreement-content-box {
+    color: #263f4c;
+    font-size: 11px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 9px 11px 13px;
+}
+
+.report-relation-agreement-content-box * {
+    line-height: inherit;
+}
+
+.report-relation-agreement-config-column .alert-warning,
+.relation-agreement-user-empty-state .alert-warning {
+    align-items: flex-start;
+    background: linear-gradient(135deg, #fff8e8 0%, #f7fbfd 100%);
+    border: 1px solid #ead8aa;
+    border-left: 4px solid #d99b32;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(85, 105, 115, 0.08);
+    color: #5f4a22;
+    display: flex;
+    font-size: 10px;
+    font-weight: 600;
+    gap: 8px;
+    line-height: 1.35;
+    margin: 8px 0 2px;
+    padding: 8px 9px;
+}
+
+.report-relation-agreement-config-column .alert-warning em,
+.relation-agreement-user-empty-state em {
+    font-style: normal;
+}
+
+@media (max-width: 991px) {
+    #main-content > .container-fluid {
+        padding: 8px;
+    }
+}

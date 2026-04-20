@@ -18,9 +18,7 @@ class Ajax_words_frequency_subcorpora extends CPageCorpus{
 		
 		$base_ids = $_POST['base_ids'];
 		$corpus_id = $_POST['corpus_id'];
-		$ctag = null;
-
-		$words = DbCorpusStats::getWordsFrequencesPerSubcorpus($corpus_id, $ctag, true, $base_ids);
+		$words = DbCorpusStats::getWordsFrequencesPerSubcorpus($corpus_id, null, null, true, $base_ids);
 		$sizes = $this->getSubcorporaSizes($corpus_id);
 		$total = 0;
 		foreach ($sizes as $subcorpus_id=>$size){

@@ -813,3 +813,189 @@ SET @reports_annotations_autoextension_idx_sql = IF(
 PREPARE reports_annotations_autoextension_idx_stmt FROM @reports_annotations_autoextension_idx_sql;
 EXECUTE reports_annotations_autoextension_idx_stmt;
 DEALLOCATE PREPARE reports_annotations_autoextension_idx_stmt;
+
+--changeset tn:23
+
+SET @activities_user_datetime_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'activities'
+      AND INDEX_NAME = 'activities_user_datetime_idx'
+);
+SET @activities_user_datetime_idx_sql = IF(
+    @activities_user_datetime_idx_exists = 0,
+    'ALTER TABLE `activities` ADD INDEX `activities_user_datetime_idx` (`user_id`, `datetime`)',
+    'SELECT 1'
+);
+PREPARE activities_user_datetime_idx_stmt FROM @activities_user_datetime_idx_sql;
+EXECUTE activities_user_datetime_idx_stmt;
+DEALLOCATE PREPARE activities_user_datetime_idx_stmt;
+
+--changeset tn:24
+
+SET @activities_user_type_datetime_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'activities'
+      AND INDEX_NAME = 'activities_user_type_datetime_idx'
+);
+SET @activities_user_type_datetime_idx_sql = IF(
+    @activities_user_type_datetime_idx_exists = 0,
+    'ALTER TABLE `activities` ADD INDEX `activities_user_type_datetime_idx` (`user_id`, `activity_type_id`, `datetime`)',
+    'SELECT 1'
+);
+PREPARE activities_user_type_datetime_idx_stmt FROM @activities_user_type_datetime_idx_sql;
+EXECUTE activities_user_type_datetime_idx_stmt;
+DEALLOCATE PREPARE activities_user_type_datetime_idx_stmt;
+
+--changeset tn:25
+
+SET @activities_datetime_user_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'activities'
+      AND INDEX_NAME = 'activities_datetime_user_idx'
+);
+SET @activities_datetime_user_idx_sql = IF(
+    @activities_datetime_user_idx_exists = 0,
+    'ALTER TABLE `activities` ADD INDEX `activities_datetime_user_idx` (`datetime`, `user_id`)',
+    'SELECT 1'
+);
+PREPARE activities_datetime_user_idx_stmt FROM @activities_datetime_user_idx_sql;
+EXECUTE activities_datetime_user_idx_stmt;
+DEALLOCATE PREPARE activities_datetime_user_idx_stmt;
+
+--changeset tn:26
+
+SET @activities_anonymous_datetime_ip_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'activities'
+      AND INDEX_NAME = 'activities_anonymous_datetime_ip_idx'
+);
+SET @activities_anonymous_datetime_ip_idx_sql = IF(
+    @activities_anonymous_datetime_ip_idx_exists = 0,
+    'ALTER TABLE `activities` ADD INDEX `activities_anonymous_datetime_ip_idx` (`user_id`, `datetime`, `ip_id`)',
+    'SELECT 1'
+);
+PREPARE activities_anonymous_datetime_ip_idx_stmt FROM @activities_anonymous_datetime_ip_idx_sql;
+EXECUTE activities_anonymous_datetime_ip_idx_stmt;
+DEALLOCATE PREPARE activities_anonymous_datetime_ip_idx_stmt;
+
+--changeset tn:27
+
+SET @activities_corpus_user_datetime_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'activities'
+      AND INDEX_NAME = 'activities_corpus_user_datetime_idx'
+);
+SET @activities_corpus_user_datetime_idx_sql = IF(
+    @activities_corpus_user_datetime_idx_exists = 0,
+    'ALTER TABLE `activities` ADD INDEX `activities_corpus_user_datetime_idx` (`corpus_id`, `user_id`, `datetime`)',
+    'SELECT 1'
+);
+PREPARE activities_corpus_user_datetime_idx_stmt FROM @activities_corpus_user_datetime_idx_sql;
+EXECUTE activities_corpus_user_datetime_idx_stmt;
+DEALLOCATE PREPARE activities_corpus_user_datetime_idx_stmt;
+
+--changeset tn:28
+
+UPDATE `report_perspectives`
+SET `title` = 'Morph. Agreement'
+WHERE `id` = 'morphodisambagreement';
+
+UPDATE `report_perspectives`
+SET `title` = 'History'
+WHERE `id` = 'diffs';
+
+--changeset tn:29
+
+SET @reports_corpora_subcorpus_id_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'reports'
+      AND INDEX_NAME = 'reports_corpora_subcorpus_id_idx'
+);
+SET @reports_corpora_subcorpus_id_idx_sql = IF(
+    @reports_corpora_subcorpus_id_idx_exists = 0,
+    'ALTER TABLE `reports` ADD INDEX `reports_corpora_subcorpus_id_idx` (`corpora`, `subcorpus_id`, `id`)',
+    'SELECT 1'
+);
+PREPARE reports_corpora_subcorpus_id_idx_stmt FROM @reports_corpora_subcorpus_id_idx_sql;
+EXECUTE reports_corpora_subcorpus_id_idx_stmt;
+DEALLOCATE PREPARE reports_corpora_subcorpus_id_idx_stmt;
+
+SET @tokens_tags_optimized_word_frequency_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'tokens_tags_optimized'
+      AND INDEX_NAME = 'tokens_tags_optimized_word_frequency_idx'
+);
+SET @tokens_tags_optimized_word_frequency_idx_sql = IF(
+    @tokens_tags_optimized_word_frequency_idx_exists = 0,
+    'ALTER TABLE `tokens_tags_optimized` ADD INDEX `tokens_tags_optimized_word_frequency_idx` (`token_id`, `disamb`, `pos`, `base_id`)',
+    'SELECT 1'
+);
+PREPARE tokens_tags_optimized_word_frequency_idx_stmt FROM @tokens_tags_optimized_word_frequency_idx_sql;
+EXECUTE tokens_tags_optimized_word_frequency_idx_stmt;
+DEALLOCATE PREPARE tokens_tags_optimized_word_frequency_idx_stmt;
+
+--changeset tn:30
+
+SET @tokens_report_id_token_id_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'tokens'
+      AND INDEX_NAME = 'tokens_report_id_token_id_idx'
+);
+SET @tokens_report_id_token_id_idx_sql = IF(
+    @tokens_report_id_token_id_idx_exists = 0,
+    'ALTER TABLE `tokens` ADD INDEX `tokens_report_id_token_id_idx` (`report_id`, `token_id`)',
+    'SELECT 1'
+);
+PREPARE tokens_report_id_token_id_idx_stmt FROM @tokens_report_id_token_id_idx_sql;
+EXECUTE tokens_report_id_token_id_idx_stmt;
+DEALLOCATE PREPARE tokens_report_id_token_id_idx_stmt;
+
+SET @tokens_tags_optimized_disamb_pos_token_base_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'tokens_tags_optimized'
+      AND INDEX_NAME = 'tokens_tags_optimized_disamb_pos_token_base_idx'
+);
+SET @tokens_tags_optimized_disamb_pos_token_base_idx_sql = IF(
+    @tokens_tags_optimized_disamb_pos_token_base_idx_exists = 0,
+    'ALTER TABLE `tokens_tags_optimized` ADD INDEX `tokens_tags_optimized_disamb_pos_token_base_idx` (`disamb`, `pos`, `token_id`, `base_id`)',
+    'SELECT 1'
+);
+PREPARE tokens_tags_optimized_disamb_pos_token_base_idx_stmt FROM @tokens_tags_optimized_disamb_pos_token_base_idx_sql;
+EXECUTE tokens_tags_optimized_disamb_pos_token_base_idx_stmt;
+DEALLOCATE PREPARE tokens_tags_optimized_disamb_pos_token_base_idx_stmt;
+
+--changeset tn:31
+
+SET @tto_stage_user_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'tokens_tags_optimized'
+      AND INDEX_NAME = 'tokens_tags_optimized_stage_user_disamb_pos_token_base_idx'
+);
+SET @tto_stage_user_idx_sql = IF(
+    @tto_stage_user_idx_exists = 0,
+    'ALTER TABLE `tokens_tags_optimized` ADD INDEX `tokens_tags_optimized_stage_user_disamb_pos_token_base_idx` (`stage`, `user_id`, `disamb`, `pos`, `token_id`, `base_id`)',
+    'SELECT 1'
+);
+PREPARE tokens_tags_optimized_stage_user_disamb_pos_token_base_idx_stmt FROM @tto_stage_user_idx_sql;
+EXECUTE tokens_tags_optimized_stage_user_disamb_pos_token_base_idx_stmt;
+DEALLOCATE PREPARE tokens_tags_optimized_stage_user_disamb_pos_token_base_idx_stmt;

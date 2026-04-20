@@ -17,23 +17,23 @@
 		<div id="annotation_layers" class="scrolling">
 		   {* Poniższe opcje dostępne wyłącznie w widoku do edycji anotacji *}
 		   {if $subpage=="annotator"}
-			<div class="panel panel-default">
+			<div class="panel panel-default report-annotator-working-mode-panel">
 				<div class="panel-heading">Working mode</div>
 				<div class="panel-body">
 				   <input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
-				   <div id="annotation_mode_list">
+				   <div id="annotation_mode_list" class="report-annotator-working-mode-list">
 					   {if "annotate"|has_corpus_role}
-						   <div class="radio" title="Work on final annotations and relations">
+						   <div class="radio report-annotator-working-mode-option" title="Work on final annotations and relations">
 							   <label><input type="radio" class="radio" name="annotation_mode" value="final"/> final</label>
 						   </div>
 					   {/if}
 					   {if "annotate_agreement"|has_corpus_role}
-						   <div class="radio" title="Work on annotations and relations for agreement measurement">
+						   <div class="radio report-annotator-working-mode-option" title="Work on annotations and relations for agreement measurement">
 							   <label><input type="radio" class="radio" name="annotation_mode" value="agreement"/> agreement</label>
 						   </div>
 					   {/if}
                        {if "annotate_agreement"|has_corpus_role}
-                           <div class="radio" title="Work on annotations for agreement measurement. Unable to edit annotations.">
+                           <div class="radio report-annotator-working-mode-option" title="Work on annotations for agreement measurement. Unable to edit annotations.">
                                <label><input type="radio" class="radio" name="annotation_mode" value="relation_agreement"/> relation agreement</label>
                            </div>
                        {/if}
@@ -106,7 +106,9 @@
 			</div>
 		</div>
 		<div class="panel-footer scrollingFix">
-			<button id="applyLayer" class="btn btn-primary">Apply configuration</button>
+			<button id="applyLayer" class="btn btn-primary">
+				{if $subpage=="preview"}<i class="fa fa-check" aria-hidden="true"></i> Apply{else}Apply configuration{/if}
+			</button>
 		</div>
 	</div>
 	</div>

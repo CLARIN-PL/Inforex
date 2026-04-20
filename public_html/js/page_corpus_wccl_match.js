@@ -66,15 +66,19 @@ $(function(){
 		//_editor.setSelection(position);
 	});
 	
-	$("#annotation_types_toogle a").click(function(){
+	$("#annotation_types_toogle").click(function(e){
+		e.preventDefault();
 		$("#annotation_types").toggle();
         autoreizeFitToScreen();
 	});
 	
-	$("#toolbox_toogle a").click(function(){
+	$("#toolbox_toogle").click(function(e){
+		e.preventDefault();
 		$("#toolbox").toggle();
         autoreizeFitToScreen();
-	});	
+	});
+
+    toggleWcclEmptyState();
 });
 
 function stop_processing(){
@@ -160,6 +164,7 @@ function run_wccl_match_next(){
 	                	}        		
 	                	html += "</ol></li>";
 	                	$("#sentences").append(html);
+                        toggleWcclEmptyState();
 	            	}
 	            	if ( _stopped ){
 	            		$("#count").text("Stopped");
@@ -195,6 +200,7 @@ function processing_ended(){
 	$("#process").removeClass("disabled");
 	$("#process").removeAttr("disabled");	
 	$("img.ajax").remove();	
+    toggleWcclEmptyState();
 }
 
 /**
@@ -272,3 +278,7 @@ WcclRulesSaver.prototype.getCurrentTime = function(){
 	        + currentdate.getMinutes() + ":" 
 	        + currentdate.getSeconds();	
 };
+
+function toggleWcclEmptyState() {
+    $("#wccl_empty_state").toggle($("#sentences").children().length === 0);
+}

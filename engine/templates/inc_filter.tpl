@@ -19,9 +19,15 @@
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
 				<input type="checkbox" name="search_field[]" value="title" style="vertical-align: middle" {if $search_field_title}checked="checked"{/if}> in title,
 				<input type="checkbox" name="search_field[]" value="content" style="vertical-align: middle" {if $search_field_content || !$search_field_title}checked="checked"{/if}> in content<br/>				
-				<input type="text" name="search" value="{$search|escape:'html'}" style="width: 150px"/>
+				<input type="text" name="search" value="{$search|escape:'html'}" style="width: 150px" class="corpus-documents-filter-search-input"/>
 				<input type="hidden" name="page" value="{$page}"/>
+				{if $page == 'corpus_documents' || $page == 'browse' || $page == 'corpus_document'}
+				<button type="submit" class="button corpus-documents-filter-search-button" title="Search">
+					<i class="fa fa-search" aria-hidden="true"></i>
+				</button>
+				{else}
 				<input type="submit" class="button" value="search"/>
+				{/if}
                 <div style="border: none; display: none;">
                     <input type="checkbox" id="filter_search_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
                     {if $search}
@@ -48,9 +54,15 @@
         <div id="filter_base" need_order_and_results_limit="1" class="options" {if !$base}style="display: none"{/if}>
             <form action="index.php?page={$page}">
                 <input type="hidden" name="corpus" value="{$corpus.id}"/>
-                <input type="text" name="base" value="{$base|escape:'html'}" style="width: 150px"/>
+                <input type="text" name="base" value="{$base|escape:'html'}" style="width: 150px" class="corpus-documents-filter-search-input"/>
                 <input type="hidden" name="page" value="browse"/> 
+                {if $page == 'corpus_documents' || $page == 'browse' || $page == 'corpus_document'}
+                <button type="submit" class="button corpus-documents-filter-search-button" title="Search">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button><br />
+                {else}
                 <input type="submit" class="button" value="search"/><br />
+                {/if}
                 <input type="checkbox" id="filter_base_show_found_sentences" name="base_show_found_sentences" value="1" style="vertical-align: middle" {if $base_show_found_sentences == 1}checked="checked"{/if}> <label for="filter_base_show_found_sentences">show found sentences</label><br>
                 <div style="border: none; display: none;">
                     <input type="checkbox" id="filter_base_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
@@ -98,9 +110,15 @@
             		{/foreach}
             	</select>
                 <input type="hidden" name="corpus" value="{$corpus.id}"/>
-                <input type="text" name="annotation_value" value="{$annotation_value|escape:'html'}" style="width: 150px"/>
+                <input type="text" name="annotation_value" value="{$annotation_value|escape:'html'}" style="width: 150px" class="corpus-documents-filter-search-input"/>
                 <input type="hidden" name="page" value="browse"/> 
+                {if $page == 'corpus_documents' || $page == 'browse' || $page == 'corpus_document'}
+                <button type="submit" class="button corpus-documents-filter-search-button" title="Search">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+                {else}
                 <input type="submit" class="button" value="search"/>
+                {/if}
             </form>
         </div>
     </div>

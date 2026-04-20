@@ -1,0 +1,332 @@
+#page.corpus #page_content,
+#page_content {
+	background: #eef4f7;
+}
+
+.corpus-upload-page {
+	padding: 8px 10px 10px;
+}
+
+.corpus-upload-alert {
+	border-radius: 10px;
+	margin: 0 0 10px;
+}
+
+.corpus-upload-panel {
+	background: #ffffff;
+	border: 1px solid #d8e4eb;
+	border-radius: 12px;
+	box-shadow: 0 8px 18px rgba(32, 56, 73, 0.08);
+	margin: 0;
+	overflow: hidden;
+}
+
+.corpus-upload-panel > .panel-heading {
+	align-items: center;
+	background:
+		linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+		radial-gradient(circle at top right, rgba(31, 111, 147, 0.14), transparent 34%);
+	border-bottom: 2px solid #1f6f93;
+	color: #174f69;
+	display: flex;
+	font-size: 16px;
+	font-weight: bold;
+	gap: 9px;
+	letter-spacing: 0.02em;
+	padding: 10px 14px;
+}
+
+.corpus-upload-panel > .panel-heading .administration-content-heading-icon {
+	align-items: center;
+	background: #1f6f93;
+	border-radius: 10px;
+	box-shadow: 0 8px 16px rgba(31, 111, 147, 0.18);
+	color: #ffffff;
+	display: inline-flex;
+	height: 28px;
+	justify-content: center;
+	width: 28px;
+}
+
+.corpus-upload-panel .panel-body {
+	background:
+		radial-gradient(circle at top right, rgba(31, 111, 147, 0.08), transparent 38%),
+		linear-gradient(145deg, #f8fbfd 0%, #edf4f7 100%);
+	padding: 10px;
+}
+
+.corpus-upload-grid {
+	align-items: stretch;
+	display: grid;
+	gap: 8px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.corpus-upload-card,
+.corpus-upload-format-card {
+	background: #ffffff;
+	border: 1px solid #d8e4eb;
+	border-radius: 10px;
+	box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+}
+
+.corpus-upload-card {
+	display: flex;
+	gap: 10px;
+	min-height: 158px;
+	padding: 11px;
+}
+
+.corpus-upload-card-primary {
+	border-color: #bdd9dc;
+}
+
+.corpus-upload-card-icon {
+	align-items: center;
+	background: #e7f3f2;
+	border: 1px solid #bdd9dc;
+	border-radius: 10px;
+	color: #1f6f93;
+	display: inline-flex;
+	flex: 0 0 38px;
+	font-size: 17px;
+	height: 38px;
+	justify-content: center;
+	width: 38px;
+}
+
+.corpus-upload-card-content {
+	min-width: 0;
+	width: 100%;
+}
+
+.corpus-upload-card h3 {
+	color: #174f69;
+	font-size: 14px;
+	font-weight: bold;
+	margin: 0 0 4px;
+}
+
+.corpus-upload-card p {
+	color: #486171;
+	font-size: 11px;
+	line-height: 1.35;
+	margin: 0 0 8px;
+}
+
+.corpus-upload-page label {
+	color: #486171;
+	font-size: 11px;
+	font-weight: bold;
+	letter-spacing: 0.03em;
+	margin-bottom: 4px;
+	text-transform: uppercase;
+}
+
+.corpus-upload-page .form-control {
+	background: #ffffff;
+	border-color: #c7d7e1;
+	border-radius: 8px;
+	box-shadow: none;
+	color: #2f4554;
+	font-size: 12px;
+	min-height: 31px;
+}
+
+.corpus-upload-page .form-control:focus {
+	border-color: #1f6f93;
+	box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+}
+
+.corpus-upload-file-input {
+	padding: 5px 8px;
+}
+
+.corpus-upload-checkbox {
+	align-items: center;
+	background: #f8fbfd;
+	border: 1px solid #d8e4eb;
+	border-radius: 9px;
+	cursor: pointer;
+	display: flex;
+	gap: 8px;
+	margin: 3px 0 6px;
+	padding: 5px 8px;
+	text-transform: none !important;
+	transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.corpus-upload-checkbox:hover {
+	background: #eef7f6;
+	border-color: #bdd9dc;
+}
+
+.corpus-upload-checkbox input {
+	height: 1px;
+	opacity: 0;
+	position: absolute;
+	width: 1px;
+}
+
+.corpus-upload-checkbox > span[aria-hidden="true"] {
+	align-items: center;
+	background: #ffffff;
+	border: 2px solid #bdd0dc;
+	border-radius: 5px;
+	color: #ffffff;
+	display: inline-flex;
+	flex: 0 0 16px;
+	height: 16px;
+	justify-content: center;
+	transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+	width: 16px;
+}
+
+.corpus-upload-checkbox > span[aria-hidden="true"]:before {
+	content: "\f00c";
+	font-family: FontAwesome;
+	font-size: 10px;
+	line-height: 1;
+	opacity: 0;
+	transform: scale(0.8);
+	transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.corpus-upload-checkbox input:checked + span[aria-hidden="true"] {
+	background: #2f8f55;
+	border-color: #2f8f55;
+}
+
+.corpus-upload-checkbox input:checked + span[aria-hidden="true"]:before {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.corpus-upload-checkbox input:focus + span[aria-hidden="true"] {
+	box-shadow: 0 0 0 3px rgba(31, 111, 147, 0.16);
+}
+
+.corpus-upload-checkbox > span:last-child {
+	color: #3e5364;
+	font-size: 11px;
+	font-weight: bold;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.corpus-upload-pattern {
+	background: #f3f8fa;
+	border: 1px solid #d8e4eb;
+	border-radius: 8px;
+	color: #2f4554;
+	display: block;
+	font-size: 10px;
+	line-height: 1.35;
+	padding: 6px 8px;
+	white-space: normal;
+	word-break: break-word;
+}
+
+.corpus-upload-pattern span {
+	color: #174f69;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.corpus-upload-pattern em {
+	color: #b85b3d;
+	font-style: normal;
+	font-weight: bold;
+}
+
+.corpus-upload-format-card {
+	margin-top: 8px;
+	overflow: hidden;
+}
+
+.corpus-upload-format-header {
+	align-items: center;
+	background: linear-gradient(135deg, #f8fbfd 0%, #eef7f6 100%);
+	border-bottom: 1px solid #d8e4eb;
+	color: #174f69;
+	display: flex;
+	font-size: 12px;
+	font-weight: bold;
+	gap: 8px;
+	padding: 8px 10px;
+}
+
+.corpus-upload-format-header .fa {
+	color: #1f6f93;
+}
+
+.corpus-upload-format-card pre {
+	background: #ffffff;
+	border: 0;
+	color: #2f4554;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+	font-size: 11px;
+	margin: 0;
+	padding: 9px 10px;
+	white-space: pre-wrap;
+}
+
+.corpus-upload-footer {
+	align-items: center;
+	background: #ffffff;
+	border-top: 1px solid #d8e4eb;
+	display: flex;
+	justify-content: flex-end;
+	padding: 9px 14px;
+}
+
+.corpus-upload-footer .btn-primary {
+	align-items: center;
+	background: #197b8c;
+	border-color: #197b8c;
+	border-radius: 5px;
+	box-shadow: 0 6px 14px rgba(25, 123, 140, 0.18);
+	color: #ffffff;
+	display: inline-flex;
+	font-size: 11px;
+	font-weight: bold;
+	gap: 6px;
+	line-height: 1.2;
+	padding: 7px 12px;
+}
+
+.corpus-upload-footer .btn-primary:hover,
+.corpus-upload-footer .btn-primary:focus {
+	background: #146675;
+	border-color: #146675;
+	color: #ffffff;
+}
+
+@media (max-width: 991px) {
+	.corpus-upload-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.corpus-upload-card {
+		min-height: 0;
+	}
+}
+
+@media (max-width: 767px) {
+	.corpus-upload-page {
+		padding: 8px;
+	}
+
+	.corpus-upload-card {
+		align-items: flex-start;
+	}
+
+	.corpus-upload-footer {
+		justify-content: stretch;
+	}
+
+	.corpus-upload-footer .btn-primary {
+		justify-content: center;
+		width: 100%;
+	}
+}

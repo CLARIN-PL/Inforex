@@ -12,7 +12,7 @@
 	<div class="panel-heading">About</div>
 	<div class="panel-body">
 -->
-<br/>
+<div class="container-fluid admin_tables about-page">
 			<div class="panel panel-default about-panel">
 				<div class="panel-heading about-panel-heading">
 					<span class="about-panel-heading-icon"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
@@ -283,6 +283,7 @@
 	</div>
 </div>
 -->
+</div>
 
 {literal}
 <script type="text/javascript">

@@ -1,25 +1,635 @@
-.card-main{
-    width: 150%;
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
 }
-.col-tag-list-annotators{
+
+.row-report {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.report-morpho-agreement-main-column,
+.report-morpho-agreement-config-column,
+#col-flags {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-morpho-agreement-panel.administration-content-panel,
+#col-flags .report-flags-side-panel {
+    background: #fff;
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+    margin: 0 0 8px;
+    overflow: hidden;
+}
+
+.report-morpho-agreement-heading.administration-content-heading,
+#col-flags .report-flags-side-heading {
+    align-items: center;
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69 !important;
+    display: flex;
+    font-size: 10px;
+    font-weight: bold;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-morpho-agreement-heading-icon.administration-content-heading-icon {
+    align-items: center;
+    background: #e7f2f5;
+    border: 1px solid #cfe1e8;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #176d7d;
+    display: inline-flex;
+    font-size: 10px;
+    height: 16px;
+    justify-content: center;
+    width: 16px;
+}
+
+.report-morpho-agreement-content-body,
+.report-morpho-agreement-tagger-body,
+.report-morpho-agreement-config-body {
+    background: #fbfdfe;
+}
+
+.report-morpho-agreement-content-body,
+.report-morpho-agreement-tagger-body {
     padding: 0;
 }
-.col-tag-list-annotators:first-child{
-    padding-left: 15px;
+
+.report-morpho-agreement-document-content {
+    background:
+        linear-gradient(90deg, rgba(23, 109, 125, 0.04) 0, rgba(23, 109, 125, 0) 18px),
+        #fff;
+    border-right: 1px solid #d7e4ea;
 }
-.col-tag-list-annotators:last-child{
-    padding-right: 15px;
+
+.report-morpho-agreement-content-box {
+    color: #263f4c;
+    font-size: 11px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 9px 11px 13px;
 }
-.possible-tags-list{
-    margin: 1px;
+
+.report-morpho-agreement-content-box * {
+    line-height: inherit;
 }
-/*.token-card-content ul.possible-tags-list.main-list li.agreed{*/
-    /*background-color: #e1f9e5 !important;*/
-/*}*/
-/*hidding icons in annototors selection*/
-ul.annotator .selected .tag-base .glyphicon-ok-sign{
+
+.report-morpho-agreement-content-box .token {
+    cursor: pointer;
+}
+
+.report-morpho-agreement-content-box .token.token-tagger-active,
+.report-morpho-agreement-content-box .token.selected {
+    background: #176d7d;
+    border-radius: 3px;
+    color: #ffffff;
+}
+
+.report-morpho-agreement-tagger {
+    align-items: stretch;
+    background: #fbfdfe;
+    display: flex;
+    gap: 6px;
+    min-height: 360px;
+    padding: 8px;
+    position: relative;
+}
+
+.report-morpho-agreement-tagger > .col-sm-1,
+.report-morpho-agreement-tagger > .col-sm-2 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.report-morpho-agreement-tagger .col-sm-1 {
+    align-items: stretch;
+    display: flex;
+    flex: 0 0 34px;
+    max-width: 34px;
+}
+
+.report-morpho-agreement-tagger .token-card {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0;
+    width: auto;
+}
+
+.report-morpho-agreement-tagger .token-card.card-main {
+    flex: 1.6 1 0;
+    width: auto;
+}
+
+.report-morpho-agreement-tagger .token-card-content {
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 9px;
+    box-shadow: none;
+    color: #345462;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 8px;
+    position: relative;
+}
+
+.report-morpho-agreement-tagger .card-main > .token-card-content {
+    background: #ffffff;
+    border-color: #bfd7e0;
+    box-shadow: 0 8px 18px rgba(32, 56, 73, 0.08);
+    padding: 8px;
+}
+
+.report-morpho-agreement-tagger .morpho-token {
+    color: #174f69;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 7px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.report-morpho-agreement-tagger .possible-tags-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.report-morpho-agreement-tagger .possible-tags-list li {
+    align-items: center;
+    background: #f4f8fa;
+    border: 1px solid #e0ebf0;
+    border-radius: 6px;
+    color: #345462;
+    display: flex;
+    font-size: 10px;
+    justify-content: center;
+    line-height: 1.2;
+    margin: 3px 0;
+    min-height: 34px;
+    overflow: hidden;
+    padding: 4px 5px;
+    position: relative;
+    text-align: center;
+    text-overflow: ellipsis;
+}
+
+.report-morpho-agreement-tagger .card-main > .token-card-content ul.possible-tags-list li {
+    padding: 4px 5px;
+}
+
+.report-morpho-agreement-tagger .possible-tags-list li.focused {
+    background: #dff2f7;
+    border-color: #2393a6;
+    color: #104f5b;
+    cursor: pointer;
+}
+
+.report-morpho-agreement-tagger .possible-tags-list li.selected,
+.report-morpho-agreement-tagger .possible-tags-list li.agreed.selected,
+.report-morpho-agreement-tagger .possible-tags-list li.selected.focused {
+    background: #dff4e6 !important;
+    border-color: #77bd8b;
+    color: #255f37;
+}
+
+.report-morpho-agreement-tagger .tag-base {
+    display: block;
+    float: none;
+    font-weight: 700;
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    z-index: 2;
+}
+
+.report-morpho-agreement-tagger .glyphicon {
+    color: #7aa98a;
     display: none;
+    left: 4px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 6px;
 }
-.token-card-content ul.possible-tags-list li.agreed.selected{
-    background-color: rgba(50, 255, 0, 0.5) !important;
+
+.report-morpho-agreement-tagger .selected .glyphicon-ok-sign {
+    display: inline-block;
+}
+
+.report-morpho-agreement-tagger .col-tag-list-annotators {
+    padding: 0 3px;
+}
+
+.report-morpho-agreement-tagger .col-tag-list-annotators i {
+    color: #607985;
+    display: inline-block;
+    font-size: 9px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.report-morpho-agreement-tagger .col-tag-list-annotators b {
+    color: #174f69;
+}
+
+.report-morpho-agreement-tagger hr {
+    border-top: 1px solid #dce9ee;
+    margin: 8px 0;
+}
+
+#editable-select-container {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 7px;
+    position: relative;
+}
+
+#morpho-tagger #editable-select-container .form-control,
+#morpho-tagger #editable-select-container input,
+#morpho-tagger #editable-select-container select {
+    background: #ffffff;
+    border: 1px solid #c9dce4;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #263f4c;
+    font-size: 10px;
+    height: 24px;
+    line-height: 1.2;
+    padding: 2px 6px;
+    width: 50%;
+}
+
+#morpho-tagger #editable-select-container .form-control:focus,
+#morpho-tagger #editable-select-container input:focus,
+#morpho-tagger #editable-select-container select:focus {
+    border-color: #1f6f93;
+    box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+}
+
+#add-tag {
+    align-items: center;
+    background: #176d7d;
+    border: 1px solid #125a67;
+    border-radius: 5px;
+    box-shadow: 0 6px 14px rgba(23, 109, 125, 0.18);
+    color: #fff;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    justify-content: center;
+    line-height: 1.1;
+    padding: 6px 10px;
+}
+
+#add-tag:hover,
+#add-tag:focus {
+    background: #125a67;
+    border-color: #0f4b56;
+    color: #fff;
+}
+
+.report-morpho-agreement-nav-button.btn-side-morpho {
+    align-items: center;
+    background: #eef6f8;
+    border: 1px solid #d4e6ed;
+    border-radius: 7px;
+    color: #176d7d;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    min-height: 120px;
+    padding: 0;
+    width: 100%;
+}
+
+.report-morpho-agreement-nav-button:hover,
+.report-morpho-agreement-nav-button:focus {
+    background: #dff2f7;
+    border-color: #2393a6;
+    color: #104f5b;
+}
+
+.report-morpho-agreement-nav-button .glyphicon {
+    color: inherit;
+    display: inline-block;
+    padding: 0;
+}
+
+.report-morpho-agreement-tagger [data-module-id="overlay"] {
+    background-color: rgba(32, 56, 73, 0.78);
+    border-radius: 9px;
+}
+
+.report-morpho-agreement-tagger [data-module-id="overlay"] p {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.report-morpho-agreement-config-body {
+    padding: 0;
+}
+
+.report-morpho-agreement-config-scroll {
+    background: #fbfdfe;
+    padding: 7px;
+}
+
+.report-morpho-agreement-config-footer {
+    background: #f5fafc;
+    border-top: 1px solid #dce9ee;
+    padding: 7px 8px;
+    text-align: right;
+}
+
+.report-morpho-agreement-apply-button {
+    align-items: center;
+    background: #2f7d57;
+    border: 1px solid #276948;
+    border-radius: 5px;
+    box-shadow: 0 6px 14px rgba(47, 125, 87, 0.18);
+    color: #fff;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1.1;
+    padding: 5px 10px;
+}
+
+.report-morpho-agreement-apply-button:hover,
+.report-morpho-agreement-apply-button:focus {
+    background: #276948;
+    border-color: #1f573b;
+    color: #fff;
+}
+
+.report-morpho-agreement-config-column .agreement-user-empty-state .alert-warning,
+.report-morpho-agreement-config-column .alert-warning {
+    background:
+        linear-gradient(135deg, #ffffff 0%, #f1f8fb 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 38%);
+    border: 1px dashed #bfd7e0;
+    border-radius: 10px;
+    color: #345462;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0;
+    padding: 12px;
+}
+
+.report-morpho-agreement-config-column .form-control {
+    background: #ffffff;
+    border: 1px solid #c9dce4;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #263f4c;
+    font-size: 10px;
+    height: 24px;
+    line-height: 1.2;
+    padding: 2px 6px;
+}
+
+.report-morpho-agreement-config-column .form-control:focus {
+    border-color: #1f6f93;
+    box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+}
+
+.report-morpho-agreement-config-column label {
+    color: #456674;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.report-morpho-agreement-document-content,
+.report-morpho-agreement-config-scroll,
+#col-flags .scrolling,
+#col-flags .scrollingAccordion {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-morpho-agreement-document-content::-webkit-scrollbar,
+.report-morpho-agreement-config-scroll::-webkit-scrollbar,
+#col-flags .scrolling::-webkit-scrollbar,
+#col-flags .scrollingAccordion::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-morpho-agreement-document-content::-webkit-scrollbar-track,
+.report-morpho-agreement-config-scroll::-webkit-scrollbar-track,
+#col-flags .scrolling::-webkit-scrollbar-track,
+#col-flags .scrollingAccordion::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-morpho-agreement-document-content::-webkit-scrollbar-thumb,
+.report-morpho-agreement-config-scroll::-webkit-scrollbar-thumb,
+#col-flags .scrolling::-webkit-scrollbar-thumb,
+#col-flags .scrollingAccordion::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-morpho-agreement-document-content::-webkit-scrollbar-thumb:hover,
+.report-morpho-agreement-config-scroll::-webkit-scrollbar-thumb:hover,
+#col-flags .scrolling::-webkit-scrollbar-thumb:hover,
+#col-flags .scrollingAccordion::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+#col-flags .panel-group,
+#accordionFlags {
+    margin-top: 0;
+}
+
+#col-flags .panel-title {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+}
+
+#col-flags .panel-title > a {
+    align-items: center;
+    color: #174f69;
+    display: flex;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.1;
+    text-decoration: none;
+}
+
+#col-flags .panel-body,
+#col-flags .scrollingAccordion {
+    background: #fbfdfe;
+}
+
+#col-flags .report-flags-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px;
+}
+
+#col-flags .report-flag-item {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 6px;
+    color: #345462;
+    cursor: pointer;
+    display: flex;
+    gap: 4px;
+    min-height: 22px;
+    overflow: hidden;
+    padding: 3px 4px;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+    white-space: nowrap;
+    width: 100%;
+}
+
+#col-flags .report-flag-item:hover,
+#col-flags .report-flag-item:focus {
+    background: #eef8fb;
+    border-color: #2393a6;
+    color: #176d7d;
+    transform: translateX(1px);
+}
+
+#col-flags .report-flag-state-empty {
+    background: #f7fafc;
+    color: #687d88;
+}
+
+#col-flags .report-flag-icon {
+    align-items: center;
+    background: #f2f7f9;
+    border: 1px solid #e0ebf0;
+    border-radius: 4px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 15px;
+    justify-content: center;
+    width: 15px;
+}
+
+#col-flags .report-flag-icon img {
+    display: block;
+    max-height: 11px;
+    max-width: 11px;
+}
+
+#col-flags .report-flag-short {
+    display: block;
+    flex: 1 1 auto;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.2;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#col-flags .report-flags-empty {
+    align-items: center;
+    background: #ffffff;
+    border: 1px dashed #d8e4eb;
+    border-radius: 7px;
+    color: #6f8490;
+    display: flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 6px;
+    justify-content: center;
+    padding: 8px 6px;
+}
+
+#col-flags #actionList .scrollingAccordion {
+    padding: 6px !important;
+    text-align: center;
+}
+
+#col-flags .report-action-delete-button {
+    align-items: center;
+    background: #fff4f3;
+    border: 1px solid #e6b9b4;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #a33f35;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    justify-content: center;
+    line-height: 1.1;
+    margin: 0;
+    padding: 5px 8px;
+    width: 100%;
+}
+
+#col-flags .report-action-delete-button:hover,
+#col-flags .report-action-delete-button:focus {
+    background: #c84f43;
+    border-color: #b84439;
+    color: #ffffff;
+}
+
+@media (max-width: 991px) {
+    #main-content > .container-fluid {
+        padding: 8px;
+    }
+
+    .report-morpho-agreement-document-content {
+        border-right: 0;
+        width: 100% !important;
+    }
+
+    .report-morpho-agreement-content-box {
+        font-size: 13px;
+        padding: 12px;
+    }
+
+    .report-morpho-agreement-tagger {
+        display: block;
+        min-height: 0;
+    }
+
+    .report-morpho-agreement-tagger .col-sm-1,
+    .report-morpho-agreement-tagger .token-card,
+    .report-morpho-agreement-tagger .token-card.card-main {
+        display: block;
+        flex: none;
+        max-width: none;
+        width: 100%;
+    }
+
+    .report-morpho-agreement-nav-button.btn-side-morpho {
+        min-height: 34px;
+    }
 }

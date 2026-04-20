@@ -20,23 +20,23 @@ $(function() {
         ajaxIndicatorShow(checkbox);
         $(this).hide();
         doAjax("corpus_set_annotation_sets_corpora", params,
-			function(){
+            function(){
                 ajaxIndicatorHide(checkbox);
                 if ( checked ){
-                	$(checkbox).closest("td").addClass("selected");
-				} else {
-                    $(checkbox).closest("td").removeClass("selected");
-				}
-			},
-			function(){
+                    $(checkbox).closest("td").addClass("corpus-settings-annotation-set-use-cell-active");
+                } else {
+                    $(checkbox).closest("td").removeClass("corpus-settings-annotation-set-use-cell-active");
+                }
+            },
+            function(){
                 ajaxIndicatorHide(checkbox);
                 if ( !checked ){
-                    $(checkbox).closest("td").addClass("selected");
+                    $(checkbox).closest("td").addClass("corpus-settings-annotation-set-use-cell-active");
                     $(checkbox).attr("checked", "checked");
                 } else {
-                    $(checkbox).closest("td").removeClass("selected");
+                    $(checkbox).closest("td").removeClass("corpus-settings-annotation-set-use-cell-active");
                     $(checkbox).removeAttr("checked");
                 }
-			});
+            });
 	});
 });

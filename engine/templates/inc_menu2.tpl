@@ -6,19 +6,19 @@
  *}
 
 <div class="tnav">
-	<nav class="navbar navbar-default">
+	<nav class="navbar navbar-default inforex-main-nav">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a href="index.php"><img class="logo" src="gfx/inforex_logo.png" alt="Inforex"></a>
+				<a class="inforex-main-logo" href="index.php" aria-label="Inforex home"><img class="logo" src="gfx/inforex_logo.png" alt="Inforex"></a>
 			</div>
 			<ul class="nav navbar-nav">
 				<li class="{if $page=="home"} active{/if}">
-					<a href="index.php?page=home">Corpora</a>
+					<a href="index.php?page=home"><i class="fa fa-folder-open" aria-hidden="true"></i> Corpora</a>
 				</li>
                 {if isset($corpus.id)}
 					<li class="active dropdown navbar-sub corpus_select_nav">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}">
-							<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" title="Show a list of corpora"></span> <b>{if isset($corpus.name)}{$corpus.name}{/if}</b>
+							<i class="fa fa-bars" aria-hidden="true" title="Show a list of corpora"></i> <b>{if isset($corpus.name)}{$corpus.name}{/if}</b>
 							<!--<span class="caret"></span>--></a>
 						<ul class="dropdown-menu">
 
@@ -70,9 +70,9 @@
                 {/if}
                 {if isset($corpus.id) && ( "read"|has_corpus_role_or_owner || "admin"|has_role || !empty($corpus.public) ) }
 
-                    <li class="navbar-sub dropdown nav_corpus_pages" style="background: #eee">
+                    <li class="navbar-sub dropdown nav_corpus_pages">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true" title="Show corpus pages"></span> <em>Corpus page</em>
+							<i class="fa fa-list-ul" aria-hidden="true" title="Show corpus pages"></i> <em>Corpus page</em>
 							<!--<span class="caret"></span>--></a>
                         <ul class="dropdown-menu">
                             <li{if $page=="corpus_start"} class="active"{/if}><a href="index.php?page=corpus_start&amp;corpus={$corpus.id}">
@@ -171,30 +171,36 @@
                         </ul>
 				    </li>
                 {/if}
-                <li{if $page=="public_annotations"} class="active"{/if}><a href="index.php?page=public_annotations">Annotations</a></li>
+                <li{if $page=="public_annotations"} class="active"{/if}><a class="inforex-main-nav-collapse-link" title="Annotations" href="index.php?page=public_annotations"><i class="fa fa-tags" aria-hidden="true"></i> <span class="inforex-main-nav-collapse-label">Annotations</span></a></li>
                 {* <li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li> *}
 		{if $Config.wccl_match_enable}
-					<li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
+					<li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester"><i class="fa fa-search" aria-hidden="true"></i> Wccl Match Tester</a></li>
                 {/if}
+				<li{if $page=="about"} class="active"{/if}><a class="inforex-main-nav-collapse-link" title="About & citing" href="index.php?page=about"><i class="fa fa-info-circle" aria-hidden="true"></i> <span class="inforex-main-nav-collapse-label">About & citing</span></a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				{if $user}
+				<li>
+					<a class="inforex-main-nav-user-link" href="index.php?page=user_roles" title="{if isset($user.screename) && $user.screename}{$user.screename|escape}{elseif isset($user.login)}{$user.login|escape}{/if}" data-user-name="{if isset($user.screename) && $user.screename}{$user.screename|escape}{elseif isset($user.login)}{$user.login|escape}{/if}">
+						<i class="fa fa-user-circle" aria-hidden="true"></i>
+						<b class="inforex-main-nav-user-name">{if isset($user.screename) && $user.screename}{$user.screename}{elseif isset($user.login)}{$user.login}{/if}</b>
+						<b class="inforex-main-nav-user-initials" aria-hidden="true"></b>
+					</a>
+				</li>
+				{/if}
                 {if "admin"|has_role}
 					<li{if $page|strpos:'administration_'===0} class="active"{/if}>
-						<a href="index.php?page=administration_users">Administration</a></li>
+						<a class="inforex-main-nav-collapse-link" title="Administration" href="index.php?page=administration_users"><i class="fa fa-cogs" aria-hidden="true"></i> <span class="inforex-main-nav-collapse-label">Administration</span></a></li>
                 {/if}
-				<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right" style="margin-right:50px;">
-				{if $user}
-				<li><a href="index.php?page=user_roles"><b>{if isset($user.login)}{$user.login}{/if} {if isset($user.screename)}{$user.screename}{/if}</b></a></li>
-				{/if}
 				<li>
 					{*if not using federation login show usual login buttons*}
 					{if !($Config.federationLoginUrl)}
 						{if $user}
 							 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
-							<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#loginForm">Logout</button>
+							<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs inforex-main-nav-auth-button" title="Logout" data-toggle="modal" data-target="#loginForm"><i class="fa fa-sign-out" aria-hidden="true"></i> <span class="inforex-main-nav-auth-label">Logout</span></button>
 						{else}
 							{*<a href="#" id="login_link" style="color: green">login</a>*}
-							<button href="#" type="button" class="btn btn-success btn-xs" data-toggle="modal" data-target="#loginForm">Login</button>
+							<button href="#" type="button" class="btn btn-success btn-xs inforex-main-nav-auth-button" title="Login" data-toggle="modal" data-target="#loginForm"><i class="fa fa-sign-in" aria-hidden="true"></i> <span class="inforex-main-nav-auth-label">Login</span></button>
 						{/if}
 					{/if}
 				</li>
@@ -208,29 +214,42 @@
 
 <!-- Modal -->
 <div class="modal fade" id="loginForm" role="dialog">
-	<div class="modal-dialog">
+	<div class="modal-dialog login-form-modal-dialog">
 
 		<!-- Modal content-->
-		<div class="modal-content">
-			<div class="modal-header">
+		<div class="modal-content login-form-modal-content">
+			<div class="modal-header login-form-modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Login to Inforex</h4>
+				<div class="login-form-brand">
+					<div class="login-form-brand-mark">
+						<span class="login-form-brand-icon login-form-brand-icon-primary"><i class="fa fa-shield" aria-hidden="true"></i></span>
+					</div>
+					<div class="login-form-brand-copy">
+						<h4 class="modal-title">Login to Inforex</h4>
+						<div class="login-form-brand-subtitle">Access your corpora, documents and annotation tools.</div>
+					</div>
+				</div>
 			</div>
-			<div class="modal-body">
-				<form>
-					<div class="form-group">
-						<label for="exampleInputLogin">Login</label>
+			<div class="modal-body login-form-modal-body">
+				<form class="login-form-panel">
+					<div class="form-group login-form-group">
+						<label for="username"><i class="fa fa-user" aria-hidden="true"></i><span>Login</span></label>
 						<input type="login" name="username" class="form-control" id="username" placeholder="Login">
 					</div>
-					<div class="form-group">
-						<label for="exampleInputPassword1">Password</label>
+					<div class="form-group login-form-group">
+						<label for="password"><i class="fa fa-lock" aria-hidden="true"></i><span>Password</span></label>
 						<input type="password" name="password" class="form-control" id="password" placeholder="Password">
 					</div>
-					<button type="submit" class="btn btn-primary">Login</button>
-					<span style="color: red; margin-left: 70px" id="dialog-form-login-error"></span>
+					<div class="login-form-actions">
+						<button type="submit" class="btn btn-primary login-form-submit-button">
+							<i class="fa fa-sign-in" aria-hidden="true"></i>
+							<span>Login</span>
+						</button>
+						<span id="dialog-form-login-error" class="login-form-error"></span>
+					</div>
 				</form>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer login-form-modal-footer">
 			</div>
 		</div>
 
@@ -238,17 +257,23 @@
 </div>
 	
 {if $page=="report"}
-	<ul class="pager" style="padding: 0 20px">
-		<li class="previous" style="" title="Number of reports before the current one."><span> ({$row_prev_c}) </span></li>
+	<ul class="pager report-document-pager">
+		<li class="previous report-pager-count" title="Number of reports before the current one."><span>{$row_prev_c}</span></li>
 		<li class="previous">{if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}"><i class="fa fa-step-backward" aria-hidden="true"></i> First</a>{else}<span class="inactive"><i class="fa fa-step-backward" aria-hidden="true"></i> First</span>{/if}</li>
-		<li class="previous">{if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if}</li>
-		<li class="previous">{if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if}</li>
+		<li class="previous report-pager-step">{if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if}</li>
+		<li class="previous report-pager-step">{if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if}</li>
 		<li class="previous">{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Previous</a>{else}<span class="inactive"><i class="fa fa-arrow-left" aria-hidden="true"></i> Previous</span>{/if}</li>
-		<li> <span style="color: black"><b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b>: <a href="#">{if $row.subcorpus_name}<b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b class="document_title">{$row.title}</b>{/if}</a></span> </li>
-		<li class="next"><span title="Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span></li>
+		<li class="report-pager-current">
+			<span>
+				<b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b>
+				{if $row.subcorpus_name}<span class="report-pager-subcorpus">{$row.subcorpus_name}</span>{/if}
+				{if $row.title}<span class="document_title" title="{$row.title|escape}">{$row.title}</span>{/if}
+			</span>
+		</li>
+		<li class="next report-pager-count"><span title="Liczba raportów znajdujących się po aktualnym raporcie">{$row_next_c}</span></li>
 		<li class="next">{if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}"> Last <i class="fa fa-step-forward" aria-hidden="true"></i></a>{else}<span class="inactive">Last <i class="fa fa-step-forward" aria-hidden="true"></i></span>{/if}</li>
-		<li class="next">{if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if}</li>
-		<li class="next">{if $row_next_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if}</li>
+		<li class="next report-pager-step">{if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if}</li>
+		<li class="next report-pager-step">{if $row_next_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if}</li>
 		<li class="next">{if $row_next}<a id="article_next" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next}">Next <i class="fa fa-arrow-right" aria-hidden="true"></i></a>{else}<span class="inactive">Next <i class="fa fa-arrow-right" aria-hidden="true"></i></span>{/if}</li>
 	</ul>
 {/if}

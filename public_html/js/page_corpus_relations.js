@@ -8,6 +8,20 @@ var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 
 $(function(){
+    function buildEmptyRelationsRow(message){
+        return "<tr class='corpus-relations-empty-row'><td colspan='6'><div class='corpus-relations-empty'>" + message + "</div></td></tr>";
+    }
+
+    function showRelationsLoading(){
+        $("#relations-loading").show();
+        $("#relation-list .corpus-relations-table-wrapper").hide();
+    }
+
+    function hideRelationsLoading(){
+        $("#relations-loading").hide();
+        $("#relation-list .corpus-relations-table-wrapper").show();
+    }
+
     /*
     Obsługa panelu View Configuration
     */
@@ -60,8 +74,7 @@ $(function(){
 	tabela z listami relacji i aktualizowane są odnośniki do podstron z relacjami)
 	*/			
 	$("tr.subsetGroup").click(function(){
-
-		$("#relation-list .panel-body").LoadingOverlay("show");
+		showRelationsLoading();
 
 		if (! $(this).hasClass("selected")){
 			$("tr.subsetGroup").removeClass("selected");
@@ -99,7 +112,11 @@ $(function(){
 				html += "<td style='vertical-align: middle'>" + data[a]['target_type'] + "</td>";
 				html += "</tr>";
 			}
+			if (!html) {
+                html = buildEmptyRelationsRow("No relations found for the selected type.");
+			}
 			$("#relation_statistic_items").html(html);
+            hideRelationsLoading();
 			html = "";
 			var i=0;
 			var limit = parseInt(limit_to);
@@ -124,13 +141,13 @@ $(function(){
 		};
 		
 		var error = function(request, textStatus, errorThrown){
+            hideRelationsLoading();
 			$("#messageBox").text("Load failed.");
 		};
 		
 		var complete = function(){
 			$(button).removeAttr("disabled");
 			$(".ajax_indicator").remove();
-            $("#relation-list .panel-body").LoadingOverlay("hide");
 		};
 		
 		doAjax("relation_get_relation_statistic", params, success, error, complete);
@@ -146,6 +163,7 @@ $(function(){
 	$("span.relationPage").on({
 		click: function(){
 			if($(this).hasClass("inactive")) return;
+			showRelationsLoading();
 			
 			var button = this;
 			var html_this = $(this).html();
@@ -181,7 +199,11 @@ $(function(){
 					html += "<td style='vertical-align: middle'>" + data[a]['target_type'] + "</td>";
 					html += "</tr>";
 				}
+                if (!html) {
+                    html = buildEmptyRelationsRow("No relations found for this range.");
+                }
 				$("#relation_statistic_items").html(html);		
+                hideRelationsLoading();
 			
 				var html = $("#relation_pages").find('span.relationPage.inactive').text();
 				$("#relation_pages").find('span.relationPage.inactive').html("<a href='#' class='relationNameLink' id=" + relation_type + " >" + html +"</a>");
@@ -193,6 +215,7 @@ $(function(){
 			};
 			
 			var error = function(){
+                hideRelationsLoading();
 				$("#messageBox").text("Load failed.");
 			};
 			

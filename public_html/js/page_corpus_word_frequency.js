@@ -12,6 +12,9 @@ var COOKIE_COUNTBY = "countby";
 var pageElements = 10;
 var wordFrequencies = new Array();
 var tablesorterTable = "table#words_frequences";
+var MIN_CHART_BAR_SLOTS = 3;
+var MIN_WORD_FREQUENCY_HEIGHT = 240;
+var MAX_WORD_FREQUENCY_HEIGHT = 360;
 
 // Wysokość nagłówka
 var headerH = 170;
@@ -23,9 +26,78 @@ var paginateH = 30;
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 var phrase = "";
+var WORD_FREQUENCY_ROWS_PER_PAGE = 15;
+var WORD_FREQUENCY_DOWNLOAD_FRAME_ID = "word-frequency-download-frame";
+
+function triggerWordFrequencyDownload(downloadUrl) {
+    var $frame = $("#" + WORD_FREQUENCY_DOWNLOAD_FRAME_ID);
+    if (!$frame.length) {
+        $frame = $("<iframe>", {
+            id: WORD_FREQUENCY_DOWNLOAD_FRAME_ID,
+            name: WORD_FREQUENCY_DOWNLOAD_FRAME_ID,
+            style: "display:none;"
+        }).appendTo("body");
+    }
+    $frame.attr("src", downloadUrl);
+}
+
+function buildWordFrequencyExportUrl(pageName) {
+    return "index.php?page=" + encodeURIComponent(pageName) +
+        "&corpus=" + encodeURIComponent(corpus_id || "") +
+        "&ctag=" + encodeURIComponent($("select[name=ctag]").val() || "") +
+        "&subcorpus_id=" + encodeURIComponent($("select[name=subcorpus_id]").val() || "") +
+        "&phrase=" + encodeURIComponent($("input[name=phrase]").val() || "");
+}
+
+function setWordsFrequencyLoading(isLoading) {
+    $("#words_frequency_loading").toggle(!!isLoading);
+    $("#words_frequency .corpus-word-frequency-flexigrid").toggle(!isLoading);
+}
+
+function setWordsFrequencyEmpty(isVisible) {
+    $("#words_frequency_empty").toggle(!!isVisible);
+    $("#words_frequency .corpus-word-frequency-flexigrid").toggle(!isVisible);
+}
+
+function setWordsDistributionLoading(isLoading) {
+    $("#words_distribution_loading").toggle(!!isLoading);
+}
+
+function getWordsFrequencyRows() {
+    return $("table#words_frequences tbody tr").filter(function(){
+        var rowId = $(this).attr("id") || "";
+        return rowId.indexOf("row") === 0;
+    });
+}
+
+function preprocessWordsFrequencyResponse(data) {
+    var total = data && typeof data.total !== "undefined" ? parseInt(data.total, 10) : 0;
+    if (isNaN(total)) {
+        total = 0;
+    }
+
+    if (total === 0) {
+        setWordsFrequencyLoading(false);
+        setWordsFrequencyEmpty(true);
+        setWordsDistributionLoading(false);
+        $("#chart_link").hide().attr("href", "#");
+        $("#words_per_subcorpus").html(
+            '<div class="corpus-word-frequency-empty-copy">' +
+                '<i class="fa fa-bar-chart" aria-hidden="true"></i>' +
+                '<div class="corpus-word-frequency-empty-text">' +
+                    '<strong>No distribution to display</strong>' +
+                    '<span>There are no matching results for the current filters, so the chart is empty.</span>' +
+                '</div>' +
+            '</div>'
+        );
+    } else {
+        setWordsFrequencyEmpty(false);
+    }
+
+    return data;
+}
 
 $(document).ready(function() {
-	
 	/* Do zmiany trybu zliczania */
     var countby = $.cookie(COOKIE_COUNTBY);
     if ( countby ){
@@ -40,13 +112,20 @@ $(document).ready(function() {
     		$.cookie(COOKIE_COUNTBY, $("#countby a.active").attr("type"));
     	}
     })
+
+    $("#chart_link").on("click", function(event){
+        var href = $(this).attr("href");
+        if (!href || href === "#") {
+            event.preventDefault();
+        }
+    });
 	
     /* Tabelka z frekwencją */
     var colModel = [
-            {display: "No.", name : "no", width : 40, sortable : true, align: 'right'},
-            {display: "Base", name : "base", width : 200, sortable : true, align: 'left'},
-            {display: "Count", name : "c", width : 60, sortable : true, align: 'right'},
-            {display: "Docs", name : "docs", width : 60, sortable : true, align: 'right'},
+            {display: "No.", name : "no", width : 32, sortable : true, align: 'right'},
+            {display: "Base", name : "base", width : 150, sortable : true, align: 'left'},
+            {display: "Count", name : "c", width : 52, sortable : true, align: 'right'},
+            {display: "Docs", name : "docs", width : 52, sortable : true, align: 'right'},
     ];      
     
     var ctag = $("select[name=ctag] option:selected").val();
@@ -56,9 +135,18 @@ $(document).ready(function() {
     var row_height = $("#words_frequency tr:last").outerHeight(true) + 8;
     $("#words_frequency").hide();
     $("#words_per_subcorpus").hide();
-    var flexi_height = $(window).height() - $("body").outerHeight(true) - 70;
-    var rows_per_page = Math.floor(flexi_height / row_height); 
+    row_height = row_height && row_height > 0 ? row_height : 28;
+    var viewportHeight = $(window).height();
+    var occupiedHeight = $(".corpus-word-frequency-toolbar").outerHeight(true) +
+        $(".corpus-word-frequency-subheading").first().outerHeight(true) +
+        $(".corpus-word-frequency-footer").outerHeight(true) + 140;
+    var flexi_height = Math.max(MIN_WORD_FREQUENCY_HEIGHT, Math.min(MAX_WORD_FREQUENCY_HEIGHT, viewportHeight - occupiedHeight));
+    var flexi_width = Math.max($("#words_frequency").closest(".corpus-word-frequency-column").width() - 12, 286);
     
+    setWordsFrequencyLoading(true);
+    setWordsFrequencyEmpty(false);
+    setWordsDistributionLoading(true);
+
     flex = $("#words_frequences").flexigrid({
         url: 'index.php',
         params: [
@@ -76,28 +164,38 @@ $(document).ready(function() {
         usepager: true,
         title: false,
         useRp: false,
-        rp: rows_per_page,
+        rp: WORD_FREQUENCY_ROWS_PER_PAGE,
         showTableToggleBtn: false,
         showToggleBtn: false,
-        width: 400,
+        width: flexi_width,
         height: flexi_height,
         resizable: false,
+        preProcess: preprocessWordsFrequencyResponse,
+        onSubmit: function(){
+            setWordsFrequencyLoading(true);
+            setWordsFrequencyEmpty(false);
+            return true;
+        },
         onSuccess: function(){
+            setWordsFrequencyLoading(false);
+            setWordsFrequencyEmpty(false);
         	$("#words_per_subcorpus").text("Loading ...");
-        	loadWordFrequencyPerCorpus();
+            window.setTimeout(loadWordFrequencyPerCorpus, 0);
+            return true;
         }
     });
     
     /* Pozostałe */
     $("#words_frequency").show();
+    $("#words_frequency .corpus-word-frequency-flexigrid").hide();
     $("#words_per_subcorpus").show();    
     	
     $("#export_selected").click(function(){
-    	window.location.href=window.location.href.replace("page=word_frequency", "page=word_frequency_export");
+        triggerWordFrequencyDownload(buildWordFrequencyExportUrl("word_frequency_export"));
     });	
 
     $("#export_by_subcorpora").click(function(){
-    	window.location.href=window.location.href.replace("page=word_frequency", "page=word_frequency_export_by_subcorpora");
+        triggerWordFrequencyDownload(buildWordFrequencyExportUrl("word_frequency_export_by_subcorpora"));
     });	
 
 });
@@ -112,12 +210,29 @@ function loadWordFrequencyPerCorpus(){
 	var subcorpus_ids_text = {};
 	var count = $("#countby a.active").attr("type");
 
-	$("table#words_frequences tbody tr").each(function(){
-		var base_id = $(this).attr("id").replace("row", "");
+    setWordsDistributionLoading(true);
+    $("#chart_link").hide().attr("href", "#");
+
+	getWordsFrequencyRows().each(function(){
+		var base_id = ($(this).attr("id") || "").replace("row", "");
 		var base_text = $(this).find("td:nth-child(2)").text();
 		base_ids.push(base_id);
 		base_ids_text[base_id] = base_text;
 	});
+
+    if (!base_ids.length) {
+        setWordsDistributionLoading(false);
+        $("#words_per_subcorpus").html(
+            '<div class="corpus-word-frequency-empty-copy">' +
+                '<i class="fa fa-bar-chart" aria-hidden="true"></i>' +
+                '<div class="corpus-word-frequency-empty-text">' +
+                    '<strong>No distribution to display</strong>' +
+                    '<span>There are no matching results for the current filters, so the chart is empty.</span>' +
+                '</div>' +
+            '</div>'
+        );
+        return;
+    }
 
 	$("select[name=subcorpus_id] option").each(function(){
 		var value = $(this).attr("value");
@@ -163,24 +278,62 @@ function loadWordFrequencyPerCorpus(){
 				});
 				freq.push(row);
 			}
+
+            while ((freq.length - 1) < MIN_CHART_BAR_SLOTS) {
+                var emptyRow = [' '];
+                $.each(subcorpus_ids_text, function(){
+                    emptyRow.push(0);
+                });
+                freq.push(emptyRow);
+            }
 			
 			var data = google.visualization.arrayToDataTable(freq);
+                var chartContainer = $("#words_per_subcorpus");
+                var visibleBarCount = base_ids.length + (phrase != '' ? 1 : 0);
+                var chartHeight = Math.max(210, Math.min(320, 88 + (Math.max(visibleBarCount, MIN_CHART_BAR_SLOTS) * 30)));
+                var chartAreaTop = 28;
+                var chartAreaBottom = 52;
+                var chartAreaLeft = 104;
+                var chartAreaWidth = Math.max(chartContainer.width() - chartAreaLeft - 24, 180);
+                var chartAreaHeight = Math.max(chartHeight - chartAreaTop - chartAreaBottom, 140);
       			var options = {
         			title: "inforex.clarin-pl.eu",
-			        height: $("#words_frequences").height(),
+			        height: chartHeight,
 			        legend: { position: 'bottom', aligment: 'start' },
-			        bar: { groupWidth: '75%' },
+			        bar: { groupWidth: '89%' },
 			        isStacked: "relative",
 			        fontSize: 12,
-			        chartArea:{left:100,top:20,width:$("#words_per_subcorpus").width()-120,height:$("#words_frequences").height()}
+                    hAxis: {
+                        minValue: 0
+                    },
+                    vAxis: {
+                        textStyle: {
+                            fontSize: 11
+                        }
+                    },
+			        chartArea:{
+                        left: chartAreaLeft,
+                        top: chartAreaTop,
+                        width: chartAreaWidth,
+                        height: chartAreaHeight
+                    }
 				
 		      };
 		      var chart = new google.visualization.BarChart(document.getElementById('words_per_subcorpus'));
 		      google.visualization.events.addListener(chart, 'ready', function () {
-		    	    var link = '<a href="' + chart.getImageURI() + '" target="_blank">Open chart as a PNG file</a>';
-		    	    $("#chart_link").html(link);
+                    var exportName = "word-distribution-corpus-" + corpus_id + ".png";
+                    $("#chart_link")
+                        .attr("href", chart.getImageURI())
+                        .attr("download", exportName)
+                        .show();
+                    setWordsDistributionLoading(false);
 		      });
 		      chart.draw(data, options);
 		},
-		null,null,null);
+        function(){
+            setWordsDistributionLoading(false);
+            $("#words_per_subcorpus").text("Failed to load subcorpus distribution");
+        },
+        null,
+        null);
 }	

@@ -1,0 +1,200 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.row-report {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.report-history-content-column,
+#col-flags {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-history-panel.administration-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-history-panel .administration-content-heading {
+    border-bottom-width: 1px;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-history-panel .administration-content-heading-icon {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 10px;
+    height: 16px;
+    width: 16px;
+}
+
+.report-history-body {
+    background: #fbfdfe;
+    padding: 7px;
+}
+
+.report-history-scroll {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-history-scroll::-webkit-scrollbar,
+.report-history-diff pre::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-history-scroll::-webkit-scrollbar-track,
+.report-history-diff pre::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-history-scroll::-webkit-scrollbar-thumb,
+.report-history-diff pre::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-history-scroll::-webkit-scrollbar-thumb:hover,
+.report-history-diff pre::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+#diffs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#diffs > li.diff {
+    margin: 0 0 8px;
+}
+
+.report-history-item {
+    background: #fff;
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.report-history-item-heading {
+    align-items: center;
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69 !important;
+    display: flex;
+    font-size: 10px;
+    font-weight: bold;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-history-item-heading em {
+    color: #2f5969;
+    font-style: normal;
+}
+
+.report-history-item-icon {
+    color: #174f69;
+    font-size: 10px;
+    text-align: center;
+    width: 11px;
+}
+
+.report-history-item-body {
+    background: #ffffff;
+    padding: 0;
+}
+
+.report-history-subheader {
+    align-items: center;
+    background: #f5fafc;
+    border-bottom: 1px solid #dce9ee;
+    border-top: 1px solid #edf3f6;
+    color: #496572;
+    display: flex;
+    font-size: 9px;
+    font-weight: 700;
+    gap: 5px;
+    letter-spacing: .03em;
+    line-height: 1.15;
+    padding: 5px 8px;
+    text-transform: uppercase;
+}
+
+.report-history-comment {
+    color: #263f4c;
+    font-size: 11px;
+    line-height: 1.45;
+    padding: 8px 10px;
+}
+
+.report-history-diff {
+    background:
+        linear-gradient(90deg, rgba(23, 109, 125, 0.04) 0, rgba(23, 109, 125, 0) 18px),
+        #fff;
+    padding: 0;
+}
+
+.report-history-diff pre {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #263f4c;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    margin: 0;
+    max-height: 52vh;
+    overflow: auto;
+    padding: 9px 11px 13px;
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+    white-space: pre-wrap;
+}
+
+.report-history-empty,
+.report-history-empty-inline {
+    align-items: center;
+    background: #fff8e8;
+    border: 1px solid #ead8aa;
+    border-left: 4px solid #d99b32;
+    border-radius: 8px;
+    color: #5f4a22;
+    display: flex;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 600;
+    gap: 8px;
+    line-height: 1.35;
+    margin: 0;
+    padding: 8px 9px;
+}
+
+.report-history-empty-inline {
+    border-left-width: 1px;
+    margin: 8px;
+}
+
+@media (max-width: 991px) {
+    #main-content > .container-fluid {
+        padding: 8px;
+    }
+}

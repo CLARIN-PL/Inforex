@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
 
-<div id="col-content" class="col-main {if $flags_active}col-md-11{else}col-md-12{/if} scrollingWrapper">
+<div id="col-content" class="col-main {if $flags_active}col-md-11{else}col-md-12{/if} scrollingWrapper report-edit-content-column">
 {if false}
 <div style="background: #E03D19; padding: 1px; margin: 10px; ">
     <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;"> <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/>This document has annotations so the edition is temporary disabled.</div>
@@ -13,10 +13,13 @@
 {else}
 
 	{if $confirm}
-		<div class="panel panel-warning">
-			<div class="panel-heading" id="content">List of annotations that will be automatically updated</div>
-			<div class="panel-body scrolling">
-				<table class="table table-striped" id="table-annotations" style="width: 99%">
+		<div class="panel panel-warning administration-content-panel report-edit-confirm-panel">
+			<div class="panel-heading administration-content-heading report-edit-main-heading" id="content">
+                <span class="administration-content-heading-icon report-edit-heading-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                <span>List of annotations that will be automatically updated</span>
+            </div>
+			<div class="panel-body scrolling report-edit-confirm-body">
+				<table class="table table-striped report-edit-confirm-table" id="table-annotations">
 					<tr>
 						<th>Action</th>
 						<th>Id</th>
@@ -57,27 +60,27 @@
 					{/foreach}
 				</table>
 			</div>
-			<div class="panel-footer">
-				<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}" style="display: table-cell">
+			<div class="panel-footer report-edit-footer">
+				<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 					<input type="hidden" value="{$confirm_content|escape}" name="content"/>
 					<input type="hidden" value="{$confirm_comment}" name="comment"/>
 					<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 					<input type="hidden" value="{$row.format_id}" name="format" id="format"/>
 					<input type="hidden" value="document_save" name="action"/>
 					<input type="hidden" value="1" name="confirm"/>
-					<input type="submit" value="confirm" class="btn btn-success"/>
+					<button type="submit" class="btn btn-success report-edit-confirm-button"><i class="fa fa-check" aria-hidden="true"></i> Confirm</button>
 				</form>
-				<div style="display: table-cell; padding-left: 10px;"><a class="btn btn-warning" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">cancel</a></div>
+				<a class="btn btn-warning report-edit-cancel-button" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}"><i class="fa fa-times" aria-hidden="true"></i> Cancel</a>
 			</div>
 		</div>
 
-		<i><a id="toggle-edit-form" href="#">&raquo; re-edit the document &laquo;</a></i>
-		<div id="edit-form" style="display: none">
+		<a id="toggle-edit-form" class="report-edit-reopen-link" href="#"><i class="fa fa-pencil" aria-hidden="true"></i> Re-edit the document</a>
+		<div id="edit-form" class="report-edit-hidden-form" style="display: none">
 			<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
-				<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white; ">
+				<div class="report-edit-editor-frame">
 					<textarea name="content" id="report_content">{$confirm_content|escape}</textarea>
 				</div>
-				<input type="submit" value="Save" name="formatowanie" id="formating" class="btn btn-success"/>
+				<button type="submit" name="formatowanie" id="formating" class="btn btn-success report-edit-save-button"><i class="fa fa-check" aria-hidden="true"></i> Save</button>
 				<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 				<input type="hidden" value="document_save" name="action"/>
 				<input type="hidden" value="2" name="step"/>
@@ -85,19 +88,22 @@
 		</div>
 
 	{else}
-	<div class="panel panel-primary">
-		<div class="panel-heading">Edit content</div>
+	<div class="panel panel-primary administration-content-panel report-edit-panel">
+		<div class="panel-heading administration-content-heading report-edit-main-heading">
+            <span class="administration-content-heading-icon report-edit-heading-icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+            <span>Edit content</span>
+        </div>
 		<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
-			<div class="panel-body">
+			<div class="panel-body report-edit-body">
 				{include file="inc_report_wrong_changes.tpl"}
                 {if $full_edit_disabled_reason}
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning report-edit-alert">
                         {$full_edit_disabled_reason}
                         Content length: {$content_edit_length}. Annotations: {$annotations_count}.
                     </div>
                 {/if}
                 {if $disable_codemirror}
-                    <div class="alert alert-info">
+                    <div class="alert alert-info report-edit-alert">
                         Code editor is disabled by default in this perspective to keep the page responsive. Plain textarea mode is active.
                     </div>
                 {/if}
@@ -122,56 +128,58 @@
 				</div>
 				<hr>
 				*}
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<span style="padding-left: 10px; float: right;">
+				<div class="panel panel-default report-edit-card">
+					<div class="panel-heading report-edit-card-heading">
+                        <span class="report-edit-card-title"><i class="fa fa-file-code-o" aria-hidden="true"></i> Document content</span>
+						<span class="report-edit-mode-actions">
 							Edit mode:
 						{if $active_edit_type eq 'full'}
-							<a class="btn btn-xs btn-primary" disabled="disabled">Full &mdash; content and annotation</a>
-							<a href="#" class="btn btn-xs btn-default edit_type" id="no_annotation">Simple &mdash; structure tags only</a>
+							<a class="btn btn-xs btn-primary report-edit-mode-button active" disabled="disabled">Full - content and annotation</a>
+							<a href="#" class="btn btn-xs btn-default edit_type report-edit-mode-button" id="no_annotation">Simple - structure tags only</a>
 						{else}
                             {if $full_edit_disabled}
-							<a class="btn btn-xs btn-default" disabled="disabled" title="Disabled for large documents">Full &mdash; content and annotation</a>
+							<a class="btn btn-xs btn-default report-edit-mode-button" disabled="disabled" title="Disabled for large documents">Full - content and annotation</a>
                             {else}
-							<a href="#" class="btn btn-xs btn-default edit_type" id="full">Full &mdash; content and annotation</a>
+							<a href="#" class="btn btn-xs btn-default edit_type report-edit-mode-button" id="full">Full - content and annotation</a>
                             {/if}
-							<a href="#" class="btn btn-xs btn-primary" disabled="disabled">Simple &mdash; structure tags only</a>
+							<a href="#" class="btn btn-xs btn-primary report-edit-mode-button active" disabled="disabled">Simple - structure tags only</a>
 						{/if}
 						</span>
-						Document content</div>
-					<div class="panel-body" id="edit_content_panel" style="padding: 0;">
-                        <div style="padding: 10px; border-bottom: 1px solid #ddd; background: #f8f8f8;">
+                    </div>
+					<div class="panel-body report-edit-card-body" id="edit_content_panel">
+                        <div class="report-edit-toolbar">
                             {if $disable_codemirror}
-                                <a href="#" class="btn btn-xs btn-default" id="enable_codemirror">Enable code editor</a>
+                                <a href="#" class="btn btn-xs btn-default report-edit-tool-button" id="enable_codemirror"><i class="fa fa-code" aria-hidden="true"></i> Enable code editor</a>
                             {else}
-                                <a href="#" class="btn btn-xs btn-default" id="disable_codemirror_button">Use plain textarea</a>
+                                <a href="#" class="btn btn-xs btn-default report-edit-tool-button" id="disable_codemirror_button"><i class="fa fa-align-left" aria-hidden="true"></i> Use plain textarea</a>
                             {/if}
                         </div>
 						<div id="edit_content">
-							<textarea name="content" class="scrolling" id="report_content" style="display: block; width: 100%; min-height: 280px; max-height: 55vh; resize: vertical; overflow: auto; border: 0; padding: 12px; font-family: monospace; box-sizing: border-box;">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
+							<textarea name="content" class="scrolling report-edit-textarea" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
 						</div>
 					</div>
 				</div>
-				<hr>
-				<div class="panel panel-default">
-					<div class="panel-heading">Comment</div>
-					<div class="panel-body" style="padding: 0; min-height: 50px;">
+				<div class="panel panel-default report-edit-card report-edit-comment-card">
+					<div class="panel-heading report-edit-card-heading">
+                        <span class="report-edit-card-title"><i class="fa fa-comment-o" aria-hidden="true"></i> Comment</span>
+                    </div>
+					<div class="panel-body report-edit-comment-body">
 						<div id="edit_comment">
-							<textarea placeholder = "Your comment..." rows = "2" name="comment" style="border:none; width:100%" id="report_comment"></textarea>
+							<textarea placeholder = "Your comment..." rows = "2" name="comment" id="report_comment" class="report-edit-comment"></textarea>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class = "panel panel-footer clearfix" style = "margin-bottom: 0px;">
+			<div class = "panel panel-footer clearfix report-edit-footer">
 				<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 				<input type="hidden" value="2" name="step"/>
 				<input type="hidden" value="document_save" name="action"/>
                 <input type="hidden" value="{if $disable_codemirror}1{else}0{/if}" id="disable_codemirror"/>
                 <input type="hidden" value="{$use_codemirror|default:0}" id="use_codemirror"/>
 				{if $ex}
-					<div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
+					<div class="report-edit-error">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
 				{/if}
-				<input type="submit" class="btn btn-primary" style = "float: right;" value="Save" name="formatowanie" id="formating"/>
+				<button type="submit" class="btn btn-primary report-edit-save-button" name="formatowanie" id="formating"><i class="fa fa-check" aria-hidden="true"></i> Save</button>
 			</div>
 		</form>
 	</div>

@@ -5,31 +5,39 @@
  * See LICENCE 
  *}
  
-<h1>{$row.title}</h1>
-<table style="width: 100%">
-	<tr>
-		<td style="vertical-align: top">
-			<div class="column" id="widget_text">
-				<div class="ui-widget ui-widget-content ui-corner-all">			
-					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
-					<div id="content" style="padding: 5px;" class="annotations scrolling">{$content_inline|format_annotations}</div>
-				</div>
-			</div>
-		</td>
-		<td style="vertical-align: top; width: 400px;">
-			<div class="column" id="widget_text">
-				<div class="ui-widget ui-widget-content ui-corner-all">			
-					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Topic:</div>
-					<div id="list_of_topics" style="overflow: auto">
-					<ul class="topics">
-					{foreach from=$topics item=topic}					
-						<li><a href="#" id="topic_{$topic.id}"{if $row.type==$topic.id} class="marked"{/if}>{$topic.name}</a></li>
-					{/foreach}
-					</ul>
-					</div>
-				</div>
-			</div>
-		</td>
-	</tr>
-</table>
+<div id="col-content" class="{if $flags_active}col-md-7{else}col-md-8{/if} scrollingWrapper report-viewer-content-column report-topic-content-column">
+    <div class="panel panel-primary administration-content-panel report-viewer-content-panel report-topic-content-panel">
+        <div class="panel-heading administration-content-heading report-viewer-main-heading">
+            <span class="administration-content-heading-icon report-viewer-heading-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+            <span>Document content</span>
+        </div>
+        <div class="panel-body report-viewer-content-body">
+            <div id="content" class="annotations scrolling content report-viewer-document-content report-topic-document-content">
+                <div class="contentBox report-viewer-content-box">{$content_inline|format_annotations}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="col-topic" class="col-md-4 scrollingWrapper report-viewer-content-column report-topic-sidebar-column">
+    <div class="panel panel-info administration-content-panel report-viewer-content-panel report-topic-sidebar-panel">
+        <div class="panel-heading administration-content-heading report-viewer-main-heading">
+            <span class="administration-content-heading-icon report-viewer-heading-icon"><i class="fa fa-tags" aria-hidden="true"></i></span>
+            <span>Topic</span>
+        </div>
+        <div class="panel-body report-viewer-content-body report-topic-sidebar-body">
+            <div id="list_of_topics" class="scrolling report-topic-list-wrapper">
+                <ul class="topics report-topic-list">
+                {foreach from=$topics item=topic}
+                    <li>
+                        <a href="#" id="topic_{$topic.id}" class="report-topic-link{if $row.type==$topic.id} marked{/if}">
+                            <span class="report-topic-link-label">{$topic.name}</span>
+                        </a>
+                    </li>
+                {/foreach}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="hidden" id="report_id" value="{$row.id}"/>

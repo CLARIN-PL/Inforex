@@ -7,37 +7,36 @@
 $(document).ready(function(){
 	$('.password_change').keyup(function() {
 		var empty = false;
-		$('.password_change').each(function() {
+		var $form = $(this).closest(".password_change_form");
+		var $passwordFields = $form.find('input.password_change[type="password"]');
+		var $newPass1 = $form.find('input.password_change[name=new_pass1]');
+		var $newPass2 = $form.find('input.password_change[name=new_pass2]');
+		var $submit = $form.find('input.password_change[type=submit]');
+
+		$passwordFields.each(function() {
 			if ($(this).val() == '') {
 				empty = true;
 			}
 		});
-		if(!validate_password($('.password_change[name=new_pass1]').val(), $('.password_change[name=new_pass2]').val())){
+		if(!validate_password($newPass1.val(), $newPass2.val())){
 			empty = true;
-			$('.password_change[name=new_pass1]').css("border" , "3px red double");
-			$('.password_change[name=new_pass2]').css("border" , "3px red double");
+			$newPass1.removeClass("is-valid").addClass("is-invalid");
+			$newPass2.removeClass("is-valid").addClass("is-invalid");
 		}
 
 		if (empty) {
-			$('.password_change[type=submit]').attr('disabled', 'disabled');
+			$submit.attr('disabled', 'disabled');
 		} else {
-			$('.password_change[type=submit]').removeAttr('disabled');
-			$('.password_change[name=new_pass1]').css("border" , "3px green double");
-			$('.password_change[name=new_pass2]').css("border" , "3px green double");
+			$submit.removeAttr('disabled');
+			$newPass1.removeClass("is-invalid").addClass("is-valid");
+			$newPass2.removeClass("is-invalid").addClass("is-valid");
 		}
 	});
 
-	$(".option").click(function() {
-		var option_element = $(this).attr("id");
-		if ($("."+option_element).hasClass("show")){
-			$("."+option_element).hide();
-			$("."+option_element).removeClass("show");
-		}
-		else{
-			$("."+option_element).show();
-			$("."+option_element).addClass("show");
-		}
-		return false;
+	$("#password_change_modal").on("hidden.bs.modal", function() {
+		var $form = $(this).find(".password_change_form");
+		$form.find('input.password_change[type="password"]').val("").removeClass("is-valid is-invalid");
+		$form.find('input.password_change[type=submit]').attr('disabled', 'disabled');
 	});
 
     $("#corpora_filter").on("keyup", function() {

@@ -64,10 +64,9 @@ class DbUser{
             $order = "ASC";
         }
 
-
-        $sql = "SELECT YEAR(a.datetime) AS year, COUNT(a.activity_page_id) AS number_of_activities , COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a 
-                WHERE a.user_id IS NULL 
-                GROUP BY YEAR(a.datetime) ";
+        $sql = "SELECT YEAR(a.datetime) AS year, COUNT(*) AS number_of_activities, COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a
+                WHERE a.user_id IS NULL
+                GROUP BY YEAR(a.datetime)";
         $sql .= " ORDER BY YEAR(a.datetime) " . $order;
 
         $activities_years = $db->fetch_rows($sql);
@@ -75,15 +74,25 @@ class DbUser{
         return $activities_years;
     }
 
-    static function getAnonymousActivitiesByYearMonth(){
+    static function getAnonymousActivitiesByYearMonth($year = null){
         global $db;
 
-        $sql = "SELECT YEAR(a.datetime) AS year, MONTH(a.datetime) as month, COUNT(a.activity_page_id) AS number_of_activities , COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a 
-                WHERE a.user_id IS NULL 
+        $params = array();
+        $where = "a.user_id IS NULL";
+
+        if ($year !== null) {
+            $year = intval($year);
+            $where .= " AND a.datetime >= ? AND a.datetime < ?";
+            $params[] = sprintf("%04d-01-01 00:00:00", $year);
+            $params[] = sprintf("%04d-01-01 00:00:00", $year + 1);
+        }
+
+        $sql = "SELECT YEAR(a.datetime) AS year, MONTH(a.datetime) as month, COUNT(*) AS number_of_activities, COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a
+                WHERE $where
                 GROUP BY YEAR(a.datetime), MONTH(a.datetime)
                 ORDER BY YEAR(a.datetime) DESC, MONTH(a.datetime) DESC";
 
-        $activities_years_months = $db->fetch_rows($sql);
+        $activities_years_months = $db->fetch_rows($sql, $params);
 
         return $activities_years_months;
     }
@@ -91,12 +100,18 @@ class DbUser{
     static function getAnonymousActivitiesByYearMonthChart($year){
         global $db;
 
-        $sql = "SELECT YEAR(a.datetime) AS year, DATE_FORMAT(a.datetime, '%b') as month, COUNT(a.activity_page_id) AS number_of_activities , COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a 
-                WHERE (a.user_id IS NULL AND YEAR(a.datetime) = ?) 
+        $year = intval($year);
+        $startDate = sprintf("%04d-01-01 00:00:00", $year);
+        $endDate = sprintf("%04d-01-01 00:00:00", $year + 1);
+
+        $sql = "SELECT YEAR(a.datetime) AS year, DATE_FORMAT(a.datetime, '%b') as month, COUNT(*) AS number_of_activities, COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a
+                WHERE a.user_id IS NULL
+                  AND a.datetime >= ?
+                  AND a.datetime < ?
                 GROUP BY YEAR(a.datetime), MONTH(a.datetime)
                 ORDER BY YEAR(a.datetime) DESC, MONTH(a.datetime) ASC";
 
-        $activities_years_months = $db->fetch_rows($sql, array($year));
+        $activities_years_months = $db->fetch_rows($sql, array($startDate, $endDate));
 
         return $activities_years_months;
     }

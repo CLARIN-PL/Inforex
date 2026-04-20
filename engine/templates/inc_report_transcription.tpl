@@ -20,10 +20,10 @@
 	<div id="transcriber" class="horizontal">
 {/if}
 *}
-<div class="col-md-5 scrollingWrapper">
+<div class="col-md-5 scrollingWrapper report-transcription-images-column">
 	{include file="inc_report_transcription_images.tpl"}
 </div>
-<div class="col-main {if $flags_active}col-md-6{else}col-md-7{/if} scrollingWrapper">
+<div class="col-main {if $flags_active}col-md-6{else}col-md-7{/if} scrollingWrapper report-transcription-main-column">
 	{include file="inc_report_transcription_editor.tpl"}
 	{include file="inc_report_transcription_elements.tpl"}
 </div>

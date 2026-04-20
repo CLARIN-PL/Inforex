@@ -1,0 +1,269 @@
+#main-content {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 8px 12px 14px;
+}
+
+.corpus-flag-history-page {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.corpus-flag-history-grid {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.corpus-flag-history-column {
+    display: flex;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.corpus-flag-history-column-filters {
+    align-items: flex-start;
+}
+
+.corpus-flag-history-panel {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0 10px;
+    min-height: calc(100vh - 170px);
+    overflow: hidden;
+    width: 100%;
+}
+
+.corpus-flag-history-filters-panel {
+    min-height: 0;
+    flex: 0 0 auto;
+}
+
+.corpus-flag-history-panel-body {
+    background: #fbfdfe;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    padding: 10px;
+}
+
+.corpus-flag-history-counter {
+    margin-left: auto;
+}
+
+.corpus-flag-history-toolbar {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    padding: 7px 9px;
+}
+
+.corpus-flag-history-search-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 4px;
+    min-width: 0;
+}
+
+.corpus-flag-history-search-group label {
+    color: #486171;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.corpus-flag-history-search-group .form-control {
+    border-color: #d8e4eb;
+    box-shadow: none;
+    font-size: 11px;
+    height: 28px;
+    padding: 4px 8px;
+}
+
+.corpus-flag-history-search-group .form-control:focus {
+    border-color: #1f6f93;
+    box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+}
+
+.corpus-flag-history-search-button {
+    align-items: center;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    height: 28px;
+    margin-top: 18px;
+}
+
+.corpus-flag-history-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.corpus-flag-history-filter-group + .corpus-flag-history-filter-group {
+    margin-top: 10px;
+}
+
+.corpus-flag-history-filter-group label {
+    color: #486171;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.corpus-flag-history-filter-group .form-control {
+    border-color: #d8e4eb;
+    box-shadow: none;
+    font-size: 11px;
+    height: 30px;
+    padding: 4px 8px;
+}
+
+.corpus-flag-history-filter-group .form-control:focus {
+    border-color: #1f6f93;
+    box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+}
+
+.corpus-flag-history-footer {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.corpus-flag-history-apply-button {
+    align-items: center;
+    border-radius: 5px !important;
+    box-shadow: 0 6px 14px rgba(31, 111, 147, 0.16);
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    line-height: 1.2;
+    padding: 6px 10px;
+}
+
+.corpus-flag-history-apply-button:hover,
+.corpus-flag-history-apply-button:focus {
+    box-shadow: 0 8px 18px rgba(23, 79, 105, 0.20);
+}
+
+.corpus-flag-history-table-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.corpus-flag-history-table {
+    font-size: 11px;
+    margin-bottom: 0 !important;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.corpus-flag-history-document-column {
+    width: 32%;
+}
+
+.corpus-flag-history-flag-column {
+    width: 70px;
+}
+
+.corpus-flag-history-status-column {
+    width: 74px;
+}
+
+.corpus-flag-history-user-column {
+    width: 16%;
+}
+
+.corpus-flag-history-date-column {
+    width: 108px;
+}
+
+.corpus-flag-history-document-link {
+    color: #174f69;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.corpus-flag-history-document-link:hover,
+.corpus-flag-history-document-link:focus {
+    color: #1f6f93;
+    text-decoration: underline;
+}
+
+.corpus-flag-history-flag-badge {
+    background: #eef6f8;
+    border: 1px solid #d4e6ed;
+    border-radius: 4px;
+    color: #176d7d;
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 28px;
+    padding: 4px 6px;
+    text-align: center;
+}
+
+.corpus-flag-history-status-cell {
+    text-align: center;
+}
+
+.corpus-flag-history-status-cell img {
+    padding-top: 1px;
+}
+
+.corpus-flag-history-time {
+    cursor: default;
+    font-variant-numeric: tabular-nums;
+}
+
+.corpus-flag-history-empty {
+    min-height: 180px;
+}
+
+.corpus-flag-history-table-footer {
+    min-height: 44px;
+}
+
+.corpus-flag-history-pagination {
+    margin-top: 0;
+}
+
+.corpus-flag-history-pagination .home-corpora-page-button {
+    text-decoration: none;
+}
+
+.corpus-flag-history-pagination .home-corpora-page-button.disabled {
+    background: #eef1f4;
+    border-color: #d8e4eb;
+    color: #95a3ad;
+    cursor: default;
+    pointer-events: none;
+}
+
+@media (max-width: 991px) {
+    .corpus-flag-history-column {
+        width: 100%;
+    }
+
+    .corpus-flag-history-panel {
+        min-height: 0;
+    }
+
+    .corpus-flag-history-table {
+        table-layout: auto;
+    }
+}

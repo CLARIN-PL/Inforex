@@ -8,6 +8,9 @@
  
 class PerspectiveCleanup extends CPerspective {
 
+    const FULL_EDIT_MAX_CONTENT_LENGTH = 150000;
+    const CODEMIRROR_MAX_CONTENT_LENGTH = 200000;
+
     function execute()
 	{
 		$this->set_dropdown_lists();
@@ -16,6 +19,7 @@ class PerspectiveCleanup extends CPerspective {
 	function set_dropdown_lists()
 	{
 		$edit_type = array_key_exists('edit_type', $_COOKIE) ? $_COOKIE['edit_type'] : "full";
+        $useCodeMirror = array_key_exists('edit_use_codemirror', $_COOKIE) ? $_COOKIE['edit_use_codemirror'] === "1" : false;
 		
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
@@ -30,9 +34,20 @@ class PerspectiveCleanup extends CPerspective {
 
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
 		$annotations_count = $this->page->getDb()->fetch_one($sql, $this->document['id']);
+        $content = $this->document['content'];
+        $contentLength = strlen($content);
+        $hasAnnotations = intval($annotations_count) > 0;
+        $fullEditDisabledReason = null;
+        $disableCodeMirror = !$useCodeMirror || $contentLength > self::CODEMIRROR_MAX_CONTENT_LENGTH;
 
 		try{
-			$content = $this->document['content'];
+            if ($hasAnnotations && $edit_type !== 'no_annotation') {
+                $edit_type = 'no_annotation';
+                $fullEditDisabledReason = "Full cleanup mode was disabled automatically because this document already has annotations.";
+            } elseif ($contentLength > self::FULL_EDIT_MAX_CONTENT_LENGTH && $edit_type !== 'no_annotation') {
+                $edit_type = 'no_annotation';
+                $fullEditDisabledReason = "Full cleanup mode was disabled automatically because this document is too large.";
+            }
 
 			if($edit_type != 'no_annotation'){
 				$htmlStr = new HtmlStr2($content, true);
@@ -60,6 +75,10 @@ class PerspectiveCleanup extends CPerspective {
 		$this->page->set('select_format', $select_format->toHtml());
 		$this->page->set('annotations_count', $annotations_count);
 		$this->page->set('content_edit', $content);
+        $this->page->set('disable_codemirror', $disableCodeMirror);
+        $this->page->set('use_codemirror', $useCodeMirror ? 1 : 0);
+        $this->page->set('content_edit_length', $contentLength);
+        $this->page->set('full_edit_disabled_reason', $fullEditDisabledReason);
 	}
 }
 

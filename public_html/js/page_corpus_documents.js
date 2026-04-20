@@ -15,7 +15,7 @@ var paginateH = 15;
 // Szerokość paska przewijania
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
-var minRowH = 25.5;
+var minRowH = 21;
 // Obiekt flexgid reprezentujący tabelę z dokumentami
 var flex = null;
 
@@ -193,6 +193,16 @@ function deselectOperationDelete(){
     $("#selected_deletion").prop("checked", false);
 }
 
+function compactDocumentsGridHeight(){
+    var $body = $(".corpus-documents-page .flexigrid div.bDiv");
+    var $table = $body.find("table#table-documents");
+    var tableHeight = $table.outerHeight();
+
+    if (tableHeight > 0) {
+        $body.height(tableHeight + 2);
+    }
+}
+
 //Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status lub nie ma zaznaczonych dokumentow
 function unlockButtons(){
         var number = checkboxAction(null, "get_amount");
@@ -262,14 +272,10 @@ $(function() {
     // Ustaw wysokość panelu filtrów
     resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = $("#table-documents tr:last").outerHeight() + 10;
-    rowH = Math.max(rowH, minRowH);
-    // Wysokość FlexiGrida
-    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 20;
-    // Liczba wyświetlanych wierszy
-    var elems = Math.floor((flexiHeight - 15) / rowH);
-    // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
-    var tableElementsPerPage = Math.max(10, elems); 
+    var rowH = minRowH;
+    var tableElementsPerPage = 15;
+    // Wysokość ciała tabeli liczona z liczby wierszy, żeby pager przylegał do tabeli.
+    var flexiHeight = tableElementsPerPage * rowH + 4;
     var paggingContainer = '.pagging';
     var tablesorterTable = '#table-documents';
     var showSelected;
@@ -294,7 +300,7 @@ $(function() {
         rp: tableElementsPerPage,
         showTableToggleBtn: false,
         showToggleBtn: false,
-        width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 40,
+        width: $(".corpus-documents-panel > .panel-body").innerWidth() - 2,
         height: flexiHeight,
         newp: (prev_report?-1:initPage),
         resizable: false,
@@ -310,6 +316,7 @@ $(function() {
                 unlockButtons();
                 updateCheckCount();
             });
+            compactDocumentsGridHeight();
         }
     });
     

@@ -28,9 +28,28 @@ class Page_public_annotations extends CPagePublic{
             $annotationSets[$key]['count_ann'] = count($used_in_corpora);
             $annotationSets[$key]['count_public'] = count($public_corpora);
             $annotationSets[$key]['corpora'] = $public_corpora;
+            $annotationSets[$key]['owner_initials'] = $this->getInitials($annotationSet['screename']);
         }
 
         $this->set("annotationSets", $annotationSets);
+    }
+
+    private function getInitials($name){
+        $parts = preg_split('/\s+/', trim($name));
+        $initials = "";
+        $count = 0;
+
+        foreach ($parts as $part){
+            if ($part !== ""){
+                $initials .= function_exists('mb_substr') ? mb_substr($part, 0, 1, 'UTF-8') : substr($part, 0, 1);
+                $count++;
+            }
+            if ($count >= 2){
+                break;
+            }
+        }
+
+        return function_exists('mb_strtoupper') ? mb_strtoupper($initials, 'UTF-8') : strtoupper($initials);
     }
 }
 

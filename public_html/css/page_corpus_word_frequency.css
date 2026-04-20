@@ -1,14 +1,888 @@
+#page.corpus_word_frequency #page_content,
 #page.word_frequency #page_content {
-	padding: unset;
+    padding: 0;
 }
 
-.pcontrol input { width: 20px; vertical-align: middle;}
+.corpus-word-frequency-page {
+    padding: 5px;
+}
 
-#countby { float: right; padding: 1px; color: white; }
-#countby a { color: #ddd; }
-#countby a.active { color: white; font-weight: bold; }
+.corpus-word-frequency-shell {
+    margin: 5px 0 10px;
+    overflow: hidden;
+}
 
-div.filter { float: left; padding: 4px; }
+.corpus-word-frequency-main-heading {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
 
-#words_frequences td div { padding-left: 4px; padding-right: 4px;}
-#words_frequences th { padding: 0 4px; }
+.corpus-word-frequency-main-heading-copy {
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
+    min-width: 0;
+}
+
+.corpus-word-frequency-body {
+    background: #fbfdfe;
+    padding: 0;
+}
+
+.corpus-word-frequency-toolbar {
+    background: linear-gradient(180deg, #f8fbfc 0%, #eef5f8 100%);
+    border-bottom: 1px solid #d6e4eb;
+    padding: 9px 12px;
+}
+
+.corpus-word-frequency-form {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+}
+
+.corpus-word-frequency-form-title {
+    align-items: center;
+    color: #174f69;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    margin-right: 2px;
+    padding-bottom: 5px;
+}
+
+.corpus-word-frequency-field {
+    display: flex;
+    flex: 0 1 200px;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+}
+
+.corpus-word-frequency-search {
+    flex-basis: 220px;
+    flex-grow: 1;
+}
+
+.corpus-word-frequency-field-pos {
+    flex-basis: 100px;
+    max-width: 110px;
+}
+
+.corpus-word-frequency-field > span {
+    color: #587180;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.corpus-word-frequency-field select,
+.corpus-word-frequency-field input[type="text"] {
+    background: #ffffff;
+    border: 1px solid #cddde5;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px rgba(18, 52, 68, 0.04);
+    color: #274455;
+    font-size: 11px;
+    height: 31px;
+    padding: 5px 9px;
+    width: 100%;
+}
+
+.corpus-word-frequency-actions {
+    display: flex;
+    padding-bottom: 1px;
+}
+
+.corpus-word-frequency-actions .btn {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 11px;
+    font-weight: 700;
+    min-height: 31px;
+    min-width: 82px;
+    padding: 5px 12px;
+}
+
+.corpus-word-frequency-apply {
+    align-items: center;
+    background: #1f6f93;
+    border-color: #1a5f7d;
+    display: inline-flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.corpus-word-frequency-apply:hover,
+.corpus-word-frequency-apply:focus {
+    background: #1a5f7d;
+    border-color: #144b62;
+}
+
+.corpus-word-frequency-apply .fa {
+    font-size: 11px;
+}
+
+.corpus-word-frequency-grid {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 10px;
+}
+
+.corpus-word-frequency-column {
+    align-items: stretch;
+    display: flex;
+    padding: 0 5px;
+}
+
+.corpus-word-frequency-content-panel {
+    border: 1px solid #d8e4eb;
+    border-radius: 0 12px 12px 12px;
+    box-shadow: 0 10px 24px rgba(32, 56, 73, 0.08);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: 100%;
+    margin: 0 0 10px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.corpus-word-frequency-chart-panel {
+    align-self: flex-start;
+    height: auto;
+}
+
+.corpus-word-frequency-subheading {
+    align-items: center;
+    background: linear-gradient(135deg, #ffffff 0%, #eef7f6 100%);
+    border-bottom: 2px solid #1f6f93;
+    color: #174f69 !important;
+    display: flex;
+    font-size: 15px;
+    font-weight: 700;
+    gap: 8px;
+    min-height: 0;
+    padding: 12px 14px;
+}
+
+.corpus-word-frequency-chart-heading {
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.corpus-word-frequency-heading-with-actions {
+    justify-content: space-between;
+}
+
+.corpus-word-frequency-heading-copy {
+    align-items: center;
+    display: inline-flex;
+    flex: 1 1 auto;
+    gap: 8px;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.corpus-word-frequency-heading-actions {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 6px;
+    margin-left: 10px;
+}
+
+.corpus-word-frequency-main-actions {
+    margin-left: 0;
+}
+
+.corpus-word-frequency-export-btn {
+    align-items: center;
+    border-radius: 6px;
+    box-shadow: none;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1;
+    min-height: 29px;
+    padding: 6px 9px;
+    white-space: nowrap;
+}
+
+.corpus-word-frequency-export-btn .fa {
+    font-size: 11px;
+}
+
+.corpus-word-frequency-export-btn-primary {
+    background: #1f6f93;
+    border-color: #1a5f7d;
+    color: #ffffff;
+}
+
+.corpus-word-frequency-export-btn-primary:hover,
+.corpus-word-frequency-export-btn-primary:focus {
+    background: #1a5f7d;
+    border-color: #144b62;
+    color: #ffffff;
+}
+
+.corpus-word-frequency-export-btn-secondary {
+    background: #eef6f9;
+    border-color: #cfe0e8;
+    color: #355262;
+}
+
+.corpus-word-frequency-export-btn-secondary:hover,
+.corpus-word-frequency-export-btn-secondary:focus {
+    background: #d9eeee;
+    border-color: #bdd9dc;
+    color: #244554;
+}
+
+.corpus-word-frequency-subbody {
+    background: #fbfdfe;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 10px;
+}
+
+.corpus-word-frequency-panel-content.is-hidden {
+    display: none;
+}
+
+.corpus-word-frequency-loading {
+    margin: 0;
+    min-height: 220px;
+}
+
+.corpus-word-frequency-empty-state {
+    margin: 0;
+    min-height: 220px;
+}
+
+.corpus-word-frequency-empty-copy {
+    align-items: center;
+    display: inline-flex;
+    gap: 12px;
+    max-width: 340px;
+    text-align: left;
+}
+
+.corpus-word-frequency-empty-copy .fa {
+    background: #eef6f9;
+    border: 1px solid #d6e4eb;
+    border-radius: 999px;
+    color: #1f6f93;
+    flex: 0 0 auto;
+    font-size: 16px;
+    height: 36px;
+    line-height: 34px;
+    text-align: center;
+    width: 36px;
+}
+
+.corpus-word-frequency-empty-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.corpus-word-frequency-empty-text strong {
+    color: #355262;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.corpus-word-frequency-empty-text span {
+    color: #6b7d8b;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.corpus-word-frequency-chart-loading {
+    bottom: 10px;
+    left: 10px;
+    min-height: 190px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 4;
+}
+
+.corpus-word-frequency-chart-panel .corpus-word-frequency-subbody {
+    flex: 0 0 auto;
+}
+
+.corpus-word-frequency-flexigrid,
+.corpus-word-frequency-flexigrid .flexigrid {
+    min-height: 0;
+}
+
+.corpus-word-frequency-flexigrid .flexigrid {
+    border: 0;
+    color: #21394d;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px;
+    overflow: hidden;
+}
+
+.corpus-word-frequency-flexigrid .mDiv,
+.corpus-word-frequency-flexigrid .tDiv,
+.corpus-word-frequency-flexigrid .sDiv {
+    display: none;
+}
+
+.corpus-word-frequency-flexigrid .hDiv {
+    background: #f3f8fa;
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+}
+
+.corpus-word-frequency-flexigrid .hDiv th {
+    background: #f3f8fa;
+    border-left: 0;
+    border-right: 1px solid #d8e4eb;
+    color: #486171;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.corpus-word-frequency-flexigrid .hDiv th div {
+    padding: 4px 7px;
+}
+
+.corpus-word-frequency-flexigrid .bDiv {
+    background: #ffffff;
+    border: 0;
+}
+
+.corpus-word-frequency-flexigrid .bDiv table {
+    border-bottom: 0;
+    margin-bottom: 0;
+}
+
+.corpus-word-frequency-flexigrid .bDiv td {
+    border-bottom: 1px solid #e7eef3;
+    border-left: 0;
+    border-right: 1px solid #e7eef3;
+    color: #21394d;
+    font-size: 11px;
+    padding: 0;
+    vertical-align: middle !important;
+}
+
+.corpus-word-frequency-flexigrid .bDiv td div {
+    line-height: 1.35;
+    padding: 3px 7px;
+}
+
+.corpus-word-frequency-flexigrid .bDiv tr.erow td {
+    background: #eef6f9;
+    border-bottom-color: #e7eef3;
+}
+
+.corpus-word-frequency-flexigrid .bDiv tr:hover td,
+.corpus-word-frequency-flexigrid .bDiv tr.trOver td {
+    background: #d9eeee;
+    border-bottom-color: #bdd9dc;
+    border-left: 0;
+    color: #21394d;
+}
+
+.corpus-word-frequency-flexigrid .pDiv {
+    background: #ffffff;
+    border: 0;
+    border-top: 1px solid #d8e4eb;
+    color: #486171;
+    min-height: 32px;
+    padding-top: 2px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pDiv2 {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 5px;
+    width: auto;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pGroup {
+    align-items: flex-end;
+    display: inline-flex;
+    float: none;
+    gap: 4px;
+    height: auto;
+    margin: 0 2px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .btnseparator {
+    border-left-color: #d8e4eb;
+    border-right: 0;
+    height: 22px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pPageStat {
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    justify-content: center;
+    line-height: 24px;
+    text-align: center;
+    top: 0;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pcontrol {
+    align-items: flex-end;
+    color: #486171;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 5px;
+    height: 24px;
+    line-height: 24px;
+    top: 0;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pcontrol > span {
+    display: inline-flex;
+    line-height: 24px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pcontrol input {
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 4px;
+    box-shadow: none;
+    color: #274455;
+    height: 24px;
+    line-height: 20px;
+    margin: 0 4px;
+    padding: 2px 4px;
+    text-align: center;
+    top: 0;
+    vertical-align: bottom;
+    width: 40px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pButton {
+    background-color: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 5px;
+    box-shadow: none;
+    height: 24px;
+    margin: 0;
+    width: 24px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pButton:hover,
+.corpus-word-frequency-flexigrid .pDiv .pButton.pBtnOver {
+    background-color: #d9eeee;
+    border-color: #bdd9dc;
+    height: 24px;
+    width: 24px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pButton span {
+    border: 0;
+    height: 22px;
+    width: 22px;
+}
+
+.corpus-word-frequency-flexigrid .pDiv .pButton:hover span,
+.corpus-word-frequency-flexigrid .pDiv .pButton.pBtnOver span {
+    border: 0;
+    height: 22px;
+    width: 22px;
+}
+
+.corpus-word-frequency-chart-body {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    padding-top: 8px;
+    position: relative;
+}
+
+.corpus-word-frequency-chart-stage {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+    width: 100%;
+}
+
+.corpus-word-frequency-chart-empty {
+    color: #647b88;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    flex: 1 1 auto;
+    min-height: 140px;
+    width: 100%;
+}
+
+.corpus-word-frequency-chart-empty .corpus-word-frequency-empty-copy {
+    justify-content: center;
+    text-align: center;
+}
+
+.corpus-word-frequency-chart-empty .corpus-word-frequency-empty-text {
+    align-items: center;
+}
+
+.corpus-word-frequency-chart-link {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #d6e4eb;
+    border-radius: 999px;
+    color: #1f6f93;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1;
+    padding: 5px 8px;
+    position: absolute;
+    right: 10px;
+    text-decoration: none;
+    top: -2px;
+    transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+    z-index: 3;
+}
+
+.corpus-word-frequency-chart-link:hover,
+.corpus-word-frequency-chart-link:focus {
+    background: #1f6f93;
+    border-color: #1f6f93;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.corpus-word-frequency-chart-link .fa {
+    font-size: 11px;
+}
+
+.corpus-word-frequency-chart-link[style*="display: none"] {
+    display: none !important;
+}
+
+.corpus-word-frequency-countby {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    font-size: 10px;
+    gap: 4px;
+    margin-left: 12px;
+    white-space: nowrap;
+}
+
+.corpus-word-frequency-countby > span {
+    color: #5f7886;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.corpus-word-frequency-countby a {
+    background: #edf4f7;
+    border: 1px solid #d2e1e8;
+    border-radius: 999px;
+    color: #54707f;
+    font-weight: 700;
+    line-height: 1;
+    padding: 4px 7px;
+    text-decoration: none;
+    transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+
+.corpus-word-frequency-countby a.active,
+.corpus-word-frequency-countby a:hover,
+.corpus-word-frequency-countby a:focus {
+    background: #1f6f93;
+    border-color: #1f6f93;
+    color: #ffffff;
+}
+
+.corpus-word-frequency-countby-separator {
+    color: #8aa0ac;
+    line-height: 1;
+}
+
+.corpus-word-frequency-footer {
+    align-items: center;
+    background: #f8fbfc;
+    border-top: 1px solid #d6e4eb;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+    padding: 10px 14px;
+}
+
+.corpus-word-frequency-footer .btn {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 11px;
+    font-weight: 700;
+    min-height: 31px;
+    padding: 5px 12px;
+}
+
+.corpus-word-frequency-footer .btn.btn-primary {
+    background: #1f6f93;
+    border-color: #1a5f7d;
+}
+
+.corpus-word-frequency-footer .btn.btn-primary:hover,
+.corpus-word-frequency-footer .btn.btn-primary:focus {
+    background: #1a5f7d;
+    border-color: #144b62;
+}
+
+.corpus-word-frequency-footer .btn.btn-info {
+    background: #eef4f7;
+    border-color: #ccdbe3;
+    color: #315162;
+}
+
+.corpus-word-frequency-footer .btn.btn-info:hover,
+.corpus-word-frequency-footer .btn.btn-info:focus {
+    background: #e0ebf1;
+    border-color: #b9ccd7;
+    color: #234455;
+}
+
+#words_frequences td div {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#words_frequences th {
+    padding: 0 4px;
+}
+
+.pcontrol input {
+    vertical-align: middle;
+    width: 20px;
+}
+
+.corpus-word-frequency-page .flexigrid {
+    border: 0;
+    color: #21394d;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px;
+}
+
+.corpus-word-frequency-page .flexigrid div.hDiv {
+    background: #f3f8fa;
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+}
+
+.corpus-word-frequency-page .flexigrid div.hDiv th {
+    background: #f3f8fa;
+    border-left: 0;
+    border-right: 1px solid #d8e4eb;
+    color: #486171;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.corpus-word-frequency-page .flexigrid div.hDiv th div {
+    padding: 4px 7px;
+}
+
+.corpus-word-frequency-page .flexigrid div.bDiv {
+    background: #ffffff;
+    border: 0;
+}
+
+.corpus-word-frequency-page .flexigrid div.bDiv table {
+    border-bottom: 0;
+    margin-bottom: 0;
+}
+
+.corpus-word-frequency-page .flexigrid div.bDiv td {
+    border-bottom: 1px solid #e7eef3;
+    border-left: 0;
+    border-right: 1px solid #e7eef3;
+    color: #21394d;
+    vertical-align: middle !important;
+}
+
+.corpus-word-frequency-page .flexigrid div.bDiv td div {
+    padding: 3px 7px;
+}
+
+.corpus-word-frequency-page .flexigrid tr.erow td {
+    background: #eef6f9;
+    border-bottom-color: #e7eef3;
+}
+
+.corpus-word-frequency-page .flexigrid div.bDiv tr:hover td,
+.corpus-word-frequency-page .flexigrid div.bDiv tr.trOver td {
+    background: #d9eeee;
+    border-bottom-color: #bdd9dc;
+    border-left: 0;
+    color: #21394d;
+}
+
+.corpus-word-frequency-page .flexigrid tr.trSelected td,
+.corpus-word-frequency-page .flexigrid div.bDiv tr.trSelected:hover td {
+    background: #b9dff1;
+    border-bottom-color: #82bed7;
+    color: #174f69;
+    font-weight: bold;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv {
+    background: #ffffff;
+    border: 0;
+    border-top: 1px solid #d8e4eb;
+    color: #486171;
+    min-height: 32px;
+    padding-top: 2px;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv div.pDiv2 {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 4px 5px;
+    width: auto;
+}
+
+.corpus-word-frequency-page .flexigrid div.pGroup {
+    align-items: flex-end;
+    display: flex;
+    float: none;
+    height: auto;
+    margin: 0 2px;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv .pPageStat,
+.corpus-word-frequency-page .flexigrid div.pDiv .pcontrol {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 24px;
+    top: 0;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv .pPageStat {
+    display: inline-flex;
+    flex-basis: 100%;
+    justify-content: center;
+    margin: 0;
+    order: 10;
+    position: static;
+    text-align: center;
+    transform: none;
+    width: 100%;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv div.pGroup:last-child {
+    flex-basis: 100%;
+    justify-content: center;
+    margin-top: 2px;
+    width: 100%;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv .pcontrol {
+    align-items: flex-end;
+    display: inline-flex;
+    gap: 4px;
+    height: 24px;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv .pcontrol > span {
+    display: inline-flex;
+    line-height: 24px;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv input {
+    border: 1px solid #d8e4eb;
+    border-radius: 4px;
+    height: 24px;
+    line-height: 20px;
+    margin: 0 4px;
+    padding: 2px 4px;
+    top: 0;
+    vertical-align: bottom;
+    width: 40px;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv div.pButton {
+    background-color: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 5px;
+    height: 24px;
+    width: 24px;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv div.pButton:hover,
+.corpus-word-frequency-page .flexigrid div.pDiv div.pButton.pBtnOver {
+    background-color: #d9eeee;
+    border-color: #bdd9dc;
+    height: 24px;
+    width: 24px;
+}
+
+.corpus-word-frequency-page .flexigrid div.pDiv div.pButton span,
+.corpus-word-frequency-page .flexigrid div.pDiv div.pButton:hover span,
+.corpus-word-frequency-page .flexigrid div.pDiv div.pButton.pBtnOver span {
+    border: 0;
+    display: block;
+    float: left;
+    height: 22px;
+    width: 22px;
+}
+
+.corpus-word-frequency-page .flexigrid div.btnseparator {
+    border-left-color: #d8e4eb;
+    border-right: 0;
+    height: 22px;
+}
+
+@media (max-width: 991px) {
+    .corpus-word-frequency-chart-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+
+    .corpus-word-frequency-countby {
+        margin-left: 0;
+        white-space: normal;
+    }
+}
+
+@media (max-width: 991px) {
+    .corpus-word-frequency-form-title,
+    .corpus-word-frequency-actions,
+    .corpus-word-frequency-field {
+        flex-basis: 100%;
+    }
+
+    .corpus-word-frequency-grid {
+        padding: 8px;
+    }
+
+    .corpus-word-frequency-column {
+        padding: 0;
+    }
+}

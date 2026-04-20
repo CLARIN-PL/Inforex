@@ -13,13 +13,16 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div class="col-main {if $flags_active}col-md-7{else}col-md-8{/if} scrollingWrapper" id="col-main">
-	<div class="panel panel-primary">
-		<div class="panel-heading">Document content</div>
-		<div id="widget_text" class="panel-body column" style="padding: 0">
+<div class="col-main {if $flags_active}col-md-7{else}col-md-8{/if} scrollingWrapper report-preview-content-column report-annotator-content-column" id="col-main">
+	<div class="panel panel-primary administration-content-panel report-preview-content-panel report-annotator-content-panel">
+		<div class="panel-heading administration-content-heading report-preview-panel-heading report-annotator-heading">
+			<span class="administration-content-heading-icon report-preview-heading-icon report-annotator-heading-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+			<span>Document content</span>
+		</div>
+		<div id="widget_text" class="panel-body column report-annotator-content-body">
 			<div id="content">
-				<div id="leftContent" style="float:left; width: {if $showRight}50%; border-right: 1px solid #E0CFC2{else}100%;{/if}" class="annotations scrolling content">
-				  <div style="margin: 5px" class="contentBox {$report.format}">{$content|format_annotations}</div>
+				<div id="leftContent" style="width: {if $showRight}50%{else}100%{/if};" class="annotations scrolling content report-preview-document-content report-annotator-document-content">
+				  <div class="contentBox {$report.format} report-preview-content-box report-annotator-content-box">{$content|format_annotations}</div>
 				</div>{*
 				<div id="rightContent" style="{if !$showRight}display: none{/if};" class="annotations scrolling content rightPanel">
 					  <div style="margin: 5px" class="contentBox {$report.format}">{$content_inline2|format_annotations}</div>
@@ -30,21 +33,23 @@
 	</div>
 </div>
 
-<div id="columnAnnotation" class="col-md-4 scrollingWrapper" style="display: none;">
+<div id="columnAnnotation" class="col-md-4 scrollingWrapper report-annotator-details-column" style="display: none;">
 	<div class="">
-		<div id="annotationLoading" style="display: none;">
-			Loading data ... <img src="gfx/ajax.gif" />
+		<div id="annotationLoading" class="administration-wsd-loading report-annotator-loading" style="display: none;">
+			<img src="gfx/ajax.gif" alt="Loading"/>
+			<span>Loading annotation data...</span>
 		</div>
 
 
 		<div id="annotationEditor">
-			<div id="annotation-details" class="panel panel-primary">
-				<div class="panel-heading">
-					<a href="#" class="btn btn-xs btn-primary annotation_redo" style="float: right" title="Close annotation editor"><i class="fa fa-window-close" aria-hidden="true"></i></a>
-					Annotation details
+			<div id="annotation-details" class="panel panel-primary administration-content-panel report-annotator-details-panel">
+				<div class="panel-heading administration-content-heading report-annotator-details-heading">
+					<span class="administration-content-heading-icon report-annotator-heading-icon"><i class="fa fa-tag" aria-hidden="true"></i></span>
+					<span>Annotation details</span>
+					<a href="#" class="btn btn-xs btn-primary annotation_redo report-annotator-close-button" title="Close annotation editor"><i class="fa fa-window-close" aria-hidden="true"></i></a>
 				</div>
-				<div class="panel-body" style="padding: 0">
-					<table style="font-size: 8pt" class="table table-striped" cellspacing="1">
+				<div class="panel-body report-annotator-details-body">
+					<table class="table table-striped report-annotator-details-table" cellspacing="1">
 						<tr>
 							<th>Id:</th>
 							<td class="value" id="annotation_id">-</td>
@@ -58,7 +63,7 @@
 							<td style="vertical-align: top">
 								<span id="annotation_redo_type" class="value" annotation-type-id=""></span>
 								<input type="hidden" id="annotation_redo_type_id"/>
-                                <div style="float:right; {if $annotation_mode == 'relation_agreement'}display: none;{/if}">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover" title="change type"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></div>
+                                <div class="report-annotator-type-change" {if $annotation_mode == 'relation_agreement'}style="display: none;"{/if}><a href="#" id="changeAnnotationType" data-toggle="popover" title="change type"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></div>
                             </td>
 						</tr>
 						<tr>
@@ -69,19 +74,19 @@
 						</tr>
 					</table>
 				</div>
-				<div class="panel-footer">
-					<input type="button" value="Save and close" class="btn btn-sm btn-primary" id="annotation_save" disabled="true"/>
+				<div class="panel-footer report-annotator-footer">
+					<input type="button" value="Save and close" class="btn btn-sm btn-primary report-annotator-save-button" id="annotation_save" disabled="true"/>
                     {if $annotation_mode != 'relation_agreement'}
-						<a href="#" type="button" style="float: right" id="annotation_delete" class="btn btn-sm btn-danger" title="Delete annotation"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a href="#" type="button" id="annotation_delete" class="btn btn-sm btn-danger report-annotator-delete-button" title="Delete annotation"><i class="fa fa-trash" aria-hidden="true"></i></a>
                     {/if}
 				</div>
 			</div>
 
-			<div id="annotation-relations" class="panel panel-default">
-				<div class="panel-heading">Annotation relations</div>
-				<div class="panel-body" style="padding: 0">
+			<div id="annotation-relations" class="panel panel-default report-annotator-relations-panel">
+				<div class="panel-heading report-annotator-card-heading"><i class="fa fa-link" aria-hidden="true"></i> Annotation relations</div>
+				<div class="panel-body report-annotator-relations-body">
 					<div class="annotations relationsContainer scrolling">
-						<table class="table table-striped relations" cellspacing="1" style="font-size: 8pt">
+						<table class="table table-striped relations report-annotator-relations-table" cellspacing="1">
 							<thead>
 								<tr>
 									<th>Id</th>
@@ -95,7 +100,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="panel-footer">
+				<div class="panel-footer report-annotator-footer">
 					<input type="button" value="Cancel" class="btn btn-sm btn-warning relation-cancel" style="display: none"/>
 					<div class="dropup relation-types">
 						<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add relation
@@ -109,8 +114,8 @@
 </div>
 
 
-<div id="col-config" class="col-md-4 scrollingWrapper">
-	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+<div id="col-config" class="col-md-4 scrollingWrapper report-preview-config-column report-annotator-config-column">
+	<div class="panel-group report-preview-accordion report-annotator-accordion" id="accordion" role="tablist" aria-multiselectable="true">
 		{include file="inc_report_annotator_configuration.tpl" show=true}
         {include file="inc_report_annotator_annotation_pad.tpl"}
 		{include file="inc_report_annotator_annotations.tpl"}

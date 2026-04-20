@@ -1,14 +1,603 @@
 #page.annotation_frequency #page_content {
-	padding: unset;
+    padding: 0;
 }
 
-.pcontrol input { width: 20px; vertical-align: middle;}
+#main-content {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 8px 12px 14px;
+}
 
-#countby { float: right; padding: 1px; color: white; }
-#countby a { color: #ddd; }
-#countby a.active { color: white; font-weight: bold; }
+.annotation-distribution-page {
+    padding: 5px;
+}
 
-div.filter { float: left; padding: 4px; }
+.annotation-distribution-shell {
+    margin: 5px 0 10px;
+    overflow: hidden;
+}
 
-#annotation_frequency_table td div { padding-left: 4px; padding-right: 4px;}
-#annotation_frequency_table th { padding: 0 4px; }
+.annotation-distribution-main-heading {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.annotation-distribution-main-heading-copy {
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
+    min-width: 0;
+}
+
+.annotation-distribution-body {
+    background: #fbfdfe;
+    padding: 0;
+}
+
+.annotation-distribution-toolbar {
+    background: linear-gradient(180deg, #f8fbfc 0%, #eef5f8 100%);
+    border-bottom: 1px solid #d6e4eb;
+    padding: 9px 12px;
+}
+
+.annotation-distribution-form {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+}
+
+.annotation-distribution-form-title {
+    align-items: center;
+    color: #174f69;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    margin-right: 2px;
+    padding-bottom: 5px;
+}
+
+.annotation-distribution-field {
+    display: flex;
+    flex: 0 1 180px;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+}
+
+.annotation-distribution-search {
+    flex-basis: 220px;
+    flex-grow: 1;
+}
+
+.annotation-distribution-field > span {
+    color: #587180;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.annotation-distribution-field select,
+.annotation-distribution-field input[type="text"] {
+    background: #ffffff;
+    border: 1px solid #cddde5;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px rgba(18, 52, 68, 0.04);
+    color: #274455;
+    font-size: 11px;
+    height: 31px;
+    padding: 5px 9px;
+    width: 100%;
+}
+
+.annotation-distribution-actions {
+    display: flex;
+    padding-bottom: 1px;
+}
+
+.annotation-distribution-apply {
+    align-items: center;
+    background: #1f6f93;
+    border-color: #1a5f7d;
+    border-radius: 5px;
+    box-shadow: none;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    justify-content: center;
+    min-height: 31px;
+    min-width: 82px;
+    padding: 5px 12px;
+}
+
+.annotation-distribution-apply:hover,
+.annotation-distribution-apply:focus {
+    background: #1a5f7d;
+    border-color: #144b62;
+}
+
+.annotation-distribution-grid {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 10px;
+}
+
+.annotation-distribution-column {
+    align-items: stretch;
+    display: flex;
+    padding: 0 5px;
+}
+
+.annotation-distribution-content-panel {
+    border: 1px solid #d8e4eb;
+    border-radius: 0 12px 12px 12px;
+    box-shadow: 0 10px 24px rgba(32, 56, 73, 0.08);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: 100%;
+    margin: 0 0 10px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.annotation-distribution-chart-panel {
+    align-self: flex-start;
+}
+
+.annotation-distribution-subheading {
+    align-items: center;
+    background: linear-gradient(135deg, #ffffff 0%, #eef7f6 100%);
+    border-bottom: 2px solid #1f6f93;
+    color: #174f69 !important;
+    display: flex;
+    font-size: 15px;
+    font-weight: 700;
+    gap: 8px;
+    min-height: 0;
+    padding: 12px 14px;
+}
+
+.annotation-distribution-chart-heading {
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.annotation-distribution-heading-copy {
+    align-items: center;
+    display: inline-flex;
+    flex: 1 1 auto;
+    gap: 8px;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.annotation-distribution-countby {
+    align-items: center;
+    color: #5e7683;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 5px;
+    margin-left: 10px;
+}
+
+.annotation-distribution-countby-label {
+    color: #174f69;
+}
+
+.annotation-distribution-countby a {
+    color: #5e7683;
+    text-decoration: none;
+}
+
+.annotation-distribution-countby a.active {
+    color: #1f6f93;
+    font-weight: 700;
+}
+
+.annotation-distribution-subbody {
+    background: #fbfdfe;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 10px;
+}
+
+.annotation-distribution-chart-body {
+    flex: 0 0 auto;
+    position: relative;
+    padding: 0;
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.annotation-distribution-loading {
+    margin: 0;
+    min-height: 220px;
+}
+
+.annotation-distribution-chart-loading {
+    bottom: 10px;
+    left: 10px;
+    min-height: 190px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 4;
+}
+
+.annotation-distribution-flexigrid,
+.annotation-distribution-flexigrid .flexigrid {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.annotation-distribution-flexigrid .flexigrid {
+    border: 0;
+    color: #21394d;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px;
+    overflow: hidden;
+}
+
+.annotation-distribution-flexigrid .mDiv,
+.annotation-distribution-flexigrid .tDiv,
+.annotation-distribution-flexigrid .sDiv {
+    display: none;
+}
+
+.annotation-distribution-flexigrid .hDiv {
+    background: #f3f8fa;
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+}
+
+.annotation-distribution-flexigrid .hDiv th {
+    background: #f3f8fa;
+    border-left: 0;
+    border-right: 1px solid #d8e4eb;
+    color: #486171;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.annotation-distribution-flexigrid .hDiv th div {
+    overflow: hidden;
+    padding: 4px 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.annotation-distribution-flexigrid .bDiv {
+    background: #ffffff;
+    border: 0;
+    overflow-x: hidden !important;
+    overflow-y: auto;
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.annotation-distribution-flexigrid .bDiv table {
+    border-bottom: 0;
+    margin-bottom: 0;
+}
+
+.annotation-distribution-flexigrid .bDiv td {
+    border-bottom: 1px solid #e7eef3;
+    border-left: 0;
+    border-right: 1px solid #e7eef3;
+    color: #21394d;
+    vertical-align: middle !important;
+}
+
+.annotation-distribution-flexigrid .bDiv td div {
+    overflow: hidden;
+    padding: 3px 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.annotation-distribution-flexigrid .bDiv tr.erow td {
+    background: #eef6f9;
+    border-bottom-color: #e7eef3;
+}
+
+.annotation-distribution-flexigrid .bDiv tr:hover td,
+.annotation-distribution-flexigrid .bDiv tr.trOver td {
+    background: #d9eeee;
+    border-bottom-color: #bdd9dc;
+    border-left: 0;
+    color: #21394d;
+}
+
+.annotation-distribution-flexigrid .pDiv {
+    background: #ffffff;
+    border: 0;
+    border-top: 1px solid #d8e4eb;
+    color: #486171;
+    min-height: 32px;
+    padding-top: 2px;
+}
+
+.annotation-distribution-flexigrid .pDiv .pDiv2 {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 4px 5px;
+    width: auto;
+}
+
+.annotation-distribution-flexigrid .pGroup {
+    align-items: flex-end;
+    display: flex;
+    float: none;
+    height: auto;
+    margin: 0 2px;
+}
+
+.annotation-distribution-flexigrid .pDiv .pPageStat,
+.annotation-distribution-flexigrid .pDiv .pcontrol {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 24px;
+    top: 0;
+}
+
+.annotation-distribution-flexigrid .pDiv .pPageStat {
+    display: inline-flex;
+    flex-basis: 100%;
+    justify-content: center;
+    margin: 0;
+    order: 10;
+    position: static;
+    text-align: center;
+    transform: none;
+    width: 100%;
+}
+
+.annotation-distribution-flexigrid .pDiv div.pGroup:last-child {
+    flex-basis: 100%;
+    justify-content: center;
+    margin-top: 2px;
+    width: 100%;
+}
+
+.annotation-distribution-flexigrid .pDiv .pcontrol {
+    align-items: flex-end;
+    display: inline-flex;
+    gap: 4px;
+    height: 24px;
+}
+
+.annotation-distribution-flexigrid .pDiv .pcontrol > span {
+    display: inline-flex;
+    line-height: 24px;
+}
+
+.annotation-distribution-flexigrid .pDiv input {
+    border: 1px solid #d8e4eb;
+    border-radius: 4px;
+    height: 24px;
+    line-height: 20px;
+    margin: 0 4px;
+    padding: 2px 4px;
+    top: 0;
+    vertical-align: bottom;
+    width: 40px;
+}
+
+.annotation-distribution-flexigrid .pDiv div.pButton {
+    background-color: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 5px;
+    height: 24px;
+    width: 24px;
+}
+
+.annotation-distribution-flexigrid .pDiv div.pButton:hover,
+.annotation-distribution-flexigrid .pDiv div.pButton.pBtnOver {
+    background-color: #d9eeee;
+    border-color: #bdd9dc;
+}
+
+.annotation-distribution-flexigrid .pDiv div.pButton span,
+.annotation-distribution-flexigrid .pDiv div.pButton:hover span,
+.annotation-distribution-flexigrid .pDiv div.pButton.pBtnOver span {
+    border: 0;
+    display: block;
+    float: left;
+    height: 22px;
+    width: 22px;
+}
+
+.annotation-distribution-flexigrid div.btnseparator {
+    border-left-color: #d8e4eb;
+    border-right: 0;
+    height: 22px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv {
+    background: #ffffff;
+    border: 0;
+    border-top: 1px solid #d8e4eb;
+    color: #486171;
+    min-height: 32px;
+    padding-top: 2px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv div.pDiv2 {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 4px 5px;
+    width: auto;
+}
+
+.annotation-distribution-page .flexigrid div.pGroup {
+    align-items: flex-end;
+    display: flex;
+    float: none;
+    height: auto;
+    margin: 0 2px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv .pPageStat,
+.annotation-distribution-page .flexigrid div.pDiv .pcontrol {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 24px;
+    top: 0;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv .pPageStat {
+    display: inline-flex;
+    flex-basis: 100%;
+    justify-content: center;
+    margin: 0;
+    order: 10;
+    position: static;
+    text-align: center;
+    transform: none;
+    width: 100%;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv div.pGroup:last-child {
+    flex-basis: 100%;
+    justify-content: center;
+    margin-top: 2px;
+    width: 100%;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv .pcontrol {
+    align-items: flex-end;
+    display: inline-flex;
+    gap: 4px;
+    height: 24px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv .pcontrol > span {
+    display: inline-flex;
+    line-height: 24px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv input {
+    border: 1px solid #d8e4eb;
+    border-radius: 4px;
+    height: 24px;
+    line-height: 20px;
+    margin: 0 4px;
+    padding: 2px 4px;
+    top: 0;
+    vertical-align: bottom;
+    width: 40px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv div.pButton {
+    background-color: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 5px;
+    height: 24px;
+    width: 24px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv div.pButton:hover,
+.annotation-distribution-page .flexigrid div.pDiv div.pButton.pBtnOver {
+    background-color: #d9eeee;
+    border-color: #bdd9dc;
+    height: 24px;
+    width: 24px;
+}
+
+.annotation-distribution-page .flexigrid div.pDiv div.pButton span,
+.annotation-distribution-page .flexigrid div.pDiv div.pButton:hover span,
+.annotation-distribution-page .flexigrid div.pDiv div.pButton.pBtnOver span {
+    border: 0;
+    display: block;
+    float: left;
+    height: 22px;
+    width: 22px;
+}
+
+.annotation-distribution-page .flexigrid div.btnseparator {
+    border-left-color: #d8e4eb;
+    border-right: 0;
+    height: 22px;
+}
+
+.annotation-distribution-loading-cell {
+    padding: 12px !important;
+}
+
+.annotation-distribution-chart {
+    min-height: 300px;
+    padding: 6px 10px 0;
+}
+
+.annotation-distribution-chart-link {
+    align-items: center;
+    display: flex;
+    min-height: 28px;
+    background: #eef5f8;
+    border: 1px solid #d4e6ed;
+    border-radius: 5px;
+    color: #20576f;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1;
+    margin: 8px 10px 0 auto;
+    width: fit-content;
+    padding: 5px 8px;
+    text-decoration: none;
+}
+
+.annotation-distribution-chart-link:hover,
+.annotation-distribution-chart-link:focus {
+    background: #e4f0f5;
+    border-color: #bfd4df;
+    color: #174f69;
+    text-decoration: none;
+}
+
+.annotation-distribution-flexigrid .bDiv::-webkit-scrollbar,
+.annotation-distribution-chart-body::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.annotation-distribution-flexigrid .bDiv::-webkit-scrollbar-track,
+.annotation-distribution-chart-body::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 999px;
+}
+
+.annotation-distribution-flexigrid .bDiv::-webkit-scrollbar-thumb,
+.annotation-distribution-chart-body::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 999px;
+}
+
+.annotation-distribution-flexigrid .bDiv::-webkit-scrollbar-thumb:hover,
+.annotation-distribution-chart-body::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+@media (max-width: 1199px) {
+    .annotation-distribution-grid {
+        padding: 10px 8px;
+    }
+}

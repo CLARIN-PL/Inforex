@@ -10,7 +10,8 @@
 {if "admin"|has_role || "manager"|has_corpus_role_or_owner}
 	{include file="inc_system_messages.tpl"}
 	<div id="corpusId" style="display:none">{$corpus.id}</div>
-    <nav class="navbar navbar-report">
+    <div class="container-fluid admin_tables corpus-settings-page">
+    <nav class="navbar navbar-report corpus-settings-nav">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
                 {foreach from=$subpages key=perspectiv item=perspectiv_name}
@@ -27,7 +28,7 @@
         </div>
     </nav>
 	
-    <div style="margin: 4px">
+    <div class="corpus-settings-content">
         {if $subpage_file}{include file="$subpage_file"}{/if}
     </div>
 	
@@ -35,18 +36,19 @@
 {/if}
 
 
-<div class="modal fade settingsModal" id="deleteModal" role="dialog">
+<div class="modal fade settingsModal administration-form-modal administration-delete-modal" id="deleteModal" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Are you sure you want to delete this?</h4>
+                <h4 class="modal-title"><i class="fa fa-trash" aria-hidden="true"></i> Are you sure you want to delete this?</h4>
             </div>
             <div class="modal-body" id = "deleteContent">
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger confirmDelete" data-dismiss="modal">Delete</button>
             </div>
         </div>

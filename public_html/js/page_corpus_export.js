@@ -17,7 +17,7 @@ $(document).ready(function(){
 
         //Toggle the rows with error details
         $(parent_tr).nextAll().each(function(){
-            if($(this).attr('class') !== 'error_desc_row'){
+            if(!$(this).hasClass('error_desc_row')){
                 if($(parent_tr).hasClass('toggled')){
                     $(this).hide();
                 } else{
@@ -36,7 +36,7 @@ $(document).ready(function(){
     });
 
     $("#history").on('click', '.export_stats_button', function(){
-        $("#export_stats_body").html('<div class="loader"></div>');
+        $("#export_stats_body").html('<div class="corpus-export-stats-loader"><div class="loader"></div></div>');
         $("#export_stats_modal").modal('show');
 
 
@@ -288,43 +288,45 @@ function setActionToFollowAnnotationAfterLemmaAndAttrs(extractorForm){
 } // setActionToFollowAnnotationAfterLemmaAndAttrs()
 
 function generateErrorTable(data){
-    var table_html = '<table class="table table-striped">'+
+    if (!data || !data.length) {
+        return '<div class="corpus-export-stats-empty"><i class="fa fa-info-circle" aria-hidden="true"></i> No export messages are available.</div>';
+    }
+
+    var table_html = '<div class="corpus-export-errors-wrap">' +
+        '<table class="table table-striped corpus-export-errors-table">'+
         '<thead>'+
             '<tr>' +
-                '<th>Error</th>' +
-                '<th>Count</th>' +
-                '<th>Details</th>' +
+                '<th class="corpus-export-errors-message-col">Error</th>' +
+                '<th class="corpus-export-errors-count-col text-center">Count</th>' +
+                '<th class="corpus-export-errors-actions-col text-center">Details</th>' +
             '</tr>' +
         '</thead>' +
         '<tbody>';
     var i = 0;
     for(i; i < data.length; i++){
         var row = data[i];
-        table_html += '<tr class = "error_desc_row">' +
-                        '<td class = "col-md-8">'+row.message+'</td>' +
-                        '<td class = "col-md-2">'+row.count+'</td>' +
-                        '<td class = "col-md-2">' +
-                            '<button class = "btn btn-primary error_details_btn">Details</button>' +
-                        '</td>';
+        table_html += '<tr class="error_desc_row">' +
+                        '<td class="corpus-export-errors-message-cell">'+row.message+'</td>' +
+                        '<td class="corpus-export-errors-count-cell text-center">'+row.count+'</td>' +
+                        '<td class="corpus-export-errors-actions-cell text-center">' +
+                            '<button class="btn corpus-export-error-details-btn error_details_btn"><i class="fa fa-chevron-down" aria-hidden="true"></i><span>Details</span></button>' +
+                        '</td>' +
+                    '</tr>';
         for(var index in row.error_details){
             var stat = row.error_details[index];
-            table_html += '<tr style = "background: #ff000024; display: none;">' +
-                '<td colspan = "1"><strong>' +
-                    index + '</strong>: ' +
-                '<td colspan = "2">';
+            table_html += '<tr class="corpus-export-error-detail-row" style="display: none;">' +
+                '<td colspan="3" class="corpus-export-error-detail-cell">' +
+                '<div class="corpus-export-error-detail-entry">' +
+                '<span class="corpus-export-error-detail-label"><strong>' + index + '</strong>:</span>' +
+                '<span class="corpus-export-error-detail-value">';
                 for(var key in stat){
                     table_html += key + ', ';
                 }
-                table_html += '</td>';
-
-            table_html +='</td>';
+                table_html += '</span></div></td>';
             table_html += '</tr>';
-
         }
-
-
     }
-    table_html += '</tbody></table>';
+    table_html += '</tbody></table></div>';
 
     return table_html;
 }
@@ -340,32 +342,37 @@ function updateQueue(){
     var queued_exports = ongoing_exports.scheduled_exports;
     var pos = 0;
     for (var key in queued_exports) {
-        $("#export_status_"+key).html("queued - " + (pos+1) + " pos");
+        $("#export_status_"+key).html(formatExportStatus("queued - " + (pos+1) + " pos"));
         pos++;
     }
 }
 
 function generateStatsTable(data){
-    var table_html = '<table class="table table-striped">'+
+    if (!data || !Object.keys(data).length) {
+        return '<div class="corpus-export-stats-empty"><i class="fa fa-info-circle" aria-hidden="true"></i> No statistics are available for this export.</div>';
+    }
+
+    var table_html = '<div class="corpus-export-stats-wrap">' +
+        '<table class="table table-striped corpus-export-stats-table">'+
         '<thead>'+
-        '<tr><th></th>';
+        '<tr><th class="corpus-export-stats-label">Metric</th>';
     var first_key = Object.keys(data)[0];
     for(var key in data[first_key]){
-        table_html += '<th class = "text-center">'+key+'</th>';
+        table_html += '<th class="text-center">'+key+'</th>';
     }
     table_html += '</tr></thead>';
     table_html += '<tbody>';
 
     for(var index in data){
         var stat = data[index];
-        table_html += '<tr><td>'+index+'</td>';
+        table_html += '<tr><td class="corpus-export-stats-label">'+index+'</td>';
         for(var ind in stat){
-            table_html += '<td class = "text-center">'+stat[ind]+'</td>';
+            table_html += '<td class="text-center">'+stat[ind]+'</td>';
         }
         table_html += '</tr>';
 
     }
-    table_html += '</tbody></table>';
+    table_html += '</tbody></table></div>';
 
     return table_html;
 }
@@ -410,44 +417,60 @@ function formatDatetimeStr(datetime) {
 function formatExportTimeToWidget(datetime) {
 	var dt = formatDatetimeStr(datetime);
 	// dt has 'date' & 'time' property separately
-	return dt.date+'<br/><i class="fa fa-clock-o" aria-hidden="true"></i> '+dt.time;
+	return '<span class="administration-activities-time corpus-export-time" title="'+datetime+'">' +
+        '<i class="fa fa-clock-o" aria-hidden="true"></i>' +
+        '<span>'+dt.date+'</span>' +
+        '<small>'+dt.time+'</small>' +
+        '</span>';
 
 } // formatExportTimeToWidget($datetime)
+
+function formatExportStatus(status) {
+    var statusClass = String(status || "default")
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    if (!statusClass) {
+        statusClass = "default";
+    }
+
+    return '<span class="corpus-export-status status-'+statusClass+'">'+status+'</span>';
+}
 
 function fetchExportStatus(){
     var success = function (data) {
         data.forEach(function(value){
             var export_id = value.export_id;
             var progress = value.progress;
-            var progress_bar = '<div class="progress">'+
-                '<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+progress+'"'+
-                'aria-valuemin="0" aria-valuemax="100" style="text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; width:'+progress+'%">'+progress+'%'+
-                '</div>'+
+            var progress_bar = '<div class="corpus-export-progress" role="progressbar" aria-valuenow="'+progress+'" aria-valuemin="0" aria-valuemax="100">'+
+                '<div class="corpus-export-progress-bar" style="width:'+progress+'%"></div>'+
+                '<span class="corpus-export-progress-label">'+progress+'%</span>'+
                 '</div>';
 
             $("#export_status_"+export_id).html(progress_bar);
             if(progress === "100"){
-                $("#export_status_"+export_id).html("Preparing...");
+                $("#export_status_"+export_id).html(formatExportStatus("Preparing"));
             }
             if(value.status === "done"){
-                $("#export_status_"+export_id).html("done");
+                $("#export_status_"+export_id).html(formatExportStatus("done"));
 		var finish_time_html = formatExportTimeToWidget(value.datetime_finish);
 		$("#export_finish_"+export_id).html(finish_time_html);
                 var download_button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
-                                     '<button class="btn btn-primary">Download</button>'
+                                     '<button class="btn btn-xs btn-primary" title="Download"><i class="fa fa-download" aria-hidden="true"></i></button>'+
                                   '</a>';
                 $("#export_download_"+export_id).html(download_button_html);
 
                 if(value.statistics !==  null){
-                    var stats_button_html = '<button class="btn btn-primary export_stats_button" id = "'+export_id+'" >Statistics</button>';
+                    var stats_button_html = '<button class="btn btn-xs btn-info export_stats_button" id="'+export_id+'" title="Statistics"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>';
                 } else{
-                    var stats_button_html = '<i>not available</i>';
+                    var stats_button_html = '';
                 }
 
                 if(value.error_count > 0){
-                    var error_button_html = '<button class="btn btn-warning export_message_button" id = "'+export_id+'" >Contains errors</button>';
+                    var error_button_html = '<button class="btn btn-xs btn-warning export_message_button" id="'+export_id+'" title="Errors"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>';
                 } else{
-                    var error_button_html = '-';
+                    var error_button_html = '';
                 }
 
                 $("#export_message_"+export_id).html(error_button_html);

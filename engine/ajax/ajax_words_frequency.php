@@ -15,29 +15,40 @@ class Ajax_words_frequency extends CPageCorpus{
     }
 
     public function execute(){
-		global $corpus;
+        try {
+		    global $corpus;
 
-		$sortName		= $_POST['sortname'];
-		$sortOrder		= $_POST['sortorder'];
-		$pageElements	= intval($_POST['rp']);  // Liczba elementów na stronę
-		$page			= intval($_POST['page']); // Numer strony
-		$phrases		= $_POST['phrase'];
+		    $sortName		= $_POST['sortname'];
+		    $sortOrder		= $_POST['sortorder'];
+		    $pageElements	= intval($_POST['rp']);  // Liczba elementów na stronę
+		    $page			= intval($_POST['page']); // Numer strony
+		    $phrases		= $_POST['phrase'];
 		
-		$ctag = $_POST['ctag'];
-		$subcorpus_id = $_POST['subcorpus_id'];		
-		$corpus_id = $_POST['corpus'];
-		$isdisamb = true;
+		    $ctag = $_POST['ctag'];
+		    $subcorpus_id = $_POST['subcorpus_id'];
+		    $corpus_id = $_POST['corpus'];
+		    $isdisamb = true;
 
-		$phrases = explode(",", $phrases);
-		array_walk($phrases, trim);
-		$phrases = array_filter($phrases);
-		if ( count($phrases) == 0 ) $phrases = null;
+		    $phrases = array_map('trim', explode(",", $phrases));
+		    $phrases = array_filter($phrases);
+		    if ( count($phrases) == 0 ) $phrases = null;
 		
-		$rows = DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus_id, $ctag, $isdisamb, $phrases, ($page-1)*$pageElements, $pageElements);
-		$total = DbCorpusStats::getUniqueBaseCount($corpus_id, $subcorpus_id, $ctag, $isdisamb, $phrases);
+		    $result = DbCorpusStats::getWordsFrequncesWithTotal($corpus_id, $subcorpus_id, $ctag, $isdisamb, $phrases, ($page-1)*$pageElements, $pageElements);
 				
-		// UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
-		echo json_encode(array('page' => $page, 'total' => $total, 'rows' => $rows, 'post' => $_POST));
-		die;
+		    // UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
+		    echo json_encode(array('page' => $page, 'total' => $result['total'], 'rows' => $result['rows'], 'post' => $_POST));
+		    die;
+        } catch (Throwable $e) {
+            error_log('Ajax_words_frequency failed: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(array(
+                'error' => true,
+                'message' => $e->getMessage(),
+                'page' => 1,
+                'total' => 0,
+                'rows' => array(),
+            ));
+            die;
+        }
 	}
 }

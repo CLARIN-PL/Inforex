@@ -1,0 +1,252 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.report-annotation-table-column {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-annotation-table-panel.administration-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-annotation-table-panel .administration-content-heading {
+    border-bottom-width: 1px;
+    font-size: 9px;
+    gap: 5px;
+    line-height: 1;
+    min-height: 0;
+    padding: 5px 8px;
+}
+
+.report-annotation-table-panel .administration-content-heading-icon {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 9px;
+    height: 15px;
+    width: 15px;
+}
+
+.report-annotation-table-body {
+    background: #fbfdfe;
+    padding: 0;
+}
+
+.report-annotation-table-scroll {
+    min-height: calc(100vh - 205px);
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-annotation-table-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-annotation-table-scroll::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-annotation-table-scroll::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-annotation-table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.report-annotation-table-wrapper {
+    padding: 8px;
+}
+
+.report-annotation-table-body .dataTables_wrapper {
+    color: #365462;
+    font-size: 11px;
+}
+
+.report-annotation-table-body .dataTables_length,
+.report-annotation-table-body .dataTables_filter {
+    margin-bottom: 8px;
+}
+
+.report-annotation-table-body .dataTables_length label,
+.report-annotation-table-body .dataTables_filter label {
+    align-items: center;
+    color: #4a6977;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 6px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.report-annotation-table-body .dataTables_length select,
+.report-annotation-table-body .dataTables_filter input[type="search"] {
+    border: 1px solid #cfdfe7;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #274552;
+    font-size: 11px;
+    height: 26px;
+    padding: 3px 8px;
+}
+
+.report-annotation-table-body .dataTables_length select {
+    min-width: 58px;
+    padding-right: 20px;
+}
+
+.report-annotation-table-body .dataTables_filter input[type="search"] {
+    margin-left: 0;
+    min-width: 190px;
+}
+
+.report-annotation-table-body .dataTables_length select:focus,
+.report-annotation-table-body .dataTables_filter input[type="search"]:focus {
+    border-color: #8eb5c3;
+    box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+    outline: none;
+}
+
+.report-annotation-table-body .dataTables_paginate {
+    margin-top: 8px;
+    padding-top: 0;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination {
+    align-items: center;
+    display: inline-flex;
+    gap: 4px;
+    margin: 0;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li {
+    margin: 0;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li > a,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li > span {
+    background: linear-gradient(180deg, #ffffff 0%, #f5fafc 100%) !important;
+    border: 1px solid #cfdfe7 !important;
+    border-radius: 5px;
+    box-shadow: none !important;
+    color: #355866 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 !important;
+    min-width: 24px;
+    padding: 5px 7px !important;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li > a:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li > a:focus,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li > span:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li > span:focus {
+    background: linear-gradient(180deg, #eef7fa 0%, #e2f0f5 100%) !important;
+    border-color: #aecdba !important;
+    color: #174f69 !important;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > a,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > a:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > a:focus,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > span,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > span:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > span:focus {
+    background: linear-gradient(180deg, #2a7ea3 0%, #1f6f93 100%) !important;
+    border-color: #1a5f7d !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > a *,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.active > span * {
+    color: inherit !important;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li:not(.active):not(.disabled) > a,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li:not(.active):not(.disabled) > span {
+    color: #355866 !important;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.previous > a,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.next > a {
+    background: linear-gradient(180deg, #f7fafb 0%, #eef5f8 100%) !important;
+    border-color: #c9dce5 !important;
+    color: #2f5565 !important;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.previous > a:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.next > a:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.previous > a:focus,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.next > a:focus {
+    background: linear-gradient(180deg, #eaf4f8 0%, #dcebF2 100%) !important;
+    border-color: #9fc3d2 !important;
+    color: #174f69 !important;
+}
+
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.disabled > a,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.disabled > a:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.disabled > a:focus,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.disabled > span,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.disabled > span:hover,
+.report-annotation-table-body .dataTables_paginate ul.pagination > li.disabled > span:focus {
+    background: #f7fafb !important;
+    border-color: #e1eaee !important;
+    color: #a0b3bc !important;
+    cursor: default;
+}
+
+.report-annotation-table-body .dataTables_paginate .paginate_button:empty,
+.report-annotation-table-body .dataTables_paginate span > span:empty {
+    display: none !important;
+}
+
+.report-annotation-table {
+    margin-bottom: 0;
+    table-layout: fixed;
+}
+
+.report-annotation-table > thead > tr > th:nth-child(1),
+.report-annotation-table > tbody > tr > td:nth-child(1) {
+    width: 30%;
+}
+
+.report-annotation-table > thead > tr > th:nth-child(2),
+.report-annotation-table > tbody > tr > td:nth-child(2) {
+    width: 24%;
+}
+
+.report-annotation-table > thead > tr > th:nth-child(3),
+.report-annotation-table > tbody > tr > td:nth-child(3) {
+    width: 24%;
+}
+
+.report-annotation-table > thead > tr > th:nth-child(4),
+.report-annotation-table > tbody > tr > td:nth-child(4) {
+    width: 22%;
+}
+
+.report-annotation-table > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.report-annotation-table-text,
+.report-annotation-table-lemma,
+.report-annotation-table-category,
+.report-annotation-table-eid {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

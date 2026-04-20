@@ -186,7 +186,7 @@ function renderSenseItem(item, lemmaId, lemmaName) {
             "<div class='sensItemDescription administration-wsd-sense-summary'>" +
                 "<div class='administration-wsd-sense-title'>" + escapeHtml(senseName) + "</div>" +
                 "<div class='administration-description-preview' title='" + escapeHtml(description) + "'>" + escapeHtml(description || "No description") + "</div>" +
-                "<button type='button' class='sensItemEdit btn btn-primary adminPanelButton'>Edit description</button>" +
+                "<button type='button' class='sensItemEdit btn btn-primary adminPanelButton' title='Edit description' aria-label='Edit description'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span><span class='sr-only'>Edit description</span></button>" +
             "</div>" +
             "<div class='sensItemEditForm administration-wsd-sense-form' style='display:none;'>" +
                 "<form>" +

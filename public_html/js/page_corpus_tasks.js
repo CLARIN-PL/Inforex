@@ -6,6 +6,11 @@
 
 var global_task_id = null;
 var documents_status = {};
+var taskHistoryPage = 1;
+var taskHistoryPageSize = 10;
+var taskHistoryInitialized = false;
+var taskDocumentsPage = 1;
+var taskDocumentsPageSize = 10;
 
 //GRAB TASK
 var MAX_DOWNLOAD_TIME = 3 * 60 * 1000; //in milliseconds : 3 minutes
@@ -62,8 +67,14 @@ $(function(){
     });
 
 	$("#taskHistory").on("click", "tr", function(){
-        window.location = $(this).find("a").attr("href");
+        var href = $(this).data("href");
+        if (href) {
+            window.location = href;
+        }
 	});
+
+    renderTaskHistoryPage();
+    renderTaskDocumentsPage();
 
 	/*
 	 * Process new task if "All documents" selected or "Add documents by flag" and there are more than 0 documents meeting the criteria.
@@ -97,61 +108,6 @@ $(function(){
         }
 	});
 
-	$("#corpoGrabberTask").click(function(){
-		var dialog_box = 
-			$('<div class="corpoGrabberDialog">'+
-					'<table>'+
-						'<tr>'+
-							'<th style="text-align:right">URL</th>'+
-							'<td><input id="corpograbber_url" type="text" /></td>'+
-						'</tr>'+
-						/*'<tr>'+
-							'<th style="text-align:right">Recursive</th>'+
-							'<td><input id="corpograbber_recursive" type="checkbox" /></td>' +
-						'</tr>'+*/
-					'</table>'+
-			'</div>')		
-			.dialog({
-				width : 500,
-				modal : true,
-				title : 'CorpoGrabber task',
-				buttons : {
-					Cancel: function() {
-						dialog_box.dialog("destroy").remove();
-					},
-					Ok : function(){
-						corpus_id = $.url(window.location.href).param("corpus");
-						doAjax("corpograbber_new",
-							//params
-							{
-								'corpograbber_url' : $("#corpograbber_url").val(),
-								'corpograbber_recursive' : $("#corpograbber_recursive").is(":checked"),
-								'url' : 'corpus=' + corpus_id
-							},
-							//success
-							function(data){
-								if (data['task_id']>0){
-									var task_id = data['task_id'];
-									window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
-								}								
-							}, 
-							// error
-							function(){},
-							// complete
-							function(){},
-							null,
-							null,
-							false
-						);
-					}
-				},
-				close: function(event, ui) {
-					dialog_box.dialog("destroy").remove();
-					dialog_box = null;
-				}
-			});	
-	});	
-	
 	global_task_id = $("#taskProgress").attr("task_id");
 	checkTaskStatus();
 });
@@ -212,9 +168,9 @@ function checkTaskStatus(){
 			// Success
 			function (data){
 				$("#progressbarValue").css("width", data.percent + "%");
-				$("#taskProgress span.documents").text(data.documents);
-				$("#taskProgress span.processed").text(data.processed);
-				$("#taskProgress span.errors").text(data.errors);
+				$("#taskProgress .corpus-tasks-stat-documents").text(data.documents);
+				$("#taskProgress .corpus-tasks-stat-processed").text(data.processed);
+				$("#taskProgress .corpus-tasks-stat-errors").text(data.errors);
 				if ( data.task.status == "new" ){
 					$("#taskProgress .status").text("Waiting in queue");
 					$("#progressbar").hide();
@@ -273,6 +229,7 @@ function checkTaskStatus(){
 						}
 					}
 				}
+                renderTaskDocumentsPage();
 				if ( data.task.status == 'process' || data.task.status == 'new' ){
 					window.setTimeout("checkTaskStatus()", 1000);
 				}
@@ -367,9 +324,102 @@ function makeDocumentTableRow(task, data){
  */
 function makeDocumentLinks(task, data){
 	url = "";
-	url += '<a href="'+getDocumentUrl('preview', data.report_id)+'" target="_blank">show content</a>';
+	url += '<a class="corpus-tasks-action-link" href="'+getDocumentUrl('preview', data.report_id)+'" target="_blank" title="Show content"><i class="fa fa-eye" aria-hidden="true"></i></a>';
 	if ( task == "liner2" ){
 		url += ', <a href="'+getDocumentUrl('autoextension', data.report_id)+'" target="_blank">verify annotations</a>';		
 	}
 	return url;
+}
+
+function renderTaskHistoryPage() {
+    var $rows = $("#taskHistory tbody").children("tr").filter(function() {
+        return $(this).find(".corpus-tasks-empty").length === 0;
+    });
+    var $pagination = $("#task_history_pagination");
+    var $info = $("#task_history_pagination_info");
+    var $controls = $("#task_history_pagination_controls");
+
+    if (!$pagination.length || !$rows.length) {
+        $pagination.hide();
+        return;
+    }
+
+    var selectedIndex = $rows.index($rows.filter(".corpus-tasks-row-selected").first());
+    if (!taskHistoryInitialized && selectedIndex >= 0) {
+        taskHistoryPage = Math.floor(selectedIndex / taskHistoryPageSize) + 1;
+    }
+
+    var totalRows = $rows.length;
+    var totalPages = Math.max(1, Math.ceil(totalRows / taskHistoryPageSize));
+    taskHistoryPage = Math.min(taskHistoryPage, totalPages);
+
+    var start = (taskHistoryPage - 1) * taskHistoryPageSize;
+    var end = start + taskHistoryPageSize;
+
+    $rows.hide().slice(start, end).show();
+    $info.text("Showing " + (start + 1) + " to " + Math.min(end, totalRows) + " of " + totalRows + " tasks");
+    renderTaskPaginationControls($controls, taskHistoryPage, totalPages, function(page) {
+        taskHistoryPage = page;
+        renderTaskHistoryPage();
+    });
+    taskHistoryInitialized = true;
+    $pagination.show();
+}
+
+function renderTaskDocumentsPage() {
+    var $rows = $("table.documents tbody").children("tr");
+    var $pagination = $("#task_documents_pagination");
+    var $info = $("#task_documents_pagination_info");
+    var $controls = $("#task_documents_pagination_controls");
+
+    if (!$pagination.length) {
+        return;
+    }
+
+    if (!$rows.length) {
+        $pagination.hide();
+        return;
+    }
+
+    var totalRows = $rows.length;
+    var totalPages = Math.max(1, Math.ceil(totalRows / taskDocumentsPageSize));
+    taskDocumentsPage = Math.min(taskDocumentsPage, totalPages);
+
+    var start = (taskDocumentsPage - 1) * taskDocumentsPageSize;
+    var end = start + taskDocumentsPageSize;
+
+    $rows.hide().slice(start, end).show();
+    $info.text("Showing " + (start + 1) + " to " + Math.min(end, totalRows) + " of " + totalRows + " documents");
+    renderTaskPaginationControls($controls, taskDocumentsPage, totalPages, function(page) {
+        taskDocumentsPage = page;
+        renderTaskDocumentsPage();
+    });
+    $pagination.show();
+}
+
+function renderTaskPaginationControls($controls, currentPage, totalPages, onPageChange) {
+    var html = "";
+    var pageWindow = 5;
+    var firstPage = Math.max(1, currentPage - Math.floor(pageWindow / 2));
+    var lastPage = Math.min(totalPages, firstPage + pageWindow - 1);
+
+    firstPage = Math.max(1, lastPage - pageWindow + 1);
+
+    html += buildTaskPageButton("Previous", currentPage - 1, currentPage === 1, false);
+    for (var page = firstPage; page <= lastPage; page++) {
+        html += buildTaskPageButton(page, page, false, page === currentPage);
+    }
+    html += buildTaskPageButton("Next", currentPage + 1, currentPage === totalPages, false);
+
+    $controls.html(html);
+    $controls.find("button").click(function() {
+        if ($(this).prop("disabled")) {
+            return;
+        }
+        onPageChange(parseInt($(this).attr("data-page"), 10));
+    });
+}
+
+function buildTaskPageButton(label, page, disabled, active) {
+    return '<button type="button" class="home-corpora-page-button' + (active ? ' active' : '') + '" data-page="' + page + '"' + (disabled ? ' disabled="disabled"' : '') + '>' + label + '</button>';
 }

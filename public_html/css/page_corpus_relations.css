@@ -1,0 +1,293 @@
+#page.corpus_relations #page_content {
+    padding: 0;
+}
+
+.corpus-relations-page {
+    padding: 5px;
+}
+
+.corpus-relations-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+.corpus-relations-sidebar-column,
+.corpus-relations-main-column {
+    display: flex;
+    flex-direction: column;
+    padding: 0 5px;
+}
+
+.corpus-relations-panel {
+    margin: 5px 0;
+    overflow: hidden;
+}
+
+.corpus-relations-sidebar-column .scrolling,
+.corpus-relations-sidebar-column .scrollingAccordion,
+.corpus-relations-main-column .scrolling,
+.corpus-relations-main-column .scrollingAccordion {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.corpus-relations-sidebar-column .scrolling::-webkit-scrollbar,
+.corpus-relations-sidebar-column .scrollingAccordion::-webkit-scrollbar,
+.corpus-relations-main-column .scrolling::-webkit-scrollbar,
+.corpus-relations-main-column .scrollingAccordion::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.corpus-relations-sidebar-column .scrolling::-webkit-scrollbar-track,
+.corpus-relations-sidebar-column .scrollingAccordion::-webkit-scrollbar-track,
+.corpus-relations-main-column .scrolling::-webkit-scrollbar-track,
+.corpus-relations-main-column .scrollingAccordion::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.corpus-relations-sidebar-column .scrolling::-webkit-scrollbar-thumb,
+.corpus-relations-sidebar-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.corpus-relations-main-column .scrolling::-webkit-scrollbar-thumb,
+.corpus-relations-main-column .scrollingAccordion::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.corpus-relations-sidebar-column .scrolling::-webkit-scrollbar-thumb:hover,
+.corpus-relations-sidebar-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.corpus-relations-main-column .scrolling::-webkit-scrollbar-thumb:hover,
+.corpus-relations-main-column .scrollingAccordion::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.corpus-relations-config-panel .panel-body,
+.corpus-relations-panel .panel-body {
+    background: #fbfdfe;
+}
+
+.corpus-relations-config-body {
+    padding: 10px;
+}
+
+.corpus-relations-config-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.corpus-relations-inline-field {
+    align-items: center;
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.corpus-relations-config-fields label {
+    color: #587180;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.corpus-relations-config-fields .form-control {
+    background: #ffffff;
+    border: 1px solid #cddde5;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(18, 52, 68, 0.04);
+    color: #274455;
+    font-size: 10px;
+    height: 29px;
+    padding: 4px 8px;
+}
+
+.corpus-relations-inline-field .form-control {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.corpus-relations-config-fields .user_selection {
+    margin-top: 2px;
+}
+
+.corpus-relations-confirm-btn {
+    align-items: center;
+    align-self: flex-end;
+    display: inline-flex;
+    gap: 5px;
+    min-height: 27px;
+    margin-top: 0;
+    padding: 4px 9px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    flex: 0 0 auto;
+    line-height: 1;
+}
+
+.corpus-relations-confirm-btn .fa {
+    font-size: 10px;
+}
+
+.corpus-relations-table-panel-body {
+    padding: 0;
+}
+
+.corpus-relations-table-wrapper {
+    margin: 0;
+}
+
+.corpus-relations-loading {
+    margin: 8px;
+}
+
+.corpus-relations-type-table,
+.corpus-relations-list-table {
+    margin-bottom: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.corpus-relations-type-table th,
+.corpus-relations-type-table td,
+.corpus-relations-list-table th,
+.corpus-relations-list-table td {
+    vertical-align: middle !important;
+}
+
+.corpus-relations-type-table > thead > tr > th,
+.corpus-relations-list-table > thead > tr > th {
+    padding: 5px 7px;
+}
+
+.corpus-relations-type-table > tbody > tr > td,
+.corpus-relations-list-table > tbody > tr > td {
+    line-height: 1.3;
+    padding: 5px 7px;
+}
+
+.corpus-relations-set-column {
+    width: 84px;
+}
+
+.corpus-relations-count-column {
+    width: 72px;
+}
+
+.corpus-relations-set-name {
+    color: #174f69;
+    font-weight: 700;
+}
+
+.corpus-relations-count-badge {
+    background: #eef6f9;
+    border: 1px solid #d3e2e9;
+    border-radius: 999px;
+    color: #355262;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 30px;
+    justify-content: center;
+    padding: 4px 7px;
+}
+
+#relationlist tr.setGroup {
+    cursor: pointer;
+}
+
+#relationlist tr.setGroup > td {
+    background: #f3f8fa !important;
+    border-bottom-color: #d8e4eb;
+    padding-bottom: 6px;
+    padding-top: 6px;
+}
+
+#relationlist tr.subsetGroup {
+    cursor: pointer;
+}
+
+#relationlist tr.subsetGroup td.empty {
+    padding-left: 7px;
+    padding-right: 0;
+    width: 26px;
+}
+
+#relationlist tr.subsetGroup > td {
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+
+#relationlist tr.subsetGroup td.relationName {
+    padding-left: 4px;
+}
+
+.corpus-relations-branch {
+    background: linear-gradient(180deg, #cfdde6 0%, #bdd0dc 100%);
+    border-radius: 999px;
+    display: inline-block;
+    height: 16px;
+    position: relative;
+    vertical-align: middle;
+    width: 2px;
+}
+
+.corpus-relations-branch::after {
+    background: #bdd0dc;
+    content: "";
+    height: 2px;
+    left: 2px;
+    position: absolute;
+    top: 7px;
+    width: 10px;
+}
+
+#relationlist tr.subsetGroup.selected > td,
+#relationlist.table-striped > tbody > tr.subsetGroup.selected:nth-of-type(odd) > td,
+#relationlist.table-striped > tbody > tr.subsetGroup.selected:nth-of-type(even) > td,
+#relationlist.table-striped > tbody > tr.subsetGroup.selected:hover > td {
+    background: #d9eeee !important;
+    color: #174f69;
+}
+
+#relationlist tr.subsetGroup.selected td:first-child {
+    border-left: 3px solid #1f6f93;
+}
+
+.corpus-relations-list-table td a {
+    color: #1f6f93;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.corpus-relations-list-table td a:hover,
+.corpus-relations-list-table td a:focus {
+    color: #144b62;
+    text-decoration: underline;
+}
+
+.corpus-relations-empty-row > td {
+    background: #ffffff !important;
+    padding: 0 !important;
+}
+
+.corpus-relations-empty {
+    color: #6b7d8b;
+    font-size: 12px;
+    font-style: italic;
+    padding: 18px 16px;
+    text-align: center;
+}
+
+@media (max-width: 991px) {
+    .corpus-relations-sidebar-column,
+    .corpus-relations-main-column {
+        width: 100%;
+    }
+}

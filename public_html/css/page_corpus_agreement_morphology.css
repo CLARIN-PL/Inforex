@@ -1,29 +1,418 @@
-table{
-    font-size: 12px;
+#page.corpus_agreement_morphology #page_content {
+    padding: 0;
 }
-th, td { white-space: nowrap; }
 
-.dataTables_wrapper .dataTables_length {
-    float: right;
+.corpus-morphology-agreement-page {
+    padding: 5px;
 }
-.dataTables_wrapper .dataTables_filter {
-    float: right;
+
+.corpus-morphology-agreement-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+.corpus-morphology-agreement-list-column,
+.corpus-morphology-agreement-main-column,
+.corpus-morphology-agreement-sidebar-column {
+    display: flex;
+    flex-direction: column;
+    padding: 0 5px;
+}
+
+.corpus-morphology-agreement-panel {
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+    margin: 5px 0 8px;
+    overflow: hidden;
+}
+
+.corpus-morphology-agreement-panel .panel-body {
+    background: #fbfdfe;
+}
+
+.corpus-morphology-agreement-list-body,
+.corpus-morphology-agreement-diff-body {
+    padding: 0;
+}
+
+.corpus-morphology-agreement-reports-wrapper,
+.corpus-morphology-agreement-diff-wrapper,
+.corpus-morphology-agreement-users-wrapper {
+    overflow-x: hidden;
+    padding: 0;
+}
+
+.corpus-morphology-agreement-list-body,
+.corpus-morphology-agreement-list-body .dataTables_wrapper,
+.corpus-morphology-agreement-diff-body,
+.corpus-morphology-agreement-diff-body .dataTables_wrapper {
+    overflow-x: hidden !important;
+    width: 100% !important;
+}
+
+.corpus-morphology-agreement-list-column .scrolling,
+.corpus-morphology-agreement-list-column .scrollingAccordion,
+.corpus-morphology-agreement-main-column .scrolling,
+.corpus-morphology-agreement-main-column .scrollingAccordion,
+.corpus-morphology-agreement-sidebar-column .scrolling,
+.corpus-morphology-agreement-sidebar-column .scrollingAccordion,
+.corpus-morphology-agreement-subcorpus-list {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.corpus-morphology-agreement-list-column .scrolling::-webkit-scrollbar,
+.corpus-morphology-agreement-list-column .scrollingAccordion::-webkit-scrollbar,
+.corpus-morphology-agreement-main-column .scrolling::-webkit-scrollbar,
+.corpus-morphology-agreement-main-column .scrollingAccordion::-webkit-scrollbar,
+.corpus-morphology-agreement-sidebar-column .scrolling::-webkit-scrollbar,
+.corpus-morphology-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar,
+.corpus-morphology-agreement-subcorpus-list::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.corpus-morphology-agreement-list-column .scrolling::-webkit-scrollbar-track,
+.corpus-morphology-agreement-list-column .scrollingAccordion::-webkit-scrollbar-track,
+.corpus-morphology-agreement-main-column .scrolling::-webkit-scrollbar-track,
+.corpus-morphology-agreement-main-column .scrollingAccordion::-webkit-scrollbar-track,
+.corpus-morphology-agreement-sidebar-column .scrolling::-webkit-scrollbar-track,
+.corpus-morphology-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar-track,
+.corpus-morphology-agreement-subcorpus-list::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.corpus-morphology-agreement-list-column .scrolling::-webkit-scrollbar-thumb,
+.corpus-morphology-agreement-list-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.corpus-morphology-agreement-main-column .scrolling::-webkit-scrollbar-thumb,
+.corpus-morphology-agreement-main-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.corpus-morphology-agreement-sidebar-column .scrolling::-webkit-scrollbar-thumb,
+.corpus-morphology-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.corpus-morphology-agreement-subcorpus-list::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.corpus-morphology-agreement-list-column .scrolling::-webkit-scrollbar-thumb:hover,
+.corpus-morphology-agreement-list-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.corpus-morphology-agreement-main-column .scrolling::-webkit-scrollbar-thumb:hover,
+.corpus-morphology-agreement-main-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.corpus-morphology-agreement-sidebar-column .scrolling::-webkit-scrollbar-thumb:hover,
+.corpus-morphology-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.corpus-morphology-agreement-subcorpus-list::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.corpus-morphology-agreement-diff-table,
+.corpus-morphology-agreement-users-table,
+#reports_table {
+    margin-bottom: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.corpus-morphology-agreement-diff-table th,
+.corpus-morphology-agreement-diff-table td,
+.corpus-morphology-agreement-users-table th,
+.corpus-morphology-agreement-users-table td,
+#reports_table th,
+#reports_table td {
+    font-size: 10px;
+    padding: 6px 7px !important;
+    vertical-align: middle !important;
+}
+
+.corpus-morphology-agreement-diff-table td,
+#reports_table td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+#reports_table th:nth-child(1),
+#reports_table td:nth-child(1) {
+    width: 28px !important;
+}
+
+#reports_table th:nth-child(3),
+#reports_table td:nth-child(3),
+#reports_table th:nth-child(4),
+#reports_table td:nth-child(4) {
+    width: 50px !important;
+}
+
+#reports_table th:nth-child(5),
+#reports_table td:nth-child(5) {
+    width: 36px !important;
+}
+
+#reports_table th:nth-child(2),
+#reports_table td:nth-child(2) {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.corpus-morphology-agreement-list-body .dataTables_wrapper,
+.corpus-morphology-agreement-diff-body .dataTables_wrapper {
+    background: #fbfdfe;
+    padding: 8px;
+}
+
+.corpus-morphology-agreement-accordion {
+    margin-bottom: 0;
+}
+
+.corpus-morphology-agreement-accordion-heading {
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69 !important;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 1.1;
+    padding: 0;
+}
+
+.corpus-morphology-agreement-accordion-toggle {
+    align-items: center;
+    color: #174f69;
+    display: flex;
+    font-size: 10px;
+    font-weight: bold;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+    text-decoration: none;
+}
+
+.corpus-morphology-agreement-accordion-toggle:hover,
+.corpus-morphology-agreement-accordion-toggle:focus {
+    color: #1f6f93;
+    text-decoration: none;
+}
+
+.corpus-morphology-agreement-accordion-toggle .administration-content-heading-icon {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    color: inherit;
+    flex: 0 0 auto;
+    font-size: 10px;
+    height: auto;
+    margin: 0;
+    min-width: 11px;
+    padding: 0;
+    width: 11px;
+}
+
+.corpus-morphology-agreement-accordion-toggle .administration-content-heading-icon .fa {
+    font-size: 10px;
+    width: 11px;
+}
+
+.corpus-morphology-agreement-accordion-chevron {
+    font-size: 10px;
+    margin-left: auto;
+    opacity: .8;
+    transition: transform .16s ease;
+}
+
+.corpus-morphology-agreement-accordion-toggle.collapsed .corpus-morphology-agreement-accordion-chevron {
+    transform: rotate(-90deg);
+}
+
+.corpus-morphology-agreement-config-body {
+    padding: 6px;
+}
+
+.corpus-morphology-agreement-config-card {
+    border: 1px solid #d8e4eb;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.corpus-morphology-agreement-config-card:last-child {
+    margin-bottom: 0;
+}
+
+.corpus-morphology-agreement-config-card-heading {
+    background: #f3f8fa;
+    border-bottom: 1px solid #d8e4eb;
+    color: #486171;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 6px 9px;
+    text-transform: uppercase;
+}
+
+.corpus-morphology-agreement-config-card-body {
+    background: #ffffff;
+    padding: 8px;
+}
+
+.corpus-morphology-agreement-config-card .form-control {
+    background: #ffffff;
+    border: 1px solid #cddde5;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(18, 52, 68, 0.04);
+    color: #274455;
+    font-size: 10px;
+    height: 29px;
+    padding: 4px 8px;
+}
+
+.corpus-morphology-agreement-filter-block + .corpus-morphology-agreement-filter-block {
+    margin-top: 10px;
+}
+
+.corpus-morphology-agreement-filter-label {
+    color: #486171;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 5px;
+}
+
+.corpus-morphology-agreement-flag-row {
+    display: grid;
+    gap: 6px;
+}
+
+.corpus-morphology-agreement-subcorpus-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 160px;
+    overflow: auto;
+}
+
+.corpus-morphology-agreement-subcorpus-option {
+    align-items: center;
+    color: #355262;
+    display: flex;
+    font-size: 10px;
+    font-weight: 400;
+    gap: 6px;
+    margin: 0;
+}
+
+.corpus-morphology-agreement-subcorpus-option input {
+    margin: 0;
+}
+
+.corpus-morphology-agreement-config-footer {
+    background: #f8fbfc;
+    border-top: 1px solid #d6e4eb;
+    text-align: right;
+}
+
+.corpus-morphology-agreement-apply-btn {
+    align-items: center;
+    border-radius: 4px;
+    display: inline-flex;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1;
+    min-height: 27px;
+    padding: 4px 9px;
+}
+
+.corpus-morphology-agreement-users-annotator-column {
+    width: 42px;
+}
+
+.corpus-morphology-agreement-user-badge {
+    align-items: center;
+    background: linear-gradient(135deg, #edf7fa 0%, #dcecf4 100%);
+    border: 1px solid #c7dbe6;
+    border-radius: 999px;
+    color: #1a5f7e;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    height: 24px;
+    justify-content: center;
+    min-width: 24px;
+    padding: 0 7px;
+}
+
+.corpus-morphology-agreement-user-badge-final {
+    background: linear-gradient(135deg, #eef7ea 0%, #dcecd4 100%);
+    border-color: #cde0c4;
+    color: #2d6b2d;
+}
+
+.corpus-morphology-agreement-users-note,
+.corpus-morphology-agreement-global-psc {
+    color: #6e808d;
+    font-size: 10px;
+}
+
+.corpus-morphology-agreement-global-psc {
+    background: #f5fafc;
+    border: 1px solid #dbe8ef;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    padding: 7px 8px;
+}
+
+.corpus-morphology-agreement-empty {
+    align-items: center;
+    color: #6b7d8b;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    min-height: 120px;
+    padding: 18px;
     text-align: left;
 }
+
+.corpus-morphology-agreement-empty .fa {
+    color: #1f6f93;
+    font-size: 22px;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    display: none;
+}
+
 .dataTable tr.hover td {
-    background-color: #e7e7e7 !important;
+    background-color: #e7f2f8 !important;
     cursor: pointer;
 }
 
 .dataTable tr.hover td.sorting_1 {
-    background-color: unset;
-    cursor: unset;
+    background-color: inherit !important;
 }
 
-.DTFC_LeftBodyLiner{
-    top: -12px !important;  /* fix for position */
+.DTFC_LeftBodyLiner {
+    top: -12px !important;
 }
-table.dataTable tbody tr.selected td{
-    color: white;
-    background-color: #337ab7 !important;
+
+table.dataTable tbody tr.selected td {
+    background-color: #dff0fb !important;
+    color: #174f69;
+}
+
+table.dataTable tbody tr.selected td:first-child {
+    box-shadow: inset 3px 0 0 #3d8fb4;
+}
+
+.corpus-morphology-agreement-panel td.dataTables_empty {
+    background: #f6fbfd !important;
+    color: #6b7d8b !important;
+    font-size: 11px;
+    font-style: italic;
+    padding: 18px 12px !important;
+    text-align: center !important;
 }

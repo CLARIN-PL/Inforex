@@ -8,20 +8,26 @@
 {include file="inc_header2.tpl"}
 
 <div id="main-content">
-    <nav class="navbar navbar-report">
+    <nav class="navbar navbar-report report-subpage-nav">
         <div class="container-fluid">
-            <ul class="nav navbar-nav">
+            <ul class="nav navbar-nav report-subpage-list">
                 {foreach from=$subpages item=s}
+                    {assign var=tab_title value=$s->title}
+                    {if $s->id=="morphodisambagreement"}
+                        {assign var=tab_title value="Morph. Agreement"}
+                    {elseif $s->id=="diffs"}
+                        {assign var=tab_title value="History"}
+                    {/if}
                     <li class="{if $subpage==$s->id}active{/if}">
-                        <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
+                        <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}" title="{$s->title|escape}">{$tab_title}</a></li>
                 {/foreach}
             </ul>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right report-subpage-actions">
                 <li>
-                    <a href="#" id="toogleConfig" title="show/hide document view configuration"><i class="fa fa-cog fa-4" aria-hidden="true"></i></a></li>
+                    <a href="#" id="toogleConfig" title="show/hide document view configuration"><i class="fa fa-cog fa-4" aria-hidden="true"></i></a>
                 </li>
                 <li>
-                    <a href="#" id="toogleFlags" title="show/hide document flags and actions"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a></li>
+                    <a href="#" id="toogleFlags" title="show/hide document flags and actions"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a>
                 </li>
             </ul>
         </div>
@@ -70,29 +76,28 @@
                 </div>
                 <div id="col-flags" class="col-md-1" {if !$flags_active}style="display: none"{/if}>
                     <div class="scrollingWrapper panel-group" id="accordionFlags">
-                            <div class="panel panel-info">
-                                <div class="panel-heading" id="headingAvailable">
+                            <div class="panel panel-info report-flags-side-panel">
+                                <div class="panel-heading report-flags-side-heading" id="headingAvailable">
                                     <h4 class="panel-title">
                                         <a data-toggle="collapse" data-parent="#accordionFlags" href="#flagList">
-                                            Flags
+                                            <i class="fa fa-flag" aria-hidden="true"></i> Flags
                                         </a>
                                     </h4>
                                 </div>
                                 <div id="flagList" class="panel-collapse collapse in">
                                     <div class="scrollingAccordion">
-                                        <div class="scrolling">
+                                        <div class="scrolling report-flags-list">
                                         {if $corporaflags|@count==0}
-                                            <i>no flags</i>
+                                            <div class="report-flags-empty"><i class="fa fa-flag-o" aria-hidden="true"></i> no flags</div>
                                         {else}
                                             {foreach from=$corporaflags item=corporaflag}
                                                 <span
-                                                    class="corporaFlag"
+                                                    class="corporaFlag report-flag-item {if $corporaflag.flag_id}report-flag-state-set{else}report-flag-state-empty{/if}"
                                                     cflag_id="{$corporaflag.id}"
                                                     report_id="{$row.id}"
-                                                    style="padding: 0px 2px 0px 2px; cursor:pointer; overflow: hidden; width: 90px; display: block; white-space: nowrap"
                                                     title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}NIE GOTOWY{/if}">
-                                                       <img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png" style="padding-top: 1px"/>
-                                                       <span style="font-size: 10px; padding: 2px 0;">{$corporaflag.short}</span>
+                                                       <span class="report-flag-icon"><img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png"/></span>
+                                                       <span class="report-flag-short">{$corporaflag.short}</span>
                                                 </span>
                                             {/foreach}
                                         {/if}
@@ -101,20 +106,20 @@
                                 </div>
                             </div>
                         {if "delete_documents"|has_corpus_role_or_owner}
-                            <div class="panel panel-info">
-                                <div class="panel-heading" id="headingAvailable">
+                            <div class="panel panel-info report-flags-side-panel">
+                                <div class="panel-heading report-flags-side-heading" id="headingAvailable">
                                     <h4 class="panel-title">
                                         <a data-toggle="collapse" data-parent="#accordionFlags" href="#actionList">
-                                            Actions
+                                            <i class="fa fa-bolt" aria-hidden="true"></i> Actions
                                         </a>
                                     </h4>
                                 </div>
                                 <div id="actionList" class="panel-collapse collapse">
                                     <div class="scrollingAccordion" style="text-align: center; padding: 5px;">
                                         <span style="padding: 0px 2px 0px 2px; cursor:pointer" title="Delete document" corpus={$corpus.id}>
-                                            <button type="button" class="delete_document_button btn btn-sm btn-danger" style="margin-bottom: 20px;" title="Delete document"
+                                            <button type="button" class="delete_document_button btn btn-sm btn-danger report-action-delete-button" title="Delete document"
                                                     data-toggle="modal" data-target="#deleteDocument" report_id="{$row.id}" corpus_id="{$corpus.id}">
-                                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                                <i class="fa fa-trash" aria-hidden="true"></i> Delete
                                             </button>
                                         </span>
                                     </div>

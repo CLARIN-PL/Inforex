@@ -31,7 +31,9 @@
 			{capture assign=message}
 			<em>There are no agreement annotations for the selected criteria.</em> 
 			{/capture}
-			{include file="common_message.tpl"}
+			<div class="agreement-user-empty-state">
+				{include file="common_message.tpl"}
+			</div>
 		{/if}
 
 		{if $annotators_diff}
@@ -41,4 +43,4 @@
 			</div>
 		{/if}
 
-	</div>	
+	</div>

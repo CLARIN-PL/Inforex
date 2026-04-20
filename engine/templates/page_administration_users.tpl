@@ -64,7 +64,7 @@
 {/if}
 	</div>
 	<div class="panel-footer administration-content-footer">
-		<button type="button" class="btn btn-primary add_user_button" data-toggle="modal" data-target="#create_user_modal">Add user</button>
+		<button type="button" class="btn btn-primary add_user_button" data-toggle="modal" data-target="#create_user_modal"><i class="fa fa-user-plus" aria-hidden="true"></i> Add user</button>
 	</div>
 </div>
 

@@ -15,6 +15,7 @@ class Page_corpus_document_add extends CPageCorpus {
         $this->includeCss("libs/select2/css/select2.min.css");
         $this->includeJs('js/c_widget_select_parent_language.js');
         $this->includeCss("css/inc_report_metadata_form.css");
+        $this->includeCss("css/page_corpus_document_add.css");
     }
 		
 	function execute(){

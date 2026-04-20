@@ -351,6 +351,84 @@ td.col-num, th.col-num { width: 15px; text-align: right; }
 .filter_box ul li { border-bottom: 1px dashed #ccc; margin: 0; margin-left: 10px; }
 .filter_box .num { float: right; }
 .filter_box div { background: white; padding: 2px; }
+.corpus-documents-side-panel .filter_box .options form {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .filter_box .options {
+    padding: 8px;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-wrapper {
+    text-align: left;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-form,
+.corpus-documents-page .corpus-documents-side-panel .filter_box .options form {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    width: 100%;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-form > input[type="hidden"],
+.corpus-documents-side-panel .filter_box .options form > input[type="hidden"] {
+    display: none;
+}
+
+.corpus-documents-side-panel .filter_box .options form > br {
+    display: none;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-form > input[type="text"].corpus-documents-filter-search-input,
+.corpus-documents-page .corpus-documents-side-panel .filter_box .options form > input[type="text"].corpus-documents-filter-search-input {
+    background: #ffffff;
+    border: 1px solid #cfdde5;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px rgba(18, 52, 68, 0.04);
+    color: #294552;
+    flex: 1 1 auto;
+    font-size: 10px;
+    height: 26px;
+    line-height: 26px;
+    min-width: 0;
+    padding: 3px 7px;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-form > .corpus-documents-filter-search-button,
+.corpus-documents-page .corpus-documents-side-panel .filter_box .options form > .corpus-documents-filter-search-button {
+    align-items: center;
+    background: #eef5f8;
+    border: 1px solid #cfdde5;
+    border-radius: 5px;
+    color: #20576f;
+    display: inline-flex;
+    flex: 0 0 26px;
+    height: 26px;
+    justify-content: center;
+    line-height: 1;
+    min-width: 26px;
+    padding: 0;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-form > .corpus-documents-filter-search-button:hover,
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-form > .corpus-documents-filter-search-button:focus,
+.corpus-documents-page .corpus-documents-side-panel .filter_box .options form > .corpus-documents-filter-search-button:hover,
+.corpus-documents-page .corpus-documents-side-panel .filter_box .options form > .corpus-documents-filter-search-button:focus {
+    background: #e3eef3;
+    border-color: #bdd0da;
+    color: #174f69;
+    text-decoration: none;
+}
+
+.corpus-documents-page .corpus-documents-side-panel .corpus-documents-filter-search-form > .corpus-documents-filter-search-button .fa,
+.corpus-documents-page .corpus-documents-side-panel .filter_box .options form > .corpus-documents-filter-search-button .fa {
+    font-size: 11px;
+}
 
 .annotation_item { border-bottom: 1px dashed #ccc; }  
 .annotation_item ul { margin-left: 0; padding-left: 20px; }
@@ -623,6 +701,182 @@ div#wf_loader.loading{
 #dialog-form-login { padding-top: 20px; }
 #dialog-form-login label { float: left; width: 60px; text-align: right; margin-bottom: 5px; line-height: 19px; }
 #dialog-form-login input { width: 150px; margin-left: 5px; line-height: 18px; margin-bottom: 5px; }
+
+.ui-dialog.report-login-dialog {
+	border: 1px solid #d7e4eb;
+	border-radius: 14px;
+	box-shadow: 0 18px 44px rgba(32, 63, 78, 0.18);
+	overflow: hidden;
+}
+
+.ui-dialog.report-login-dialog .ui-dialog-titlebar {
+	background:
+		radial-gradient(circle at top right, rgba(31, 111, 147, 0.14), transparent 38%),
+		linear-gradient(180deg, #ffffff 0%, #f5fafc 100%);
+	border: 0;
+	border-bottom: 1px solid #dbe6ec;
+	border-radius: 0;
+	padding: 12px 14px;
+}
+
+.ui-dialog.report-login-dialog .ui-dialog-title {
+	color: #173f52;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.ui-dialog.report-login-dialog .ui-dialog-titlebar-close {
+	border: 0;
+	border-radius: 50%;
+	box-shadow: none;
+	height: 24px;
+	margin: 0;
+	right: 10px;
+	top: 10px;
+	width: 24px;
+}
+
+.ui-dialog.report-login-dialog .ui-dialog-content {
+	background: #fbfdfe;
+	padding: 14px 16px 10px;
+}
+
+#dialog-form-login {
+	padding-top: 0;
+}
+
+#dialog-form-login form {
+	background: #ffffff;
+	border: 1px solid #e1eaee;
+	border-radius: 10px;
+	padding: 12px;
+}
+
+#dialog-form-login fieldset {
+	margin: 0;
+	padding: 0;
+}
+
+#dialog-form-login label {
+	color: #476472;
+	display: block;
+	float: none;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .02em;
+	line-height: 1.2;
+	margin: 0 0 5px;
+	text-align: left;
+	text-transform: uppercase;
+	width: auto;
+}
+
+#dialog-form-login input {
+	border: 1px solid #cfdfe7;
+	border-radius: 6px;
+	box-shadow: none;
+	color: #274552;
+	display: block;
+	font-size: 12px;
+	height: 32px;
+	line-height: 18px;
+	margin: 0 0 10px;
+	padding: 6px 10px;
+	width: 100%;
+}
+
+#dialog-form-login input:focus {
+	border-color: #8eb5c3;
+	box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+}
+
+#dialog-form-login-error {
+	color: #b23a2a;
+	display: block;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.35;
+	margin: 8px 0 0 !important;
+	min-height: 16px;
+}
+
+.ui-dialog.report-login-dialog .ui-dialog-buttonpane {
+	background: #ffffff;
+	border: 0;
+	border-top: 1px solid #dbe6ec;
+	margin-top: 0;
+	padding: 10px 14px;
+}
+
+.ui-dialog.report-login-dialog .ui-dialog-buttonpane button {
+	align-items: center;
+	background: linear-gradient(180deg, #ffffff 0%, #f5fafc 100%);
+	border: 1px solid #cfdfe7;
+	border-radius: 6px;
+	box-shadow: none;
+	color: #355866;
+	display: inline-flex;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+	margin-left: 8px;
+	min-height: 30px;
+	padding: 6px 12px;
+}
+
+.ui-dialog.report-login-dialog .ui-dialog-buttonpane button:first-child {
+	background: linear-gradient(180deg, #2a7ea3 0%, #1f6f93 100%);
+	border-color: #1a5f7d;
+	color: #ffffff;
+}
+
+.access-notice {
+	align-items: center;
+	background:
+		radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 32%),
+		linear-gradient(180deg, #ffffff 0%, #f5fafc 100%);
+	border: 1px solid #d7e4eb;
+	border-radius: 12px;
+	box-shadow: 0 12px 28px rgba(32, 63, 78, 0.10);
+	display: flex;
+	gap: 14px;
+	margin: 16px auto;
+	max-width: 520px;
+	padding: 16px 18px;
+}
+
+.access-notice-icon {
+	align-items: center;
+	background: linear-gradient(180deg, #f8fbfd 0%, #edf5f8 100%);
+	border: 1px solid #d6e4ea;
+	border-radius: 12px;
+	color: #1f6f93;
+	display: inline-flex;
+	flex: 0 0 auto;
+	font-size: 22px;
+	height: 48px;
+	justify-content: center;
+	width: 48px;
+}
+
+.access-notice-copy {
+	min-width: 0;
+}
+
+.access-notice-title {
+	color: #173f52;
+	font-size: 17px;
+	font-weight: 700;
+	line-height: 1.15;
+	margin-bottom: 4px;
+}
+
+.access-notice-text {
+	color: #64808e;
+	font-size: 12px;
+	line-height: 1.45;
+}
 
 #newCorpusDialog #elementName { width: 350px; }
 #newCorpusDialog #elementDescription { width: 350px; }

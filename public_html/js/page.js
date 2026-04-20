@@ -173,6 +173,12 @@ $(function(){
 	});
 
     $(".nav_corpus_pages > a em").html($(".nav_corpus_pages li.active").text());
+    $(".inforex-main-nav-user-link").each(function(){
+        var userName = $(this).attr("data-user-name") || "";
+        var initials = getUserInitials(userName);
+
+        $(this).find(".inforex-main-nav-user-initials").text(initials);
+    });
 
     $("#compact-mode").click(function(){
 		$("#page").toggleClass("compact");
@@ -182,3 +188,16 @@ $(function(){
         }
 	});
 });
+
+function getUserInitials(userName) {
+    var parts = $.trim(userName).split(/\s+/);
+    var initials = "";
+
+    $.each(parts, function(index, part) {
+        if (part.length > 0 && initials.length < 2) {
+            initials += part.charAt(0);
+        }
+    });
+
+    return initials.toUpperCase();
+}

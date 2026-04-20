@@ -1,2 +1,412 @@
-#table-annotations td div { padding-left: 4px; padding-right: 4px;}
-#table-annotations th { padding: 0 4px; }
+#main-content {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 8px 12px 14px;
+}
+
+.annotation-contexts-page {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.annotation-contexts-grid {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.annotation-contexts-column {
+    display: flex;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.annotation-contexts-panel {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0 10px;
+    min-height: calc(100vh - 170px);
+    overflow: hidden;
+    width: 100%;
+}
+
+.annotation-contexts-sidebar-panel {
+    min-height: calc(100vh - 170px);
+    overflow: visible;
+}
+
+.annotation-contexts-panel-body {
+    background: #fbfdfe;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    padding: 10px;
+}
+
+.annotation-contexts-main-body {
+    padding: 0;
+}
+
+.annotation-contexts-heading {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+}
+
+.annotation-contexts-heading-copy {
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
+    min-width: 0;
+}
+
+.annotation-contexts-stack {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+}
+
+.annotation-contexts-card {
+    background: #ffffff;
+    border: 1px solid #dce8ee;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 160px;
+    overflow: hidden;
+}
+
+.annotation-contexts-sidebar-panel .annotation-contexts-panel-body {
+    flex: 0 0 auto;
+    min-height: auto;
+}
+
+.annotation-contexts-sidebar-panel .annotation-contexts-stack {
+    flex: 0 0 auto;
+    min-height: auto;
+}
+
+.annotation-contexts-sidebar-panel .annotation-contexts-card {
+    flex: 0 0 auto;
+}
+
+.annotation-contexts-sidebar-panel .annotation-contexts-card-body {
+    min-height: auto;
+}
+
+.annotation-contexts-sidebar-panel .annotation-contexts-scroll {
+    min-height: 0;
+}
+
+.annotation-contexts-card-heading {
+    background: linear-gradient(180deg, #f8fbfd 0%, #eef5f8 100%);
+    border-bottom: 1px solid #dce8ee;
+    color: #174f69;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 7px 10px;
+    text-transform: uppercase;
+}
+
+.annotation-contexts-card-body {
+    background: #fbfdfe;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0;
+}
+
+.annotation-contexts-scroll {
+    min-height: 120px;
+    overflow: auto;
+}
+
+.annotation-contexts-sidebar-panel #annotation_stages_types > .annotation-contexts-card:first-child {
+    min-height: 150px;
+}
+
+.annotation-contexts-sidebar-panel #annotation_stages_types > .annotation-contexts-card:last-child {
+    min-height: 220px;
+}
+
+.annotation-contexts-types-scroll {
+    flex: 1 1 auto;
+    max-height: none;
+}
+
+.annotation-contexts-forms-scroll {
+    flex: 1 1 auto;
+    max-height: none;
+}
+
+.annotation-contexts-table {
+    font-size: 11px;
+    margin-bottom: 0 !important;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.annotation-contexts-table td,
+.annotation-contexts-table th {
+    vertical-align: middle !important;
+}
+
+.annotation-contexts-table .annotation_contexts-count-cell,
+.annotation-contexts-count-cell {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    width: 52px;
+}
+
+.annotation-contexts-table tr.selected > td,
+.annotation-contexts-table tr.selected > th {
+    background: #dff2f7 !important;
+    color: #174f69;
+    font-weight: 700;
+}
+
+.annotation-contexts-table tr.selected a {
+    color: #174f69;
+    font-weight: 700;
+}
+
+.annotation-contexts-table .annotation_set > td {
+    background: #eef6f8 !important;
+    color: #294552;
+    font-weight: 700;
+}
+
+.annotation-contexts-empty {
+    color: #7d8e98;
+    font-size: 11px;
+    font-style: italic;
+    padding: 10px;
+}
+
+.annotation-contexts-table-shell {
+    background: #fbfdfe;
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.annotation-contexts-table-shell .flexigrid {
+    border: 0;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.annotation-contexts-table-shell .flexigrid div.mDiv {
+    display: none;
+}
+
+.annotation-contexts-table-shell .flexigrid div.hDiv,
+.annotation-contexts-table-shell .flexigrid div.bDiv,
+.annotation-contexts-table-shell .flexigrid div.pDiv {
+    border-color: #dce8ee;
+}
+
+.annotation-contexts-table-shell .flexigrid div.hDiv {
+    background: #fbfdfe;
+    border-bottom: 1px solid #dce8ee;
+}
+
+.annotation-contexts-table-shell .flexigrid div.hDiv th {
+    background: #eaf3f7;
+    border-right: 1px solid #dbe7ed;
+    color: #496572;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    padding: 6px 6px;
+    text-transform: uppercase;
+}
+
+.annotation-contexts-table-shell .flexigrid div.hDiv th div {
+    overflow: hidden;
+    padding: 0 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.annotation-contexts-table-shell .flexigrid div.hDiv th:nth-child(2) div,
+.annotation-contexts-table-shell .flexigrid div.hDiv th:nth-child(4) div {
+    text-align: center;
+}
+
+.annotation-contexts-table-shell .flexigrid div.bDiv {
+    background: #fbfdfe;
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td {
+    border-bottom: 1px solid #edf3f6;
+    color: #2f4754;
+    font-size: 10px;
+    line-height: 1.25;
+    padding: 5px 6px;
+    vertical-align: middle;
+}
+
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td:nth-child(2),
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td:nth-child(4) {
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td:nth-child(2),
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td:nth-child(2) div {
+    text-align: right;
+}
+
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td:nth-child(1),
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td:nth-child(5),
+.annotation-contexts-table-shell .flexigrid div.bDiv tr td:nth-child(6) {
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.annotation-contexts-table-shell .flexigrid div.bDiv tr.erow td {
+    background: #f8fbfc;
+}
+
+.annotation-contexts-table-shell .flexigrid div.bDiv tr:hover td {
+    background: #dff2f7;
+}
+
+.annotation-contexts-table-shell .flexigrid div.pDiv {
+    background: #ffffff;
+    border-top: 1px solid #dce8ee;
+    min-height: 28px;
+}
+
+.annotation-contexts-table-shell .flexigrid div.pDiv2 {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: space-between;
+    min-height: 28px;
+    padding: 3px 6px;
+}
+
+.annotation-contexts-table-shell .flexigrid div.pDiv .pPageStat,
+.annotation-contexts-table-shell .flexigrid div.pDiv .pcontrol {
+    color: #607985;
+    font-size: 10px;
+}
+
+.annotation-contexts-table-shell .flexigrid div.pDiv .pcontrol input {
+    border: 1px solid #c9dbe4;
+    border-radius: 4px;
+    font-size: 10px;
+    height: 22px;
+    padding: 2px 4px;
+}
+
+.annotation-contexts-table-shell .flexigrid div.pDiv .pGroup {
+    align-items: center;
+    display: inline-flex;
+    gap: 4px;
+    margin: 0;
+}
+
+.annotation-contexts-table-shell .flexigrid div.pDiv div.pButton {
+    border: 1px solid #d5e4eb;
+    border-radius: 4px;
+    height: 22px;
+    width: 22px;
+}
+
+.annotation-contexts-loading-cell {
+    padding: 14px !important;
+}
+
+.annotation-contexts-footer {
+    background: #f5fafc;
+    border-top: 1px solid #dce9ee;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.annotation-contexts-export-button {
+    align-items: center;
+    background: #2f7d57;
+    border: 1px solid #256447;
+    border-radius: 6px;
+    box-shadow: none;
+    color: #fff;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 7px;
+    line-height: 1;
+    padding: 8px 12px;
+}
+
+.annotation-contexts-heading-export {
+    flex: 0 0 auto;
+    font-size: 10px;
+    min-height: 28px;
+    padding: 6px 10px;
+}
+
+.annotation-contexts-export-button:hover,
+.annotation-contexts-export-button:focus {
+    background: #276b4a;
+    border-color: #1f5439;
+    color: #fff;
+}
+
+.annotation-contexts-scroll,
+.annotation-contexts-table-shell .flexigrid div.bDiv {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.annotation-contexts-scroll::-webkit-scrollbar,
+.annotation-contexts-table-shell .flexigrid div.bDiv::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.annotation-contexts-scroll::-webkit-scrollbar-track,
+.annotation-contexts-table-shell .flexigrid div.bDiv::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.annotation-contexts-scroll::-webkit-scrollbar-thumb,
+.annotation-contexts-table-shell .flexigrid div.bDiv::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.annotation-contexts-scroll::-webkit-scrollbar-thumb:hover,
+.annotation-contexts-table-shell .flexigrid div.bDiv::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+@media (max-width: 1199px) {
+    .annotation-contexts-panel,
+    .annotation-contexts-sidebar-panel {
+        min-height: 0;
+    }
+
+    .annotation-contexts-types-scroll,
+    .annotation-contexts-forms-scroll {
+        max-height: none;
+    }
+}

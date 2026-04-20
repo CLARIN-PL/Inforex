@@ -6,13 +6,16 @@
  *}
  
 <div id="frame_elements">
-	<div class="elements" id="elements_sections">
+	<div class="elements report-transcription-toolbox" id="elements_sections">
 
-		<div class="panel panel-default">
-			<div class="panel-heading">XML tags toolbox</div>
-			<div class="panel-body" style="padding: 5px">
+		<div class="panel panel-default administration-content-panel report-transcription-elements-panel">
+			<div class="panel-heading administration-content-heading report-viewer-main-heading">
+				<span class="administration-content-heading-icon report-viewer-heading-icon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
+				<span>XML tags toolbox</span>
+			</div>
+			<div class="panel-body report-transcription-elements-body">
 
-				<ul class="nav nav-tabs">
+				<ul class="nav nav-tabs report-transcription-tabs">
 					<li class="active"><a data-toggle="tab" href="#elem-0">szkielet</a></li>
 					<li><a data-toggle="tab" href="#elem-8">[env]</a></li>
 					<li><a data-toggle="tab" href="#elem-1">[opener]</a></li>
@@ -26,7 +29,7 @@
 							<span class="glyphicon glyphicon-ok validation-result validation-ok" style="display: none; color: darkgreen" aria-hidden="true"></span></a></li>
 				</ul>
 
-				<div class="tab-content scrolling">
+				<div class="tab-content scrolling report-transcription-tab-content">
 					<div id="elem-0" class="tab-pane fade in active">
 						<p>Szkielet dokumentu składa się ze znaczników <span class="tag">text</span>, <span class="tag">body</span> i <span class="tag">pb</span>.</p><br/>
 						<a href="#" id="tei_struct">Utwórz szkielet dokumentu</a>

@@ -6,11 +6,13 @@
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 var max_metadata_enum_values = 55;
+var assignedUsersPage = 1;
+var assignedUsersPageSize = 10;
 
 function changeDefaultValue(mode){
     var enums = getCurrentEnums(mode);
     var default_val_html;
-    var metadata_select = (mode === "create") ? '#metadata_type' : '#edit_metadata_type';
+    var metadata_select = (mode === "create") ? '#create_metadata_type' : '#edit_metadata_type';
     if($(metadata_select).val() === "text"){
         default_val_html = "<input type = 'text' class = 'form-control "+mode+"_text_default' placeholder='Default value'>";
     } else{
@@ -123,6 +125,14 @@ $(function(){
 
 
     $('.search_users').submit(false);
+    $(".corpus-settings-users .search-form").submit(false);
+
+    $(".search_assigned_users").keyup(function () {
+        assignedUsersPage = 1;
+        renderAssignedUsersPagination();
+    });
+
+    renderAssignedUsersPagination();
 
     $(".search_users").keyup(function () {
         var text = this.value.toLowerCase();
@@ -135,12 +145,12 @@ $(function(){
             var success = function(users){
                 var rows = "";
                 $.each(users, function (index, value) {
-                    var button = "<button id = '"+value.user_id+"' class = 'add_user_button btn btn-primary'><i class='fa fa-arrow-left' aria-hidden='true'></i></button>";
+                    var button = "<button id='"+value.user_id+"' class='add_user_button btn btn-primary corpus-settings-user-action-button' title='Assign user to corpus'><i class='fa fa-arrow-left' aria-hidden='true'></i><span class='sr-only'>Assign user</span></button>";
                     rows += "<tr>" +
-                        "<td>"+value.screename+"</td>" +
-                        "<td>"+value.login+"</td>" +
-                        "<td>"+value.email+"</td>" +
-                        "<td class = 'text-center'>"+button+"</td>" +
+                        "<td><span class='corpus-settings-user-name'>"+value.screename+"</span></td>" +
+                        "<td><span class='corpus-settings-user-login'>"+value.login+"</span></td>" +
+                        "<td><span class='corpus-settings-user-email'>"+value.email+"</span></td>" +
+                        "<td class='corpus-settings-users-action-cell'>"+button+"</td>" +
                         "</tr>";
                 } );
 
@@ -154,18 +164,23 @@ $(function(){
     });
 
 
-    $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox, .create_metadata_null, .edit_metadata_null)").click(function(){
-		set($(this));
+    $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox, .create_metadata_null, .edit_metadata_null)").click(function(e){
+        e.stopPropagation();
+		set($(this), $(window).scrollTop());
 	});
 
-    $("#corpus_set_corpus_perspective_roles").on("click", ".userReportPerspective", function(){
-        set($(this));
+    $("#corpus_set_corpus_perspective_roles").on("click", ".userReportPerspective", function(e){
+        e.stopPropagation();
+        set($(this), $(window).scrollTop());
     })
+
+    $("#corpus_set_corpus_role").on("change", ".corpusRole", function(){
+        $(this).closest("td").toggleClass("corpus-settings-roles-checkbox-cell-active", this.checked);
+    });
 
 	$("input[type=checkbox]:not(.create_metadata_null):checked").parent().addClass("selected");
 
 	$("#reportPerspectives").click(function(e){
-	    console.log("???");
 		e.preventDefault();
 		getReportPerspectives();
 	});
@@ -367,7 +382,7 @@ function getSelectedDefaultValue(mode){
 function edit_metadata(){
     $(".edit_metadata_error").hide();
     var page = $("#page");
-    var field = $(page).find('.hightlighted td:first').html();
+    var field = $(page).find('.hightlighted td:first').text();
     var column_id = $(page).find('.hightlighted td:eq(1)').text();
     var comment = $(page).find('.hightlighted td:eq(2)').text();
     var type = $(page).find('.hightlighted td:eq(3)').text();
@@ -460,22 +475,22 @@ function edit_metadata(){
 
                     var tableRows = "";
                     tableRows +=
-                        '<td>' + _data.field_name + '</td>' +
-                        '<td>' + _data.field + '</td>' +
-                        '<td>' + _data.comment + '</td>' +
-                        '<td>' + _data.type + '</td>' +
-                        '<td>' + (_data.default === null ? "empty" : _data.default) + '</td>';
+                        '<td><span class="corpus-settings-metadata-field">' + _data.field_name + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-column-id">' + _data.field + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-comment">' + _data.comment + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-type">' + _data.type + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-default">' + (_data.default === null ? "empty" : _data.default) + '</span></td>';
 
                     if ($("#edit_metadata_type").val() === "enum") {
                         tableRows += '<td class = "text-center">' +
-                            '<select class = "form-control select_edit_default">' +
+                            '<select class = "form-control select_edit_default corpus-settings-metadata-values-select">' +
                             '<option>-values-</option>';
                         $.each(display_enum_values, function (ind, val) {
                             tableRows += '<option>' + val + '</option>'
                         });
                         tableRows += '</select></td>';
                     } else {
-                        tableRows += "<td class = 'text-center'>-</td>"
+                        tableRows += "<td class='text-center'><span class='corpus-settings-metadata-empty'>-</span></td>"
                     }
                     $(row).html(tableRows);
 
@@ -499,6 +514,101 @@ function edit_metadata(){
 
 }
 
+function getFilteredAssignedUserRows(){
+    var text = $(".search_assigned_users").val() || "";
+    text = text.toLowerCase();
+
+    return $("#users_assigned_table tr").filter(function () {
+        return $(this).text().toLowerCase().indexOf(text) !== -1;
+    });
+}
+
+function renderAssignedUsersPagination(){
+    var $allRows = $("#users_assigned_table tr");
+    var $filteredRows = getFilteredAssignedUserRows();
+    var totalRows = $filteredRows.length;
+    var totalPages = Math.max(1, Math.ceil(totalRows / assignedUsersPageSize));
+    var startIndex;
+    var endIndex;
+    var $info = $("#assigned_users_pagination_info");
+    var $controls = $("#assigned_users_pagination_controls");
+
+    assignedUsersPage = Math.min(Math.max(assignedUsersPage, 1), totalPages);
+    startIndex = (assignedUsersPage - 1) * assignedUsersPageSize;
+    endIndex = startIndex + assignedUsersPageSize;
+
+    $allRows.hide();
+    $filteredRows.slice(startIndex, endIndex).show();
+
+    if (totalRows === 0) {
+        $info.text("No assigned users found.");
+        $controls.empty();
+        return;
+    }
+
+    $info.text("Showing " + (startIndex + 1) + " to " + Math.min(endIndex, totalRows) + " of " + totalRows + " assigned users");
+    renderAssignedUsersPaginationControls(totalPages);
+}
+
+function renderAssignedUsersPaginationControls(totalPages){
+    var $controls = $("#assigned_users_pagination_controls");
+    var buttons = "";
+    var page;
+
+    if (totalPages <= 1) {
+        $controls.empty();
+        return;
+    }
+
+    buttons += "<button type='button' class='btn btn-default corpus-settings-users-page-button' data-page='" + (assignedUsersPage - 1) + "'" + (assignedUsersPage === 1 ? " disabled" : "") + ">Previous</button>";
+
+    for (page = 1; page <= totalPages; page++) {
+        buttons += "<button type='button' class='btn btn-default corpus-settings-users-page-button" + (page === assignedUsersPage ? " active" : "") + "' data-page='" + page + "'>" + page + "</button>";
+    }
+
+    buttons += "<button type='button' class='btn btn-default corpus-settings-users-page-button' data-page='" + (assignedUsersPage + 1) + "'" + (assignedUsersPage === totalPages ? " disabled" : "") + ">Next</button>";
+    $controls.html(buttons);
+}
+
+function corpusSettingsEscapeHtml(value) {
+    return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function corpusSettingsActivityTimestampCell(timestamp){
+    var safeTimestamp = corpusSettingsEscapeHtml(timestamp || "");
+    var parts;
+    var date;
+    var time;
+
+    if (!timestamp) {
+        return "<span class='administration-activities-time-empty corpus-settings-user-date-empty'>No activity</span>";
+    }
+
+    parts = String(timestamp).split(" ");
+    date = parts[0] || timestamp;
+    time = parts[1] ? parts[1].substr(0, 5) : "";
+
+    return "<span class='administration-activities-time corpus-settings-user-date' title='" + safeTimestamp + "'>" +
+        "<i class='fa fa-clock-o' aria-hidden='true'></i>" +
+        "<span>" + corpusSettingsEscapeHtml(date) + "</span>" +
+        (time ? "<small>" + corpusSettingsEscapeHtml(time) + "</small>" : "") +
+        "</span>";
+}
+
+$(document).on("click", ".corpus-settings-users-page-button", function () {
+    if ($(this).prop("disabled")) {
+        return;
+    }
+
+    assignedUsersPage = parseInt($(this).attr("data-page"), 10);
+    renderAssignedUsersPagination();
+});
+
 function refresh_corpus_users(){
     var data = {
         'mode': 'get',
@@ -509,15 +619,16 @@ function refresh_corpus_users(){
 	        var rows = "";
 	        $.each(users, function (index, value) {
 	            rows += "<tr>" +
-	                "<td>"+value.screename+"</td>" +
-	                "<td>"+value.login+"</td>" +
-	                "<td>"+value.email+"</td>" +
-	                "<td>"+value.last_activity+"</td>" +
-	                "<td style='text-align: center'><button id = '"+value.user_id+"' class = 'remove_user_button btn btn-primary'><i class='fa fa-arrow-right' aria-hidden='true'></i></button></td>"+
+	                "<td><span class='corpus-settings-user-name'>"+value.screename+"</span></td>" +
+	                "<td><span class='corpus-settings-user-login'>"+value.login+"</span></td>" +
+	                "<td><span class='corpus-settings-user-email'>"+value.email+"</span></td>" +
+	                "<td>"+corpusSettingsActivityTimestampCell(value.last_activity)+"</td>" +
+	                "<td class='corpus-settings-users-action-cell'><button id='"+value.user_id+"' class='remove_user_button btn btn-primary corpus-settings-user-action-button' title='Remove user from corpus'><i class='fa fa-arrow-right' aria-hidden='true'></i><span class='sr-only'>Remove user</span></button></td>"+
 	                "</tr>";
 	        } );
 
         $("#users_assigned_table").html(rows);
+        renderAssignedUsersPagination();
     };
 
     doAjaxSync("user_corpus_assign", data, success);
@@ -550,7 +661,8 @@ function remove_user(element){
         }
 
         var success = function () {
-            $(element).closest('tr').hide();
+            $(element).closest('tr').remove();
+            renderAssignedUsersPagination();
         };
 
         doAjaxSync("corpus_update", data, success);
@@ -558,7 +670,18 @@ function remove_user(element){
 }
 
 
-function set($element){
+function restoreCorpusSettingsScroll(scrollTop){
+    if (typeof scrollTop === "undefined" || scrollTop === null) {
+        return;
+    }
+
+    $(window).scrollTop(scrollTop);
+    setTimeout(function(){
+        $(window).scrollTop(scrollTop);
+    }, 0);
+}
+
+function set($element, scrollTop){
 	var attrs = $element[0].attributes;
 
 	var _data = {
@@ -573,14 +696,33 @@ function set($element){
 	var ajax = $element.parents(".tablesorter").attr("id");
 
 	var success = function(data){
-		$element.parent().css('background',($element.is(':checked') ? '#9DD943' : '#FFFFFF'));
+		var $cell = $element.closest("td");
+		if ($cell.hasClass("corpus-settings-event-group-use-cell")) {
+			$cell.toggleClass("corpus-settings-event-group-use-cell-active", $element.is(":checked"));
+		} else if ($cell.hasClass("corpus-settings-perspectives-access-cell")) {
+			$cell.toggleClass("corpus-settings-perspectives-access-cell-active", $element.is(":checked"));
+		} else {
+			$element.parent().css('background',($element.is(':checked') ? '#9DD943' : '#FFFFFF'));
+		}
 		$(".tablesorter").trigger("update");
+        restoreCorpusSettingsScroll(scrollTop);
 	};
 
 	var login = function(){
-		set($element);
+		set($element, scrollTop);
 	};
 	doAjaxSyncWithLogin(ajax, _data, success, login);
+}
+
+function corpusSettingsPerspectiveCheckbox(className, attributes, checked) {
+    return "<label class='corpus-settings-perspectives-checkbox'>" +
+        "<input class='" + className + "' type='checkbox' " + attributes + (checked ? " checked='checked'" : "") + ">" +
+        "<span aria-hidden='true'></span>" +
+        "</label>";
+}
+
+function corpusSettingsPerspectiveAccessBadge(access) {
+    return "<span class='corpus-settings-perspectives-access-badge'>" + access + "</span>";
 }
 
 
@@ -588,24 +730,25 @@ function getReportPerspectives(){
 
 	var success = function(data){
 		var modalHtml =
-				'<table class="tablesorter table table-striped" cellspacing="1" style = "overflow: scroll;">'+
+				'<div class="administration-table-wrapper corpus-settings-perspectives-modal-table-wrapper">'+
+				'<table class="tablesorter table table-striped table-hover administration-table corpus-settings-perspectives-modal-table" cellspacing="1">'+
 					'<thead>'+
 						'<tr>'+
-							'<th>active</th>'+
-							'<th>title</th>'+
-							'<th>description</th>'+
-							'<th>access</th>'+
+							'<th>Active</th>'+
+							'<th>Title</th>'+
+							'<th>Description</th>'+
+							'<th>Access</th>'+
 						'</tr>'+
 					'</thead>'+
 					'<tbody>';
 		$.each(data,function(index,value){
 			modalHtml +=
 				'<tr'+(value.cid ? '' : ' class="inactive"')+'>'+
-					'<td>'+'<input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
-					'<td>'+value.title+'</td>'+
-					'<td>'+value.description+'</td>'+
+					'<td class="corpus-settings-perspectives-modal-active-cell">'+corpusSettingsPerspectiveCheckbox("setReportPerspective", 'perspectivetitle="'+value.title+'" perspectiveid="'+value.id+'"', value.cid)+'</td>'+
+					'<td><span class="corpus-settings-perspectives-modal-title" title="'+value.title+'">'+value.title+'</span></td>'+
+					'<td><span class="corpus-settings-perspectives-modal-description" title="'+value.description+'">'+value.description+'</span></td>'+
 					'<td>'+
-						'<select id = "select_'+value.id+'" '+(value.cid ? '' : ' disabled')+' perspectiveid="'+value.id+'" class="updateReportPerspective">'+
+						'<select id="select_'+value.id+'" '+(value.cid ? '' : ' disabled')+' perspectiveid="'+value.id+'" class="form-control updateReportPerspective">'+
 							'<option perspectiveid="'+value.id+'" value="loggedin" '+((value.access && value.access=="loggedin") ? 'selected="selected"' : '' )+'>loggedin</option>'+
 							'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
 							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
@@ -613,7 +756,7 @@ function getReportPerspectives(){
 					'</td>'+
 				'</tr>';
 		});
-		modalHtml += '</tbody></table>';
+		modalHtml += '</tbody></table></div>';
         $("#corpusPerspectivesContent").html(modalHtml);
 	};
 
@@ -623,7 +766,6 @@ function getReportPerspectives(){
 
 	var url = $.url(window.location.href);
 	var corpus_id = url.param("corpus");
-	console.log("Here");
 	doAjaxSyncWithLogin("corpus_get_report_perspectives", {url: "corpus="+corpus_id}, success, login);
 }
 
@@ -641,7 +783,7 @@ function setReportPerspective($element){
 	var success = function(){
 	    var action = $element.prop('checked') ? "add" : "remove";
 
-		$element.parent().parent().toggleClass("inactive");
+		$element.closest("tr").toggleClass("inactive");
 		if(action == "add"){
             $("#select_"+perspective_id).removeAttr("disabled");
 
@@ -693,19 +835,18 @@ function updatePerspectiveTable($element,operation_type){
 	else if(operation_type == "add"){
 		var access = $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val();
 		var title = $element.attr('perspectivetitle');
-		$("#corpus_set_corpus_perspective_roles thead tr").append("<th perspective_id='"+perspective_id+"' style='text-align: center'>"+title+"</th>");
+		$("#corpus_set_corpus_perspective_roles thead tr").append("<th perspective_id='"+perspective_id+"' title='"+title+"'>"+title+"</th>");
 		$("#corpus_set_corpus_perspective_roles tbody tr").each(function(){
 			var html="";
             var user_id = $(this).attr('id');
 			if( access == "role"){
-				html += "<td perspective_id='"+perspective_id+"' style='text-align: center;'>";
-				html += "<input class='userReportPerspective' type='checkbox' user_id="+user_id;
-				html += " perspective_id='"+perspective_id+"' value='1' />";
+				html += "<td perspective_id='"+perspective_id+"' class='corpus-settings-perspectives-access-cell'>";
+				html += corpusSettingsPerspectiveCheckbox("userReportPerspective", "user_id='"+user_id+"' perspective_id='"+perspective_id+"' value='1'", false);
 				html += "</td>";
 			}
 			else{
-				html += "<td perspective_id='"+perspective_id+"' style='text-align: center;'>";
-				html += "<i>"+access+"</i>";
+				html += "<td perspective_id='"+perspective_id+"' class='corpus-settings-perspectives-access-cell'>";
+				html += corpusSettingsPerspectiveAccessBadge(access);
 			}
 				html += "</td>";
 			$(this).append(html);
@@ -717,13 +858,13 @@ function updatePerspectiveTable($element,operation_type){
 			var html="";
 			if( access == "role"){
 				var user_id = $(this).attr('id');
-                html += "<input class='userReportPerspective' type='checkbox' user_id='"+user_id+"' perspective_id='"+perspective_id+"' value='1' />";
+                html += corpusSettingsPerspectiveCheckbox("userReportPerspective", "user_id='"+user_id+"' perspective_id='"+perspective_id+"' value='1'", false);
 			}
 			else{
-				html += "<i>"+access+"</i>";
+				html += corpusSettingsPerspectiveAccessBadge(access);
 			}
 			$(this).find("td[perspective_id="+perspective_id+"]").html(html);
-			$(this).find("td[perspective_id="+perspective_id+"]").css('background', '#FFFFFF');
+			$(this).find("td[perspective_id="+perspective_id+"]").removeClass("corpus-settings-perspectives-access-cell-active").addClass("corpus-settings-perspectives-access-cell");
 		});
 	}
 }
@@ -856,8 +997,8 @@ function editBasicInfoName($element){
 
             var success = function(){
                 var html = '<th id="' + _data.element_id + '">' + $container.find('.hightlighted th:first').text() + '</th>';
-                html += '<td>' + _data.desc_str + '</td>';
-                html += '<td>' + $container.find('.hightlighted td:last').html() + '</td>';
+                html += '<td><span class="corpus-settings-value corpus-settings-name">' + _data.desc_str + '</span></td>';
+                html += '<td class="corpus-settings-actions-cell">' + $container.find('.hightlighted td:last').html() + '</td>';
                 $container.find(".hightlighted").html(html);
 
                 $("#basicInfoNameModal").modal("hide");
@@ -880,10 +1021,11 @@ function editBasicInfoAccess($element){
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $("#"+parent);
+    var currentAccess = $.trim($container.find('.hightlighted td:first').text());
 
     var select_text = '<label for="basicInfoAccess">Access:</label>'
     select_text += '<select id="basicInfoAccess" class = "form-control"><option value="0">restricted</option>'
-    select_text += '<option value="1"'+($container.find('.hightlighted td:first').text() == 'public' ? " selected " : "" )+ '>public</option></select>'
+    select_text += '<option value="1"'+(currentAccess == 'public' ? " selected " : "" )+ '>public</option></select>'
 
     $("#basicInfoAccessSelect").html(select_text);
 
@@ -902,13 +1044,13 @@ function editBasicInfoAccess($element){
                 var html = '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
                 html += '<td>';
                 if(_data.desc_str == "1"){
-                    html += "public";
+                    html += '<span class="corpus-settings-access corpus-settings-access-public">public</span>';
                 } else{
-                    html += "restricted";
+                    html += '<span class="corpus-settings-access corpus-settings-access-restricted">restricted</span>';
                 }
 
                 html += '</td>';
-                html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
+                html += '<td class="corpus-settings-actions-cell">' +$container.find('.hightlighted td:last').html() + '</td>';
 
                 $container.find(".hightlighted:first").html(html);
 
@@ -931,7 +1073,7 @@ function editBasicInfoOwner($element){
     var parent = $element.parent().attr("parent");
     var $container = $("#"+parent);
 
-    $("#basicInfoOwnerSelect").html(get_users($container.find('.hightlighted td:first').text()));
+    $("#basicInfoOwnerSelect").html(get_users($.trim($container.find('.hightlighted td:first').text())));
     $( ".confirmOwner" ).unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted th:first').attr("id");
         var _data = 	{
@@ -946,9 +1088,9 @@ function editBasicInfoOwner($element){
         var success = function(data){
             var html = '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
             html += '<td>';
-            html += $("#selectedUser option:selected").text();
+            html += '<span class="corpus-settings-value corpus-settings-owner">' + $("#selectedUser option:selected").text() + '</span>';
             html += '</td>';
-            html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
+            html += '<td class="corpus-settings-actions-cell">' +$container.find('.hightlighted td:last').html() + '</td>';
             $container.find(".hightlighted:first").html(html);
         };
 
@@ -984,9 +1126,9 @@ function editBasicInfoDescription($element){
         var success = function(data){
             var html = '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
             html += '<td>';
-            html += _data.desc_str;
+            html += '<span class="corpus-settings-value corpus-settings-description">' + _data.desc_str + '</span>';
             html += '</td>';
-            html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
+            html += '<td class="corpus-settings-actions-cell">' +$container.find('.hightlighted td:last').html() + '</td>';
             $container.find(".hightlighted:first").html(html);
         };
 
@@ -1096,10 +1238,10 @@ function editSubcorpora($element){
                 }
                 else {
                     var html = "";
-                    html += '<td>' + _data.element_id + '</td><td id="' + _data.element_id + '">' + _data.name_str + '</td>';
+                    html += '<td class="corpus-settings-subcorpora-id">' + _data.element_id + '</td><td id="' + _data.element_id + '"><span class="corpus-settings-subcorpora-name">' + _data.name_str + '</span></td>';
 
                     html += '<td>';
-                    html += _data.desc_str;
+                    html += '<span class="corpus-settings-subcorpora-description" title="' + _data.desc_str + '">' + _data.desc_str + '</span>';
                     html += '</td>';
                     $container.find(".hightlighted:first").html(html);
                 }
@@ -1162,9 +1304,9 @@ function createSubcorpora($element) {
             var success = function (data) {
                 $("#" + parent + " > tbody").append(
                     '<tr>' +
-                    '<td>' + data.last_id + '</td>' +
-                    '<td>' + _data.name_str + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
+                    '<td class="corpus-settings-subcorpora-id">' + data.last_id + '</td>' +
+                    '<td id="' + data.last_id + '"><span class="corpus-settings-subcorpora-name">' + _data.name_str + '</span></td>' +
+                    '<td><span class="corpus-settings-subcorpora-description" title="' + _data.desc_str + '">' + _data.desc_str + '</span></td>' +
                     '</tr>'
                 );
 
@@ -1225,11 +1367,11 @@ function createFlag($element){
             var success = function (data) {
                 $("#" + parent + " > tbody").append(
                     '<tr>' +
-                    '<td>' + data.last_id + '</td>' +
-                    '<td class="name">' + _data.name_str + '</td>' +
-                    '<td class="short">' + _data.short_str + '</td>' +
-                    '<td class="description">' + _data.desc_str + '</td>' +
-                    '<td class="sort">' + _data.element_sort + '</td>' +
+                    '<td class="corpus-settings-flags-id">' + data.last_id + '</td>' +
+                    '<td class="name"><span class="corpus-settings-flags-name">' + _data.name_str + '</span></td>' +
+                    '<td class="short"><span class="corpus-settings-flags-short">' + _data.short_str + '</span></td>' +
+                    '<td class="description"><span class="corpus-settings-flags-description" title="' + _data.desc_str + '">' + _data.desc_str + '</span></td>' +
+                    '<td class="sort corpus-settings-flags-sort">' + _data.element_sort + '</td>' +
                     '</tr>'
                 );
                 $("#createFlag").modal("hide");
@@ -1298,9 +1440,9 @@ function editFlag($element){
 
 
                 var success = function (data) {
-                    $container.find(".hightlighted:first td.name").text(_data.name_str);
-                    $container.find(".hightlighted:first td.short").text(_data.short_str);
-                    $container.find(".hightlighted:first td.description").text(_data.desc_str);
+                    $container.find(".hightlighted:first td.name").html('<span class="corpus-settings-flags-name">' + _data.name_str + '</span>');
+                    $container.find(".hightlighted:first td.short").html('<span class="corpus-settings-flags-short">' + _data.short_str + '</span>');
+                    $container.find(".hightlighted:first td.description").html('<span class="corpus-settings-flags-description" title="' + _data.desc_str + '">' + _data.desc_str + '</span>');
                     $container.find(".hightlighted:first td.sort").text(_data.sort_str);
 
                     $("#editFlag").modal("hide");
@@ -1564,7 +1706,6 @@ function deleteFlag(element){
         var complete = function(){
             $('#deleteModal').modal('hide');
         };
-        console.log(_data);
 
         doAjaxSync("flag_delete", _data, success, null, complete, null, login);
     });
@@ -1708,22 +1849,22 @@ function ext_edit($element){
                     var tableRows = "";
                     tableRows +=
                         '<tr>' +
-                        '<td>' + _data.field_name + '</td>' +
-                        '<td>' + _data.field + '</td>' +
-                        '<td>' + ( _data.comment === "" ? "-" : _data.comment) + '</td>' +
-                        '<td>' + _data.type + '</td>' +
-                        '<td>' + ((_data.default === null || _data.default === "") ? "empty" : _data.default) + '</td>';
+                        '<td><span class="corpus-settings-metadata-field">' + _data.field_name + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-column-id">' + _data.field + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-comment">' + ( _data.comment === "" ? "-" : _data.comment) + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-type">' + _data.type + '</span></td>' +
+                        '<td><span class="corpus-settings-metadata-default">' + ((_data.default === null || _data.default === "") ? "empty" : _data.default) + '</span></td>';
 
                     if ($("#create_metadata_type").val() === "enum") {
                         tableRows += '<td class = "text-center">' +
-                            '<select class = "form-control select_create_default">' +
+                            '<select class = "form-control select_create_default corpus-settings-metadata-values-select">' +
                             '<option>-values-</option>';
                         $.each(display_enum_values, function (ind, val) {
                             tableRows += '<option>' + val + '</option>'
                         });
                         tableRows += '</select></td></tr>';
                     } else {
-                        tableRows += "<td class = 'text-center'>-</td></tr>"
+                        tableRows += "<td class='text-center'><span class='corpus-settings-metadata-empty'>-</span></td></tr>"
                     }
                     $("#extListContainer > tbody").append(tableRows);
                 };

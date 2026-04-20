@@ -4,10 +4,26 @@
  * Wrocław University of Technology
  * See LICENCE
  *}
-<div class = "col-md-2 scrollingWrapper">
-    <div class = "panel panel-primary">
-        <div class = "panel-heading">View configuration</div>
-        <div class = "panel-body scrolling">
+<div id="col-content" class="col-main {if $flags_active}col-md-6{else}col-md-7{/if} scrollingWrapper report-preview-content-column report-importannotations-content-column">
+    <div class="panel panel-primary administration-content-panel report-preview-content-panel report-importannotations-content-panel">
+        <div class="panel-heading administration-content-heading report-preview-panel-heading report-importannotations-heading">
+            <span class="administration-content-heading-icon report-preview-heading-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+            <span>Document content</span>
+        </div>
+        <div class="panel-body report-preview-content-body report-importannotations-content-body">
+            <div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if};" class="annotations scrolling content report-preview-document-content report-importannotations-document-content">
+                <div class="contentBox {$report.format} report-preview-content-box report-importannotations-content-box">{$content|format_annotations}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="col-config" class="col-md-2 scrollingWrapper report-importannotations-config-column report-preview-config-column">
+    <div class="panel panel-primary administration-content-panel report-importannotations-panel">
+        <div class="panel-heading administration-content-heading report-importannotations-heading">
+            <span class="administration-content-heading-icon report-importannotations-heading-icon"><i class="fa fa-cog" aria-hidden="true"></i></span>
+            <span>View configuration</span>
+        </div>
+        <div class="panel-body scrolling report-importannotations-config-body">
             <div class = "form-group">
                 <label for = "annotation_set">Annotation set</label>
                 <select name = "annotation_set" id = "view_annotation_set" class = "form-control import_anns_conf">
@@ -28,27 +44,23 @@
         </div>
     </div>
 </div>
-<div id="col-content" class="col-main {if $flags_active}col-md-6{else}col-md-7{/if} scrollingWrapper">
-    <div class="panel panel-primary">
-        <div class="panel-heading">Document content</div>
-        <div class="panel-body" style="padding: 0">
-            <div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-                <div style="margin: 5px" class="contentBox {$report.format}">{$content|format_annotations}</div>
-            </div>
+<div class="col-md-3 scrollingWrapper report-importannotations-import-column">
+    <div class="panel panel-primary administration-content-panel report-importannotations-panel">
+        <div class="panel-heading administration-content-heading report-importannotations-heading">
+            <span class="administration-content-heading-icon report-importannotations-heading-icon"><i class="fa fa-upload" aria-hidden="true"></i></span>
+            <span>Import annotations</span>
         </div>
-    </div>
-</div>
-<div class = "col-md-3 scrollingWrapper">
-    <div class = "panel panel-primary">
-        <div class = "panel-heading">Import annotations</div>
-        <div class = "panel-body scrolling">
-            <div class = "panel panel-default">
-                <div class = "panel-heading">From CCL file</div>
-                <div class = "panel-body">
-                    <form id = "import_from_ccl_form" method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$subpage}&amp;id={$report_id}" enctype="multipart/form-data">
-                        <div class = "form-group">
+        <div class="panel-body scrolling report-importannotations-import-body">
+            <div class="report-importannotations-card">
+                <div class="report-importannotations-card-heading">
+                    <i class="fa fa-file-code-o" aria-hidden="true"></i>
+                    <span>From CCL file</span>
+                </div>
+                <div class="report-importannotations-card-body">
+                    <form id="import_from_ccl_form" method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$subpage}&amp;id={$report_id}" enctype="multipart/form-data">
+                        <div class="form-group report-importannotations-file-group">
                             <label>Select CCL file</label>
-                            <input id = "cclFile" class="btn btn-default" type="file" name="cclFile" />
+                            <input id="cclFile" class="form-control report-importannotations-file-input" type="file" name="cclFile" />
                             <input type="hidden" name="action" value="import_annotations_ccl"/>
                             <input type="hidden" id="report_id" value="{$row.id}"/>
                         </div>
@@ -86,19 +98,21 @@
                                 {/foreach}
                             </select>
                         </div>
-                        <hr>
-                        <div class = "form-group">
-                            <label>Options</label>
-                            <div class="checkbox">
-                                <label><input type="checkbox" name = "ignore_duplicates" value="ignore_duplicates">Ignore duplicated annotations</label>
+                        <div class="report-importannotations-options">
+                            <div class="report-importannotations-options-title">Options</div>
+                            <div class="checkbox report-importannotations-checkbox">
+                                <label><input type="checkbox" name="ignore_duplicates" value="ignore_duplicates"> Ignore duplicated annotations</label>
                             </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" name = "ignore_unknown_types" value="ignore_unknown_types">Ignore unknown annotations types</label>
+                            <div class="checkbox report-importannotations-checkbox">
+                                <label><input type="checkbox" name="ignore_unknown_types" value="ignore_unknown_types"> Ignore unknown annotations types</label>
                             </div>
                         </div>
 
-                        <div class = "form-group">
-                            <input id = "import_annotations_btn" class="btn btn-primary" type="submit" value="Submit"/>
+                        <div class="form-group report-importannotations-actions">
+                            <button id="import_annotations_btn" class="btn btn-primary report-importannotations-submit" type="submit">
+                                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                <span>Import</span>
+                            </button>
                         </div>
                     </form>
                 </div>

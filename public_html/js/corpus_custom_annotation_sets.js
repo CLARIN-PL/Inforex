@@ -1,9 +1,105 @@
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 
+function customAnnotationEscapeHtml(value) {
+    return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function customAnnotationAccessBadge(access) {
+    var normalized = String(access || "private").trim().toLowerCase();
+    var className = "corpus-settings-custom-annotation-set-access-private";
+
+    if (normalized === "public") {
+        className = "corpus-settings-custom-annotation-set-access-public";
+    } else if (normalized === "edit") {
+        className = "corpus-settings-custom-annotation-set-access-edit";
+    }
+
+    return "<span class='corpus-settings-custom-annotation-set-access " + className + "'>" + customAnnotationEscapeHtml(normalized) + "</span>";
+}
+
+function customAnnotationVisibilityBadge(visibility) {
+    var normalized = String(visibility || "Visible").trim();
+    var isHidden = normalized.toLowerCase() === "hidden";
+    var icon = isHidden ? "fa-eye-slash" : "fa-eye";
+    var className = isHidden ? "corpus-settings-custom-annotation-type-visibility-hidden" : "corpus-settings-custom-annotation-type-visibility-visible";
+
+    return "<span class='corpus-settings-custom-annotation-type-visibility " + className + "' title='" + customAnnotationEscapeHtml(normalized) + "'>" +
+        "<i class='fa " + icon + "' aria-hidden='true'></i>" +
+        "<span class='sr-only'>" + customAnnotationEscapeHtml(normalized) + "</span>" +
+        "</span>";
+}
+
+function customAnnotationOwnerInitials(ownerName) {
+    var words = String(ownerName || "").trim().split(/\s+/);
+
+    if (!words[0]) {
+        return "";
+    }
+
+    return words.slice(0, 2).map(function (word) {
+        return word.charAt(0).toUpperCase();
+    }).join("");
+}
+
+function customAnnotationOwnerBadge(ownerName) {
+    var safeOwner = customAnnotationEscapeHtml(ownerName);
+    var initials = customAnnotationOwnerInitials(ownerName);
+
+    if (!initials) {
+        return "";
+    }
+
+    return "<span class='corpus-settings-custom-annotation-set-owner' title='" + safeOwner + "'>" + customAnnotationEscapeHtml(initials) + "</span>";
+}
+
+function customAnnotationSetRow(id, name, description, ownerId, ownerName, access, visibility, editAccess) {
+    var rowClass = editAccess ? " class='edit_access'" : "";
+    var safeOwner = customAnnotationEscapeHtml(ownerName);
+
+    return "<tr visibility='" + customAnnotationEscapeHtml(visibility) + "'" + rowClass + ">" +
+        "<td class='column_id td-right'><span class='corpus-settings-custom-annotation-set-id'>" + customAnnotationEscapeHtml(id) + "</span></td>" +
+        "<td><span class='corpus-settings-custom-annotation-set-name'>" + customAnnotationEscapeHtml(name) + "</span></td>" +
+        "<td><span class='annotation_description corpus-settings-custom-annotation-set-description' title='" + customAnnotationEscapeHtml(description) + "'>" + customAnnotationEscapeHtml(description) + "</span></td>" +
+        "<td class='td-center set_owner' id='" + customAnnotationEscapeHtml(ownerId) + "' data-owner-name='" + safeOwner + "'>" +
+        customAnnotationOwnerBadge(ownerName) +
+        "</td>" +
+        "<td class='td-center'>" + customAnnotationAccessBadge(access) + "</td>" +
+        "</tr>";
+}
+
+function customAnnotationSubsetRow(id, name, description) {
+    return "<tr>" +
+        "<td class='column_id td-right'><span class='corpus-settings-custom-annotation-subset-id'>" + customAnnotationEscapeHtml(id) + "</span></td>" +
+        "<td><span class='corpus-settings-custom-annotation-subset-name'>" + customAnnotationEscapeHtml(name) + "</span></td>" +
+        "<td><span class='annotation_description corpus-settings-custom-annotation-subset-description' title='" + customAnnotationEscapeHtml(description) + "'>" + customAnnotationEscapeHtml(description) + "</span></td>" +
+        "</tr>";
+}
+
+function customAnnotationTypeRow(id, name, shortName, description, visibility, css) {
+    return "<tr id='" + customAnnotationEscapeHtml(id) + "'>" +
+        "<td><span class='corpus-settings-custom-annotation-type-name' style='" + customAnnotationEscapeHtml(css) + "'>" + customAnnotationEscapeHtml(name) + "</span></td>" +
+        "<td><span class='corpus-settings-custom-annotation-type-short'>" + customAnnotationEscapeHtml(shortName) + "</span></td>" +
+        "<td><span class='annotation_description corpus-settings-custom-annotation-type-description' title='" + customAnnotationEscapeHtml(description) + "'>" + customAnnotationEscapeHtml(description) + "</span></td>" +
+        "<td class='td-center'>" + customAnnotationVisibilityBadge(visibility) + "</td>" +
+        "<td style='display:none'>" + customAnnotationEscapeHtml(css) + "</td>" +
+        "</tr>";
+}
+
 $(function () {
-    console.log("?");
     $('.search_input').submit(false);
+    $("#annotationSetsTable .set_owner").each(function () {
+        var $ownerCell = $(this);
+        var ownerName = $.trim($ownerCell.attr("data-owner-name") || $ownerCell.text());
+
+        $ownerCell.attr("data-owner-name", ownerName);
+        $ownerCell.html(customAnnotationOwnerBadge(ownerName));
+    });
 
     $(".search_input").keyup(function () {
         var data = this.value.toLowerCase();
@@ -87,10 +183,9 @@ $(function () {
             $("#annotationSubsetsContainer .create").show();
             $('#annotationSubsetsContainer').css('visibility', 'visible');
             $("#annotationTypesContainer").css('visibility', 'hidden');
-            $("#annotationSetsCorporaContainer").css('visibility', 'visibile');
+            $("#annotationSetsCorporaContainer").css('visibility', 'visible');
             $("#corpusContainer").css('visibility', 'visible');
             $("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .deleteAnnotations").hide();
-            $("#annotationTypesContainer span").hide();
             $("#annotationTypesContainer table > tbody").empty();
         }
         else if (containerType == "annotationSubsetsContainer") {
@@ -117,12 +212,15 @@ function shareAnnotationSet(){
     var success = function(users) {
         var rows = "";
         $.each(users, function (index, value) {
-            var checkbox = "<input class = 'share_annotation_checkbox' id = '"+value.user_id+"' type = 'checkbox' " + (value.annotation_set_id !== null ? "checked" : "") + ">";
+            var checkbox = "<label class='corpus-settings-custom-annotation-share-checkbox'>" +
+                "<input class='share_annotation_checkbox' id='" + value.user_id + "' type='checkbox' " + (value.annotation_set_id !== null ? "checked" : "") + ">" +
+                "<span aria-hidden='true'></span>" +
+                "</label>";
 
             rows += "<tr>" +
-                        "<td>"+value.screename+"</td>" +
-                        "<td>"+value.login+"</td>" +
-                        "<td class = 'text-center'>"+checkbox+"</td>" +
+                        "<td><span class='corpus-settings-custom-annotation-share-user'>"+customAnnotationEscapeHtml(value.screename)+"</span></td>" +
+                        "<td><span class='corpus-settings-custom-annotation-share-login'>"+customAnnotationEscapeHtml(value.login)+"</span></td>" +
+                        "<td class='text-center'>"+checkbox+"</td>" +
                     "</tr>";
         } );
 
@@ -175,13 +273,7 @@ function addAnnotationSet($element){
 
             var success = function (data) {
                 $container.find("table > tbody").append(
-                    '<tr visibility = ' + visibility + '>' +
-                    '<td class = "column_id td-right">' + data.last_id + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
-                    '<td class = "td-center set_owner" id = "'+data.user_id+'">' + data.user + '</td>' +
-                    '<td class = "td-center">' + accessType + '</td>' +
-                    '</tr>'
+                    customAnnotationSetRow(data.last_id, _data.desc_str, _data.description, data.user_id, data.user, accessType, visibility, false)
                 );
 
                 $('#create_annotation_set_modal').modal('hide');
@@ -243,11 +335,7 @@ function addAnnotationSubset($element){
             var success = function (data) {
 
                 $container.find("table > tbody").append(
-                    '<tr>' +
-                    '<td class = "column_id td-right">' + data.last_id + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
-                    '</tr>'
+                    customAnnotationSubsetRow(data.last_id, _data.desc_str, _data.description)
                 );
             };
 
@@ -265,7 +353,7 @@ function addAnnotationType($element){
 
     $("#create_annotation_type_css").on("change paste keyup", function() {
         var value = $(this).val();
-        $("#create_annotation_type_preview").attr('style', value);
+        $("#create_annotation-style-preview").attr('style', value);
     });
 
     $( "#create_annotation_types_form" ).validate({
@@ -314,13 +402,7 @@ function addAnnotationType($element){
             var success = function (data) {
 
                 $container.find("table > tbody").append(
-                    '<tr>' +
-                    '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
-                    '<td>' + _data.short + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
-                    '<td>' + _data.visibility + '</td>' +
-                    '<td style="display:none">' + _data.css + '</td>' +
-                    '</tr>'
+                    customAnnotationTypeRow(data.last_id || _data.name_str, _data.name_str, _data.short, _data.desc_str, _data.visibility, _data.css)
                 );
                 $('#create_annotation_type_modal').modal('hide');
             };
@@ -382,9 +464,7 @@ function editAnnotationSubset($element){
 
             var success = function (data) {
                 $container.find(".hightlighted:first").html(
-                    '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.description + '</div></td>'
+                    customAnnotationSubsetRow($container.find(".hightlighted td:first").text(), _data.desc_str, _data.description).replace(/^<tr>|<\/tr>$/g, "")
                 );
                 $('#edit_annotation_subset_modal').modal('hide');
             };
@@ -466,11 +546,8 @@ function editAnnotationType($element){
 
             var success = function (data) {
                 $container.find(".hightlighted:first").html(
-                    '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
-                    '<td>' + _data.short + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
-                    '<td>' + _data.shortlist + '</td>' +
-                    '<td style="display:none">' + _data.css + '</td>');
+                    customAnnotationTypeRow(_data.annotation_type_id, _data.name_str, _data.short, _data.desc_str, _data.shortlist, _data.css).replace(/^<tr[^>]*>|<\/tr>$/g, "")
+                );
                 $('#edit_annotation_type_modal').modal('hide');
 
             };
@@ -497,7 +574,6 @@ function editAnnotationSet($element){
     var $container = $element.parents(".tableContainer");
 
     var visibility = $container.find('.hightlighted').attr("visibility");
-    console.log(visibility);
     var visibilityStr = "private";
     if(visibility === '1'){
         visibilityStr = "public";
@@ -535,19 +611,15 @@ function editAnnotationSet($element){
             };
 
             var owner_id = $container.find(".hightlighted td:nth-child(4)").attr('id');
+            var owner_name = $container.find(".hightlighted td:nth-child(4)").attr("data-owner-name") || $container.find(".hightlighted td:nth-child(4)").text();
 
             var success = function (data) {
                 if (elementType == "annotation_set") {
                     $container.find(".hightlighted:first").html(
-                        '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
-                        '<td>' + _data.desc_str + '</td>' +
-                        '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
-                        '<td class = "td-center set_owner" id = "'+owner_id+'">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
-                        '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
+                        customAnnotationSetRow($container.find(".hightlighted td:first").text(), _data.desc_str, _data.description, owner_id, owner_name, $("#edit_setAccess").val(), visibility, false).replace(/^<tr[^>]*>|<\/tr>$/g, "")
                     );
                 }
 
-                console.log(_data.set_access);
                 if(_data.set_access === "public"){
                     visibility = 1;
                 } else{
@@ -592,21 +664,11 @@ function get($element) {
                 //for annotation_set the last two objects contains data from annotation_sets_corpora and corpora
                 if (_data.parent_type == "annotation_set" && index < data.length - 2) {
                     tableRows +=
-                        '<tr>' +
-                        '<td class = "column_id td-right">' + value.id + '</td>' +
-                        '<td>' + value.name + '</td>' +
-                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
-                        '</tr>';
+                        customAnnotationSubsetRow(value.id, value.name, value.description == null ? "" : value.description);
                 }
                 else if (_data.parent_type == "annotation_subset")
                     tableRows +=
-                        '<tr id = '+value.id+'>' +
-                        '<td><span style="' + (value.css == null ? "" : value.css) + '">' + value.name + '</span></td>' +
-                        '<td>' + (value.short == null ? "" : value.short) + '</td>' +
-                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
-                        '<td>' + (value.shortlist == 0 ? "Visible" : "Hidden") + '</td>' +
-                        '<td style="display:none">' + (value.css == null ? "" : value.css) + '</td>' +
-                        '</tr>';
+                        customAnnotationTypeRow(value.id, value.name, value.short == null ? "" : value.short, value.description == null ? "" : value.description, value.shortlist == 0 ? "Visible" : "Hidden", value.css == null ? "" : value.css);
             });
             $("#" + childId + " table > tbody").html(tableRows);
 
@@ -681,9 +743,7 @@ function remove_annotation($element) {
         var success = function (data) {
             $container.find(".hightlighted:first").remove();
             if (elementType == "annotation_set") {
-                $("#annotationSetsContainer .edit,#annotationSetsContainer .delete").hide();
-                $("#annotationSubsetsContainer span").hide();
-                $("#annotationTypesContainer span").hide();
+                $("#annotationSetsContainer .edit,#annotationSetsContainer .deleteAnnotations").hide();
                 $("#annotationSubsetsContainer table > tbody").empty();
                 $("#annotationTypesContainer table > tbody").empty();
                 $("#annotationSetsCorporaTable > tbody").empty();
@@ -691,12 +751,11 @@ function remove_annotation($element) {
             }
             else if (elementType == "annotation_subset") {
                 $("#annotationSubsetsContainer .create").show();
-                $("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
-                $("#annotationTypesContainer span").hide();
+                $("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .deleteAnnotations").hide();
                 $("#annotationTypesContainer table > tbody").empty();
             }
             else {
-                $("#annotationTypesContainer .edit,#annotationTypesContainer .delete").hide();
+                $("#annotationTypesContainer .edit,#annotationTypesContainer .deleteAnnotations").hide();
             }
 
             $('#deleteModal').modal('hide');

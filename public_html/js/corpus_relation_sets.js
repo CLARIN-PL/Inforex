@@ -20,9 +20,9 @@ function set($element){
 
     var success = function(){
         if(operation_type == "add"){
-            $element.parent().addClass("selected");
+            $element.closest("td").addClass("corpus-settings-relation-set-use-cell-active");
         } else{
-            $element.parent().removeClass("selected");
+            $element.closest("td").removeClass("corpus-settings-relation-set-use-cell-active");
         }
         $(".tablesorter").trigger("update");
     };

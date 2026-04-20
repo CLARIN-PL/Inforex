@@ -7,62 +7,72 @@
  
 {include file="inc_header2.tpl"}
 
-<div class="row">
+<div class="container-fluid admin_tables corpus-stats-page">
+	<div class="row corpus-stats-grid">
 
-	<div class="col-md-9 scrollingWrapper">
-		<div class="panel panel-primary">
-			<div class="panel-heading">Corpus statistics</div>
-			<div class="panel-body" style="padding: 5px">
+		<div class="col-md-9 corpus-stats-column">
+			<div class="panel administration-content-panel corpus-stats-panel">
+				<div class="panel-heading administration-content-heading corpus-stats-heading">
+                    <span class="administration-content-heading-icon"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                    <span>Corpus statistics</span>
+                </div>
+				<div class="panel-body corpus-stats-panel-body">
+                    <div class="corpus-stats-note">
+                        Number of words in accepted documents.
+                        <br/>
+                        Word is a sequence of characters matching regex
+                        <em><code>(\pL|\pM|\pN)+</code></em>
+                        according to
+                        <a href="http://www.regular-expressions.info/unicode.html" target="_blank" rel="noopener noreferrer">regular-expressions.info</a>.
+                    </div>
 
-
-				<div class="alert alert-info">
-				Number of words in accepted documents. <br/>Word is a sequence of characters matchig following regex "<em><code>(\pL|\pM|\pN)+</code></em>" (according to <a href="http://www.regular-expressions.info/unicode.html">http://www.regular-expressions.info/unicode.html</a>).
-				</div>
-
-				<div class="scrolling">
-					<table cellspacing="1" class="table table-stripped">
-						<thead>
-						<tr>
-							<th style="vertical-align: top">Subcorpus</th>
-							<th style="vertical-align: top; text-align: right">Documents <br/><small>only accepted</small></th>
-							<th style="vertical-align: top; text-align: right">Words</th>
-							<th style="vertical-align: top; text-align: right">Characters <br/><small>(no whitespaces)</small></th>
-							<th style="vertical-align: top; text-align: right">Tokens</th>
-						</tr>
-						</thead>
-						<tbody>
-						  {foreach from=$stats item=item key=key}
-							{if $key eq "summary" }
-								{capture name=summary}
-								<tr>
-									<th>TOTAL</th>
-									<th style="text-align: right">{$item.documents|number_format:0:",":"."}</th>
-									<th style="text-align: right">{$item.words|number_format:0:",":"."}</th>
-									<th style="text-align: right">{$item.chars|number_format:0:",":"."}</th>
-									<th style="text-align: right">{$item.tokens|number_format:0:",":"."}</th>
-								</tr>
-								{/capture}
-							{else}
+					<div class="administration-table-wrapper corpus-stats-table-wrapper">
+						<table cellspacing="1" class="table table-striped table-hover administration-table corpus-stats-table">
+							<thead>
 							<tr>
-								<th>{$item.name}</th>
-								<td style="text-align: right">{$item.documents|number_format:0:",":"."}</td>
-								<td style="text-align: right">{$item.words|number_format:0:",":"."}</td>
-								<td style="text-align: right">{$item.chars|number_format:0:",":"."}</td>
-								<td style="text-align: right">{$item.tokens|number_format:0:",":"."}</td>
+								<th class="corpus-stats-subcorpus-column">Subcorpus</th>
+								<th class="corpus-stats-number-column">Documents <br/><small>only accepted</small></th>
+								<th class="corpus-stats-number-column">Words</th>
+								<th class="corpus-stats-number-column">Characters <br/><small>(no whitespaces)</small></th>
+								<th class="corpus-stats-number-column">Tokens</th>
 							</tr>
-							{/if}
-						  {/foreach}
-						</tbody>
-						<tfoot>
-						   {$smarty.capture.summary}
-						</tfoot>
-					</table>
+							</thead>
+							<tbody>
+							  {foreach from=$stats item=item key=key}
+								{if $key eq "summary" }
+									{capture name=summary}
+									<tr class="corpus-stats-summary-row">
+										<th>TOTAL</th>
+										<th class="td-right">{$item.documents|number_format:0:",":"."}</th>
+										<th class="td-right">{$item.words|number_format:0:",":"."}</th>
+										<th class="td-right">{$item.chars|number_format:0:",":"."}</th>
+										<th class="td-right">{$item.tokens|number_format:0:",":"."}</th>
+									</tr>
+									{/capture}
+								{else}
+								<tr>
+									<th>{$item.name}</th>
+									<td class="td-right">{$item.documents|number_format:0:",":"."}</td>
+									<td class="td-right">{$item.words|number_format:0:",":"."}</td>
+									<td class="td-right">{$item.chars|number_format:0:",":"."}</td>
+									<td class="td-right">{$item.tokens|number_format:0:",":"."}</td>
+								</tr>
+								{/if}
+							  {/foreach}
+							</tbody>
+							<tfoot>
+							   {$smarty.capture.summary}
+							</tfoot>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-3 scrollingWrapper">
-        {include file="inc_metadata_filter.tpl"}
+		<div class="col-md-3 corpus-stats-column">
+            <div class="corpus-stats-filter-wrapper">
+                {include file="inc_metadata_filter.tpl"}
+            </div>
+		</div>
 	</div>
 </div>
 

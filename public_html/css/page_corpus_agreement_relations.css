@@ -1,6 +1,496 @@
-table.tablesorter tbody td.user_a, table.tablesorter tbody tr.user_a td  {background: #e5f1da; }
-table.tablesorter tbody td.user_b, table.tablesorter tbody tr.user_b td  {background: #f1e6da; }
-table.tablesorter tbody td.a_and_b, table.tablesorter tbody tr.a_and_b td  {background: rgba(224, 215, 68, 0.39); }
+#page.corpus_agreement_relations #page_content {
+    padding: 0;
+}
 
+.corpus-relation-agreement-page {
+    padding: 5px;
+}
 
-#agreement_summary .highlight td { font-weight: bold; border-top: 1px solid black; }
+.corpus-relation-agreement-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+.corpus-relation-agreement-main-column,
+.corpus-relation-agreement-sidebar-column {
+    display: flex;
+    flex-direction: column;
+    padding: 0 5px;
+}
+
+.corpus-relation-agreement-panel {
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+    margin: 5px 0 8px;
+    overflow: hidden;
+}
+
+.corpus-relation-agreement-accordion {
+    margin-bottom: 0;
+}
+
+.corpus-relation-agreement-accordion-heading {
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69 !important;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 1.1;
+    padding: 0;
+}
+
+.corpus-relation-agreement-accordion-toggle {
+    align-items: center;
+    color: #174f69;
+    display: flex;
+    font-size: 10px;
+    font-weight: bold;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+    text-decoration: none;
+}
+
+.corpus-relation-agreement-accordion-toggle:hover,
+.corpus-relation-agreement-accordion-toggle:focus {
+    color: #1f6f93;
+    text-decoration: none;
+}
+
+.corpus-relation-agreement-accordion-toggle .administration-content-heading-icon {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    color: inherit;
+    flex: 0 0 auto;
+    font-size: 10px;
+    height: auto;
+    margin: 0;
+    min-width: 11px;
+    padding: 0;
+    width: 11px;
+}
+
+.corpus-relation-agreement-accordion-toggle .administration-content-heading-icon .fa {
+    font-size: 10px;
+    width: 11px;
+}
+
+.corpus-relation-agreement-accordion-chevron {
+    font-size: 10px;
+    margin-left: auto;
+    opacity: .8;
+    transition: transform .16s ease;
+}
+
+.corpus-relation-agreement-accordion-toggle.collapsed .corpus-relation-agreement-accordion-chevron {
+    transform: rotate(-90deg);
+}
+
+.corpus-relation-agreement-panel .panel-body {
+    background: #fbfdfe;
+}
+
+.corpus-relation-agreement-comparison-body,
+.corpus-relation-agreement-summary-body {
+    padding: 0;
+}
+
+.corpus-relation-agreement-table-scroll,
+.corpus-relation-agreement-summary-scroll {
+    padding: 0;
+}
+
+.corpus-relation-agreement-summary-scroll {
+    min-height: 220px;
+}
+
+.corpus-relation-agreement-main-column .scrolling,
+.corpus-relation-agreement-main-column .scrollingAccordion,
+.corpus-relation-agreement-sidebar-column .scrolling,
+.corpus-relation-agreement-sidebar-column .scrollingAccordion,
+.corpus-relation-agreement-table-scroll,
+.corpus-relation-agreement-summary-scroll,
+.corpus-relation-agreement-subcorpus-list {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.corpus-relation-agreement-main-column .scrolling::-webkit-scrollbar,
+.corpus-relation-agreement-main-column .scrollingAccordion::-webkit-scrollbar,
+.corpus-relation-agreement-sidebar-column .scrolling::-webkit-scrollbar,
+.corpus-relation-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar,
+.corpus-relation-agreement-table-scroll::-webkit-scrollbar,
+.corpus-relation-agreement-summary-scroll::-webkit-scrollbar,
+.corpus-relation-agreement-subcorpus-list::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.corpus-relation-agreement-main-column .scrolling::-webkit-scrollbar-track,
+.corpus-relation-agreement-main-column .scrollingAccordion::-webkit-scrollbar-track,
+.corpus-relation-agreement-sidebar-column .scrolling::-webkit-scrollbar-track,
+.corpus-relation-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar-track,
+.corpus-relation-agreement-table-scroll::-webkit-scrollbar-track,
+.corpus-relation-agreement-summary-scroll::-webkit-scrollbar-track,
+.corpus-relation-agreement-subcorpus-list::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.corpus-relation-agreement-main-column .scrolling::-webkit-scrollbar-thumb,
+.corpus-relation-agreement-main-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.corpus-relation-agreement-sidebar-column .scrolling::-webkit-scrollbar-thumb,
+.corpus-relation-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.corpus-relation-agreement-table-scroll::-webkit-scrollbar-thumb,
+.corpus-relation-agreement-summary-scroll::-webkit-scrollbar-thumb,
+.corpus-relation-agreement-subcorpus-list::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.corpus-relation-agreement-main-column .scrolling::-webkit-scrollbar-thumb:hover,
+.corpus-relation-agreement-main-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.corpus-relation-agreement-sidebar-column .scrolling::-webkit-scrollbar-thumb:hover,
+.corpus-relation-agreement-sidebar-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.corpus-relation-agreement-table-scroll::-webkit-scrollbar-thumb:hover,
+.corpus-relation-agreement-summary-scroll::-webkit-scrollbar-thumb:hover,
+.corpus-relation-agreement-subcorpus-list::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.corpus-relation-agreement-comparison-table,
+.corpus-relation-agreement-summary-table,
+.corpus-relation-agreement-users-table {
+    margin-bottom: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.corpus-relation-agreement-comparison-table td,
+.corpus-relation-agreement-comparison-table th,
+.corpus-relation-agreement-summary-table td,
+.corpus-relation-agreement-summary-table th,
+.corpus-relation-agreement-users-table td,
+.corpus-relation-agreement-users-table th {
+    vertical-align: middle !important;
+}
+
+.corpus-relation-agreement-group-heading {
+    background: #f3f8fa !important;
+    border-bottom: 2px solid #c8d9e2 !important;
+    color: #355262;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 7px 6px !important;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.corpus-relation-agreement-report-row > td {
+    background: #ffd9a8 !important;
+    color: #7a4300;
+    font-weight: 700;
+    text-align: center;
+}
+
+.corpus-relation-agreement-span-row > td {
+    background: #eef7fb !important;
+    border-bottom: 1px solid #d8e4eb !important;
+    color: #355262;
+    padding: 6px 8px !important;
+    text-align: center;
+}
+
+.corpus-relation-agreement-span-content {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+}
+
+.corpus-relation-agreement-span-bounds {
+    color: #4a6271;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.corpus-relation-agreement-span-source {
+    color: #9c3c33;
+    font-weight: 700;
+}
+
+.corpus-relation-agreement-span-target {
+    color: #2f7b2b;
+    font-weight: 700;
+}
+
+.corpus-relation-agreement-comparison-table > tbody > tr > td {
+    font-size: 10px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    padding: 0;
+    word-break: break-word;
+}
+
+.corpus-relation-agreement-comparison-table > tbody > tr > td:nth-child(1),
+.corpus-relation-agreement-comparison-table > tbody > tr > td:nth-child(2) {
+    border-right: 2px solid #d8e4eb;
+}
+
+.corpus-relation-agreement-group-cell {
+    padding: 0 !important;
+    vertical-align: top !important;
+    width: 33.333%;
+}
+
+.corpus-relation-agreement-type-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    min-height: 42px;
+    padding: 7px;
+}
+
+.corpus-relation-agreement-type-badge {
+    background: #eef6fa;
+    border: 1px solid #d0e1e8;
+    border-radius: 4px;
+    color: #264658;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 3px 6px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.corpus-relation-agreement-empty-group {
+    min-height: 42px;
+    width: 100%;
+}
+
+.corpus-relation-agreement-comparison-table tbody td.user_a,
+.corpus-relation-agreement-comparison-table tbody tr.user_a td,
+.corpus-relation-agreement-summary-table tbody td.user_a,
+.corpus-relation-agreement-users-table tbody tr.user_a td {
+    background: #e5f1da;
+}
+
+.corpus-relation-agreement-comparison-table tbody td.user_b,
+.corpus-relation-agreement-comparison-table tbody tr.user_b td,
+.corpus-relation-agreement-summary-table tbody td.user_b,
+.corpus-relation-agreement-users-table tbody tr.user_b td {
+    background: #f1e6da;
+}
+
+.corpus-relation-agreement-comparison-table tbody td.a_and_b,
+.corpus-relation-agreement-comparison-table tbody tr.a_and_b td {
+    background: rgba(224, 215, 68, 0.25);
+}
+
+.corpus-relation-agreement-empty {
+    align-items: center;
+    color: #6b7d8b;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    min-height: 180px;
+    padding: 18px;
+    text-align: left;
+}
+
+.corpus-relation-agreement-empty .fa {
+    color: #1f6f93;
+    font-size: 22px;
+}
+
+.corpus-relation-agreement-config-body {
+    padding: 6px;
+}
+
+.corpus-relation-agreement-config-card {
+    border: 1px solid #d8e4eb;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.corpus-relation-agreement-config-card:last-child {
+    margin-bottom: 0;
+}
+
+.corpus-relation-agreement-config-card-heading {
+    background: #f3f8fa;
+    border-bottom: 1px solid #d8e4eb;
+    color: #486171;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 6px 9px;
+    text-transform: uppercase;
+}
+
+.corpus-relation-agreement-config-card-body {
+    background: #ffffff;
+    padding: 8px;
+}
+
+.corpus-relation-agreement-config-card .form-control {
+    background: #ffffff;
+    border: 1px solid #cddde5;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(18, 52, 68, 0.04);
+    color: #274455;
+    font-size: 10px;
+    height: 29px;
+    padding: 4px 8px;
+}
+
+.corpus-relation-agreement-relation-types-card-body,
+.corpus-relation-agreement-annotation-types-card-body,
+.corpus-relation-agreement-documents-card-body {
+    padding: 8px;
+}
+
+.corpus-relation-agreement-relation-types-card-body #relation-sets > div,
+.corpus-relation-agreement-annotation-types-card-body #annotation_layers > div {
+    overflow-y: auto;
+}
+
+.corpus-relation-agreement-relation-types-card-body table,
+.corpus-relation-agreement-annotation-types-card-body table {
+    margin-bottom: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.corpus-relation-agreement-relation-types-card-body th,
+.corpus-relation-agreement-relation-types-card-body td,
+.corpus-relation-agreement-annotation-types-card-body th,
+.corpus-relation-agreement-annotation-types-card-body td {
+    font-size: 10px;
+    padding: 5px 6px;
+    vertical-align: middle;
+}
+
+.corpus-relation-agreement-filter-block + .corpus-relation-agreement-filter-block {
+    margin-top: 10px;
+}
+
+.corpus-relation-agreement-filter-label {
+    color: #486171;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 5px;
+}
+
+.corpus-relation-agreement-flag-row {
+    display: grid;
+    gap: 6px;
+}
+
+.corpus-relation-agreement-subcorpus-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 160px;
+    overflow: auto;
+}
+
+.corpus-relation-agreement-subcorpus-option {
+    align-items: center;
+    color: #355262;
+    display: flex;
+    font-size: 10px;
+    font-weight: 400;
+    gap: 6px;
+    margin: 0;
+}
+
+.corpus-relation-agreement-subcorpus-option input {
+    margin: 0;
+}
+
+.corpus-relation-agreement-config-footer {
+    background: #f8fbfc;
+    border-top: 1px solid #d6e4eb;
+    text-align: right;
+}
+
+.corpus-relation-agreement-apply-btn {
+    align-items: center;
+    border-radius: 4px;
+    display: inline-flex;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1;
+    min-height: 27px;
+    padding: 4px 9px;
+}
+
+.corpus-relation-agreement-users-table-wrapper,
+.corpus-relation-agreement-summary-table-wrapper {
+    padding: 0;
+}
+
+.corpus-relation-agreement-users-table th,
+.corpus-relation-agreement-users-table td,
+.corpus-relation-agreement-summary-table th,
+.corpus-relation-agreement-summary-table td {
+    font-size: 10px;
+    padding: 6px 7px !important;
+}
+
+.corpus-relation-agreement-users-annotator-column {
+    width: 42px;
+}
+
+.corpus-relation-agreement-user-badge {
+    align-items: center;
+    background: linear-gradient(135deg, #edf7fa 0%, #dcecf4 100%);
+    border: 1px solid #c7dbe6;
+    border-radius: 999px;
+    color: #1a5f7e;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    height: 24px;
+    justify-content: center;
+    min-width: 24px;
+    padding: 0 7px;
+}
+
+.corpus-relation-agreement-users-note {
+    color: #6e808d;
+    font-size: 10px;
+    margin-top: 6px;
+}
+
+.corpus-relation-agreement-summary-category-cell {
+    max-width: 0;
+}
+
+.corpus-relation-agreement-summary-category-link {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#agreement_summary .highlight td {
+    border-top: 1px solid #000;
+    font-weight: bold;
+}

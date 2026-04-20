@@ -1,3 +1,190 @@
+#main-content {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 8px 12px 14px;
+}
+
+.metadata-batch-edit-page {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.metadata-batch-edit-panel {
+    margin: 5px 0 10px;
+    min-height: calc(100vh - 150px);
+    overflow: hidden;
+}
+
+.metadata-batch-edit-panel-body {
+    background: #fbfdfe;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    padding: 10px;
+}
+
+.metadata-batch-edit-toolbar {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    padding: 8px 10px;
+}
+
+.metadata-batch-edit-toolbar-left,
+.metadata-batch-edit-toolbar-right {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+.metadata-batch-edit-autosave {
+    align-items: center;
+    color: #486171;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 8px;
+    margin: 0;
+}
+
+.metadata-batch-edit-autosave input {
+    margin: 0;
+}
+
+.metadata-batch-edit-save-button,
+.metadata-batch-edit-load-button,
+.metadata-batch-edit-confirm-button {
+    align-items: center;
+    border-radius: 5px !important;
+    box-shadow: 0 6px 14px rgba(31, 111, 147, 0.16);
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    line-height: 1.2;
+    padding: 6px 10px;
+}
+
+.metadata-batch-edit-save-button:hover,
+.metadata-batch-edit-save-button:focus,
+.metadata-batch-edit-load-button:hover,
+.metadata-batch-edit-load-button:focus,
+.metadata-batch-edit-confirm-button:hover,
+.metadata-batch-edit-confirm-button:focus {
+    box-shadow: 0 8px 18px rgba(23, 79, 105, 0.20);
+}
+
+.metadata-batch-edit-hot-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 0;
+}
+
+#hot-container {
+    min-height: 520px;
+}
+
+.metadata-batch-edit-modal-dialog {
+    height: 92%;
+    padding: 0;
+    width: 98%;
+}
+
+.metadata-batch-edit-modal .modal-content {
+    border: 1px solid #d8e4eb;
+    border-radius: 12px;
+    box-shadow: 0 18px 45px rgba(32, 56, 73, 0.22);
+    height: 99%;
+    overflow: auto;
+}
+
+.metadata-batch-edit-modal .modal-header {
+    align-items: center;
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69;
+    display: flex;
+    min-height: 0;
+    padding: 10px 12px;
+}
+
+.metadata-batch-edit-modal .modal-title {
+    align-items: center;
+    display: flex;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 8px;
+    line-height: 1.2;
+}
+
+.metadata-batch-edit-modal .modal-title .fa {
+    color: #176d7d;
+}
+
+.metadata-batch-edit-modal .modal-header > .close {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #cfe1e8;
+    border-radius: 50%;
+    color: #607985;
+    display: inline-flex;
+    height: 26px;
+    justify-content: center;
+    margin-left: auto;
+    opacity: 1;
+    text-shadow: none;
+    width: 26px;
+}
+
+.metadata-batch-edit-modal-body {
+    background: #fbfdfe;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(92vh - 62px);
+    overflow: auto;
+    padding: 12px;
+}
+
+.metadata-batch-edit-modal-panel {
+    margin: 0;
+    overflow: hidden;
+}
+
+.metadata-batch-edit-modal-heading {
+    min-height: 0;
+}
+
+.metadata-batch-edit-modal-footer {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.metadata-batch-edit-secondary-button {
+    border-radius: 5px !important;
+    color: #486171;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 10px;
+}
+
+.metadata-batch-edit-pattern-result {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.metadata-batch-edit-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .pattern-editor-elements .col-action{
     width: 10px;
     text-align: center;
@@ -59,13 +246,23 @@
     background-color: #f2dede !important;
 }
 
-.modal-dialog {
-    width: 98%;
-    height: 92%;
-    padding: 0;
-}
+@media (max-width: 991px) {
+    .metadata-batch-edit-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 
-.modal-content {
-    height: 99%;
-    overflow: auto;
+    .metadata-batch-edit-toolbar-left,
+    .metadata-batch-edit-toolbar-right {
+        width: 100%;
+    }
+
+    .metadata-batch-edit-modal-dialog {
+        height: auto;
+        width: calc(100vw - 20px);
+    }
+
+    .metadata-batch-edit-modal .modal-content {
+        height: auto;
+    }
 }

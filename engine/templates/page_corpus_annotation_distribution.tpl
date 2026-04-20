@@ -6,108 +6,132 @@
  *}
  
 {include file="inc_header2.tpl" content_class="no_padding"}
-<div class="panel panel-primary">
-	<div class="panel-heading">Annotation frequency</div>
-	<div class="panel-body" style="padding: 0">
 
-		<div style="background: #eee; border-bottom: 1px solid #aaa; padding: 5px;">
-			{*<input type="button" id="export_by_subcorpora" style="float: right" value="Export frequency distribution to a CSV file" class="button"/>*}
-			{*<input type="button" id="export_selected" style="float: right" value="Export current frequency list to a CSV file" class="button"/>*}
-			<form method="GET" action="index.php">
-				<input type="hidden" name="page" value="{$page}"/>
-				<input type="hidden" name="corpus" value="{$corpus.id}"/>
-				<div class="filter" style="margin-top: 3px;">
-					<b>Filters:</b>
-				</div>
+<div class="container-fluid admin_tables annotation-distribution-page">
+    <div class="panel administration-content-panel annotation-distribution-shell">
+        <div class="panel-heading administration-content-heading annotation-distribution-heading annotation-distribution-main-heading">
+            <div class="annotation-distribution-main-heading-copy">
+                <span class="administration-content-heading-icon"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                <span>Annotation frequency</span>
+            </div>
+        </div>
 
-				<div class="filter" style="margin-top: 3px;">
-					<span>Annotation stage:</span>
-					<select name="annotation_stage" style="vertical-align: middle;">
-					<option value="">all</a>
-					{foreach from=$annotation_stages item=at}
-						<option value="{$at.stage}" {if $at.stage==$annotation_stage}selected="selected"{/if}>{$at.stage} ({$at.c})</a>
-					{/foreach}
-				</select>
-				</div>
+        <div class="panel-body annotation-distribution-body">
+            <div class="annotation-distribution-toolbar">
+                <form method="GET" action="index.php" class="annotation-distribution-form">
+                    <input type="hidden" name="page" value="{$page}"/>
+                    <input type="hidden" name="corpus" value="{$corpus.id}"/>
 
-				<div class="filter" style="margin-top: 3px;">
-				<span>Annotation set:</span>
-				<select name="annotation_set_id" style="vertical-align: middle;">
-					<option value="">all</a>
-					{foreach from=$annotation_sets item=as}
-						<option value="{$as.annotation_set_id}" {if $as.annotation_set_id==$annotation_set_id}selected="selected"{/if}>{$as.name} ({$as.c})</a>
-					{/foreach}
-				</select>
-				</div>
+                    <span class="annotation-distribution-form-title">
+                        <i class="fa fa-filter" aria-hidden="true"></i>
+                        <span>Filters</span>
+                    </span>
 
-				<div class="filter" style="margin-top: 3px;">
-				<span>Annotation type:</span>
-				<select name="annotation_type_id" style="vertical-align: middle;">
-					<option value="">all</a>
-					{foreach from=$annotation_types item=at}
-						<option value="{$at.annotation_type_id}" {if $at.annotation_type_id==$annotation_type_id}selected="selected"{/if}>{$at.name} ({$at.c})</a>
-					{/foreach}
-				</select>
-				</div>
+                    <label class="annotation-distribution-field">
+                        <span>Stage</span>
+                        <select name="annotation_stage">
+                            <option value="">All</option>
+                            {foreach from=$annotation_stages item=at}
+                                <option value="{$at.stage}" {if $at.stage==$annotation_stage}selected="selected"{/if}>{$at.stage} ({$at.c})</option>
+                            {/foreach}
+                        </select>
+                    </label>
 
-				<div class="filter" style="margin-top: 3px;">
-				<span>Subcorpus:</span>
-				<select name="subcorpus_id" style="vertical-align: middle;">
-					<option value="">all</a>
-					{foreach from=$subcorpora item=s}
-						<option value="{$s.subcorpus_id}" {if $s.subcorpus_id==$subcorpus_id}selected="selected"{/if}>{$s.name}</a>
-					{/foreach}
-				</select>
-				</div>
+                    <label class="annotation-distribution-field">
+                        <span>Annotation set</span>
+                        <select name="annotation_set_id">
+                            <option value="">All</option>
+                            {foreach from=$annotation_sets item=as}
+                                <option value="{$as.annotation_set_id}" {if $as.annotation_set_id==$annotation_set_id}selected="selected"{/if}>{$as.name} ({$as.c})</option>
+                            {/foreach}
+                        </select>
+                    </label>
 
-				<div class="filter" style="margin-top: 3px;">
-					<span>Phrase:</span>
-					<input type="text" name="phrase" value="{$phrase}"/>
-				</div>
+                    <label class="annotation-distribution-field">
+                        <span>Annotation type</span>
+                        <select name="annotation_type_id">
+                            <option value="">All</option>
+                            {foreach from=$annotation_types item=at}
+                                <option value="{$at.annotation_type_id}" {if $at.annotation_type_id==$annotation_type_id}selected="selected"{/if}>{$at.name} ({$at.c})</option>
+                            {/foreach}
+                        </select>
+                    </label>
 
-				<div class="filter" style="padding: 0; margin-top: 5px;">
-					<input type="submit" class="btn btn-primary btn-xs" value="Apply">
-				</div>
-				<div style="clear: both;"></div>
-			</form>
-		</div>
+                    <label class="annotation-distribution-field">
+                        <span>Subcorpus</span>
+                        <select name="subcorpus_id">
+                            <option value="">All</option>
+                            {foreach from=$subcorpora item=s}
+                                <option value="{$s.subcorpus_id}" {if $s.subcorpus_id==$subcorpus_id}selected="selected"{/if}>{$s.name}</option>
+                            {/foreach}
+                        </select>
+                    </label>
 
-		<div class="container-fluid" style="margin-top: 5px;">
-			<div class="row">
-				<div class="col-md-3">
-					<div id="annotation_frequency">
-						<div class="panel panel-default">
-							<div class="panel-heading">Annotation frequency</div>
-							<div class="panel-body" style="padding: 5px">
-								<div class="flexigrid">
-									<table id="annotation_frequency_table">
-									  <tr>
-										  <td style="vertical-align: middle"><div>Loading ... </div></td>
-									  </tr>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+                    <label class="annotation-distribution-field annotation-distribution-search">
+                        <span>Phrase</span>
+                        <input type="text" name="phrase" value="{$phrase}"/>
+                    </label>
 
-				<div class="col-md-9">
-					<div id="annotation_distribution">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<div id="countby">Count: <a href="#" class="active words" type="words">words</a>/<a href="#" class="documents" type="documents">documents</a></div>
-								Annotation distribution across subcorpora
-							</div>
-							<div class="panel-body" style="padding: 0">
-								<div id="annotations_per_subcorpus">There are no annotations to display</div>
-								<div id="chart_link" target="_blank" style="text-align: right"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                    <div class="annotation-distribution-actions">
+                        <button type="submit" class="btn btn-primary annotation-distribution-apply">
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                            <span>Apply</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row annotation-distribution-grid">
+                <div class="col-md-4 annotation-distribution-column">
+                    <div id="annotation_frequency" class="annotation-distribution-content-panel">
+                        <div class="annotation-distribution-subheading">
+                            <div class="annotation-distribution-heading-copy">
+                                <span class="administration-content-heading-icon"><i class="fa fa-list-ol" aria-hidden="true"></i></span>
+                                <span>Annotation frequency</span>
+                            </div>
+                        </div>
+                        <div class="annotation-distribution-subbody">
+                            <div class="flexigrid annotation-distribution-flexigrid">
+                                <table id="annotation_frequency_table">
+                                    <tr>
+                                        <td class="annotation-distribution-loading-cell"><div>Loading ...</div></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8 annotation-distribution-column">
+                    <div id="annotation_distribution" class="annotation-distribution-content-panel annotation-distribution-chart-panel">
+                        <div class="annotation-distribution-subheading annotation-distribution-chart-heading">
+                            <div class="annotation-distribution-heading-copy">
+                                <span class="administration-content-heading-icon"><i class="fa fa-area-chart" aria-hidden="true"></i></span>
+                                <span>Annotation distribution across subcorpora</span>
+                            </div>
+                            <span id="countby" class="annotation-distribution-countby">
+                                <span class="annotation-distribution-countby-label">Count:</span>
+                                <a href="#" class="active words" type="words">Words</a>
+                                <span>/</span>
+                                <a href="#" class="documents" type="documents">Documents</a>
+                            </span>
+                        </div>
+                        <div class="annotation-distribution-subbody annotation-distribution-chart-body">
+                            <div id="annotation_distribution_loading" class="administration-wsd-loading annotation-distribution-loading annotation-distribution-chart-loading">
+                                <img src="gfx/ajax.gif" alt="Loading"/>
+                                <span>Loading annotation distribution...</span>
+                            </div>
+                            <a id="chart_link" class="annotation-distribution-chart-link" href="#" download="annotation-distribution.png" title="Download chart as PNG" style="display: none;">
+                                <i class="fa fa-download" aria-hidden="true"></i>
+                                <span>PNG</span>
+                            </a>
+                            <div id="annotations_per_subcorpus" class="annotation-distribution-chart">There are no annotations to display</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {include file="inc_footer.tpl"}

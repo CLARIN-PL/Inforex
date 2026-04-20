@@ -101,6 +101,8 @@ $(function(){
 	
 });
 
+var sharedAttributeValuesLoadingRow = '<tr class="administration-shared-values-loading-row"><td colspan="3"><div class="administration-wsd-loading administration-shared-values-loading"><img src="gfx/ajax.gif" alt="Loading"/> <span>Loading shared attribute values...</span></div></td></tr>';
+
 function setupAttributeTableRowClick(){
 	$("#sharedAttributesTable tbody").off("click", "tr").on("click", "tr", function(){
 		$(this).siblings().removeClass("selected");
@@ -156,6 +158,10 @@ function sharedAttributeTypeLabel(type) {
 	return '<span class="administration-type-label administration-type-label-' + escapedType + '">' + escapedType + '</span>';
 }
 
+function showSharedAttributeValuesLoading(){
+	$("#sharedAttributesEnumTable > tbody").html(sharedAttributeValuesLoadingRow);
+}
+
 function get_shared_attributes_enum(){
 	var params = { shared_attribute_id : getActiveSharedAttributeId() };
 
@@ -167,7 +173,6 @@ function get_shared_attributes_enum(){
 		$("#sharedAttributesEnumTable > tbody").html(tableRows);
 		setupAttributeValueTableCkick();
 		$("#edit_shared_attribute_enum, #delete_shared_attribute_enum").attr("disabled", "disabled");
-		$("#sharedAttributesEnumContainer .panel-body").LoadingOverlay("hide");
 	};
 	
 	var login = function(){
@@ -175,7 +180,7 @@ function get_shared_attributes_enum(){
 	};
 
 
-	$("#sharedAttributesEnumContainer .panel-body").LoadingOverlay("show");
+	showSharedAttributeValuesLoading();
 	doAjaxSyncWithLogin("shared_attribute_enum_get", params, success, login);
 }
 

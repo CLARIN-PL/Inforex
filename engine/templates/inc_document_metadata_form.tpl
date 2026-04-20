@@ -5,14 +5,20 @@
  * See LICENCE 
  *}
 
-<form method="POST">
-    <div class="panel panel-primary">
-        <div class="panel-heading">{$header}</div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-6 scrollingWrapper">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Metadata</div>
+<form method="POST" class="report-metadata-edit-form">
+    <div class="panel panel-primary administration-content-panel report-metadata-main-panel">
+        <div class="panel-heading administration-content-heading report-metadata-main-heading">
+            <span class="administration-content-heading-icon report-metadata-heading-icon"><i class="fa fa-id-card-o" aria-hidden="true"></i></span>
+            <span>{$header}</span>
+        </div>
+        <div class="panel-body report-metadata-main-body">
+            <div class="row report-metadata-grid">
+                <div class="col-md-6 scrollingWrapper report-metadata-column">
+                    <div class="panel panel-default report-metadata-card">
+                        <div class="panel-heading report-metadata-card-heading">
+                            <span class="report-metadata-card-icon"><i class="fa fa-tags" aria-hidden="true"></i></span>
+                            <span>Metadata</span>
+                        </div>
                         <div class="panel-body scrolling report-metadata-form">
                             <div class="form-group">
                                 <label for="title">Title</label>
@@ -70,8 +76,8 @@
                                         <option value="{$row.parent_report_id}" selected>{$parent_report.title}</option>
                                     </select>
                                     {if $row.parent_report_id != null}
-                                        <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.parent_report_id}">
-                                            <p style = "margin-top: 5px;">{$parent_report.title}</p>
+                                        <a class="report-metadata-parent-link" href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.parent_report_id}">
+                                            {$parent_report.title}
                                         </a>
                                     {/if}
                                 </div>
@@ -128,32 +134,38 @@
                                         {/if}
                                     {/if}
                                     {if $f.comment}
-                                        <span style="color: green">{$f.comment}</span>
+                                        <span class="report-metadata-comment">{$f.comment}</span>
                                     {/if}
                                 </div>
                             {/foreach}
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 scrollingWrapper">
+                <div class="col-md-6 scrollingWrapper report-metadata-column">
                     <input id="report_id" type="hidden" name="report_id" value="{$row.id}">
                     <input type="hidden" name="action" value="{$action}"/>
                     {if $add_content}
-                        <div id="add_content_box" class="panel panel-default">
-                            <div class="panel-heading">Content</div>
-                            <div class="panel-body scrolling" style="padding: 0">
-                                <div style="border: 0px solid #cdcdcd; background: #fefefe;" id="add_content">
+                        <div id="add_content_box" class="panel panel-default report-metadata-card report-metadata-content-card">
+                            <div class="panel-heading report-metadata-card-heading">
+                                <span class="report-metadata-card-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+                                <span>Content</span>
+                            </div>
+                            <div class="panel-body scrolling report-metadata-content-body">
+                                <div class="report-metadata-editor" id="add_content">
                                 <textarea name="content"
                                           id="{$add_content}">{if $row.content==""} {else}{$row.content}{/if}</textarea>
                                 </div>
                             </div>
                         </div>
                     {else}
-                        <div id="col-config">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">Document content</div>
-                                <div class="panel-body" style="padding: 5px">
-                                    <div class="{$report.format} scrolling">{$content}</div>
+                        <div id="col-config" class="report-metadata-document-column">
+                            <div class="panel panel-default report-metadata-card report-metadata-content-card">
+                                <div class="panel-heading report-metadata-card-heading">
+                                    <span class="report-metadata-card-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+                                    <span>Document content</span>
+                                </div>
+                                <div class="panel-body report-metadata-content-body">
+                                    <div class="{$report.format} scrolling report-metadata-content-scroll">{$content}</div>
                                 </div>
                             </div>
                         </div>
@@ -161,8 +173,11 @@
                 </div>
             </div>
     </div>
-    <div class="panel-footer">
-        <input type="submit" value="{$button_text}" class="btn btn-primary"/>
+    <div class="panel-footer report-metadata-footer">
+        <button type="submit" class="btn btn-primary report-metadata-save-button">
+            <i class="fa fa-check" aria-hidden="true"></i>
+            {$button_text}
+        </button>
     </div>
 </div>
 </form>

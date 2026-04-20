@@ -1,0 +1,221 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.report-edittranslation-content-column {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-edittranslation-content-panel.administration-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-edittranslation-content-panel .administration-content-heading {
+    border-bottom-width: 1px;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-edittranslation-content-panel .administration-content-heading-icon {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 10px;
+    height: 16px;
+    width: 16px;
+}
+
+.report-edittranslation-content-body {
+    background: #fbfdfe;
+    padding: 0;
+}
+
+.report-edittranslation-grid {
+    margin: 0;
+}
+
+.report-edittranslation-pane-column {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-edittranslation-pane {
+    border: 1px solid #d9e5eb;
+    border-radius: 8px;
+    box-shadow: none;
+    margin: 8px 0;
+    overflow: hidden;
+}
+
+.report-edittranslation-pane-heading {
+    align-items: center;
+    background: linear-gradient(180deg, #ffffff 0%, #f3f8fa 100%);
+    border-bottom: 1px solid #d8e4eb;
+    color: #214656;
+    display: flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 6px;
+    line-height: 1.15;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-edittranslation-pane-icon {
+    align-items: center;
+    background: #e7f2f6;
+    border: 1px solid #cce0e8;
+    border-radius: 5px;
+    color: #1f6f93;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 10px;
+    height: 16px;
+    justify-content: center;
+    width: 16px;
+}
+
+.report-edittranslation-source-link {
+    color: #1f6f93;
+    margin-left: auto;
+    max-width: 48%;
+    overflow: hidden;
+    text-align: right;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.report-edittranslation-source-link:hover,
+.report-edittranslation-source-link:focus {
+    color: #174f69;
+    text-decoration: underline;
+}
+
+.report-edittranslation-pane-body {
+    background:
+        linear-gradient(90deg, rgba(23, 109, 125, 0.04) 0, rgba(23, 109, 125, 0) 18px),
+        #fff;
+    padding: 0;
+}
+
+.report-edittranslation-textarea,
+.report-edittranslation-source {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-edittranslation-textarea::-webkit-scrollbar,
+.report-edittranslation-source::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-edittranslation-textarea::-webkit-scrollbar-track,
+.report-edittranslation-source::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-edittranslation-textarea::-webkit-scrollbar-thumb,
+.report-edittranslation-source::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-edittranslation-textarea::-webkit-scrollbar-thumb:hover,
+.report-edittranslation-source::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.report-edittranslation-textarea {
+    background: transparent;
+    border: 0;
+    color: #263f4c;
+    display: block;
+    font-size: 11px;
+    line-height: 1.5;
+    min-height: calc(100vh - 280px);
+    outline: none;
+    padding: 10px 12px 12px;
+    resize: vertical;
+    width: 100%;
+}
+
+.report-edittranslation-source {
+    min-height: calc(100vh - 280px);
+    padding: 0;
+}
+
+.report-edittranslation-source-content {
+    color: #263f4c;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 10px 12px 12px;
+}
+
+.report-edittranslation-footer {
+    background: #ffffff;
+    border-top: 1px solid #d8e4eb;
+    padding: 7px;
+}
+
+.report-edittranslation-save-button {
+    align-items: center;
+    background: #1f6f93;
+    border-color: #1a5f7d;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #ffffff;
+    display: inline-flex;
+    float: right;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    line-height: 1;
+    min-height: 28px;
+    padding: 5px 10px;
+}
+
+.report-edittranslation-save-button:hover,
+.report-edittranslation-save-button:focus {
+    background: #174f69;
+    border-color: #144b62;
+    color: #ffffff;
+}
+
+.report-edittranslation-warning {
+    background: linear-gradient(180deg, #fffdf3 0%, #fff7d8 100%);
+    border: 1px solid #ebddb1;
+    border-radius: 10px;
+    color: #6b5621;
+    margin: 12px;
+    padding: 12px 14px;
+}
+
+.report-edittranslation-warning-title {
+    align-items: center;
+    color: #7a611f;
+    display: flex;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.report-edittranslation-warning-text,
+.report-edittranslation-warning-link {
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.report-edittranslation-warning-link a {
+    color: #1f6f93;
+    font-weight: 700;
+}

@@ -19,10 +19,16 @@ class Page_word_frequency_export_by_subcorpora extends CPage{
 		global $db, $user, $corpus;
 
 		$ctag = $_GET['ctag'];
+		$subcorpus_id = $_GET['subcorpus_id'];
+		$phrases = strval($_GET['phrase']);
 		$corpus_id = $corpus['id'];
-		$set_filters = array();
+		$phrases = array_map('trim', explode(",", $phrases));
+		$phrases = array_filter($phrases);
+		if (count($phrases) == 0) {
+			$phrases = null;
+		}
 		
-		$rows = DbCorpusStats::getWordsFrequencesPerSubcorpus($corpus_id, $ctag, true, null);		
+		$rows = DbCorpusStats::getWordsFrequencesPerSubcorpus($corpus_id, $subcorpus_id, $ctag, true, null, $phrases);
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
 		
 		$counts = array();
@@ -47,7 +53,7 @@ class Page_word_frequency_export_by_subcorpora extends CPage{
 		}
 		unset($rows);
 		
-		$rows = DbCorpusStats::getWordsFrequnces($corpus_id);
+		$rows = DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus_id, $ctag, true, $phrases);
 		foreach ($rows as $row){
 			$base_id = $row['id'];
 			$pos = $row['pos'];

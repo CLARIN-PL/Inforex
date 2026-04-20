@@ -13,29 +13,35 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div class="col-main col-md-{bootstrap_column_width default=8 flags=$flags_active config=$config_active} scrollingWrapper" id="col-main">
-	<div class="panel panel-primary">
-		<div class="panel-heading">Document content</div>
-		<div id="widget_text" class="panel-body column" style="padding: 0">
+<div class="col-main col-md-{bootstrap_column_width default=8 flags=$flags_active config=$config_active} scrollingWrapper report-morpho-agreement-main-column" id="col-main">
+	<div class="panel panel-primary administration-content-panel report-morpho-agreement-panel report-morpho-agreement-content-panel">
+		<div class="panel-heading administration-content-heading report-morpho-agreement-heading">
+			<span class="administration-content-heading-icon report-morpho-agreement-heading-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+			<span>Document content</span>
+		</div>
+		<div id="widget_text" class="panel-body column report-morpho-agreement-content-body">
 			<div id="content">
-				<div id="leftContent" style="float:left; width: {if $showRight}50%; border-right: 1px solid #E0CFC2{else}100%;{/if}" class="annotations scrolling content">
-				  <div style="margin: 5px" class="contentBox {$report.format}">{$content|format_annotations}</div>
+				<div id="leftContent" style="float:left; width: {if $showRight}50%;{else}100%;{/if}" class="annotations scrolling content report-morpho-agreement-document-content">
+				  <div class="contentBox {$report.format} report-morpho-agreement-content-box">{$content|format_annotations}</div>
 				</div>
 				<div style="clear:both"></div>
 			</div>
 		</div>
 	</div>
-	<div class="panel panel-primary">
+	<div class="panel panel-primary administration-content-panel report-morpho-agreement-panel report-morpho-agreement-tagger-panel">
 
-		<div class="panel-heading">Morphological disambiguation</div>
+		<div class="panel-heading administration-content-heading report-morpho-agreement-heading">
+			<span class="administration-content-heading-icon report-morpho-agreement-heading-icon"><i class="fa fa-check-square-o" aria-hidden="true"></i></span>
+			<span>Morphological disambiguation</span>
+		</div>
 
-		<div id="widget_text" class="panel-body column" style="padding: 0">
-				<div id="morpho-tagger" class="morpho-tagger-agreement" class="row">
+		<div id="widget_text" class="panel-body column report-morpho-agreement-tagger-body">
+				<div id="morpho-tagger" class="morpho-tagger-agreement row report-morpho-agreement-tagger">
 					<div class="overlay" data-module-id="overlay">
 						<p data-module-id="overlay-text"></p>
 					</div>
 					<div class="col-sm-1">
-						<button id='prev' type="button" class="btn btn-secondary btn-side-morpho"><span class="glyphicon glyphicon-chevron-left"></span></button>
+						<button id='prev' type="button" class="btn btn-secondary btn-side-morpho report-morpho-agreement-nav-button" title="Previous token"><span class="glyphicon glyphicon-chevron-left"></span></button>
 					</div>
 
 					<div class="col-sm-2 token-card">
@@ -105,7 +111,7 @@
 						</div>
 					</div>
 					<div class="col-sm-1">
-						<button id='next' type="button" class="btn btn-secondary btn-side-morpho"><span class="glyphicon glyphicon-chevron-right"></span></button>
+						<button id='next' type="button" class="btn btn-secondary btn-side-morpho report-morpho-agreement-nav-button" title="Next token"><span class="glyphicon glyphicon-chevron-right"></span></button>
 					</div>
 				</div>
 			<div style="clear:both"></div>
@@ -113,22 +119,28 @@
 	</div>
 </div>
 
-<div id="col-config" class="col-md-3 scrollingWrapper" {if !$config_active}style="display: none"{/if}>
-	<div class="panel panel-info">
-		<div class="panel-heading">View configuration</div>
-		<div class="panel-body" style="padding: 0">
-			<div class="scrolling">
+<div id="col-config" class="col-md-3 scrollingWrapper report-morpho-agreement-config-column" {if !$config_active}style="display: none"{/if}>
+	<div class="panel panel-info administration-content-panel report-morpho-agreement-panel report-morpho-agreement-config-panel">
+		<div class="panel-heading administration-content-heading report-config-heading report-morpho-agreement-heading">
+			<span class="administration-content-heading-icon report-morpho-agreement-heading-icon"><i class="fa fa-cog" aria-hidden="true"></i></span>
+			<span>View configuration</span>
+		</div>
+		<div class="panel-body report-morpho-agreement-config-body">
+			<div class="scrolling report-morpho-agreement-config-scroll">
                 {include file="inc_widget_user_selection_a_b.tpl"}
 			</div>
 		</div>
-		<div class="panel-footer">
+		<div class="panel-footer report-morpho-agreement-config-footer">
 			<form method="GET">
                 {* The information about selected annotation sets, subsets and types is passed through URL parameters *}
 				<input type="hidden" name="page" value="report"/>
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
 				<input type="hidden" name="subpage" value="morphodisambagreement"/>
 				<input type="hidden" name="id" value="{$report.id}"/>
-				<input class="btn btn-primary" type="submit" value="Apply configuration" id="apply"/>
+				<button class="btn btn-primary report-morpho-agreement-apply-button" type="submit" id="apply">
+					<i class="fa fa-check" aria-hidden="true"></i>
+					<span>Apply configuration</span>
+				</button>
 			</form>
 		</div>
 	</div>
@@ -150,4 +162,3 @@
     {rdelim});
 
 </script>
-

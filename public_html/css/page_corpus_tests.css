@@ -1,0 +1,282 @@
+#main-content {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 8px 12px 14px;
+}
+
+.corpus-tests-page {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.corpus-tests-grid {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.corpus-tests-column {
+    display: flex;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.corpus-tests-panel {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0 10px;
+    min-height: calc(100vh - 170px);
+    overflow: hidden;
+    width: 100%;
+}
+
+.corpus-tests-panel-body {
+    background: #fbfdfe;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    padding: 10px;
+}
+
+.corpus-tests-counter {
+    margin-left: auto;
+}
+
+.corpus-tests-toolbar {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    padding: 7px 9px;
+}
+
+.corpus-tests-toolbar-label {
+    color: #486171;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.corpus-tests-toolbar-meta {
+    color: #6a7d8b;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.corpus-tests-table-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.corpus-tests-table,
+.corpus-tests-results-table {
+    font-size: 11px;
+    margin-bottom: 0 !important;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.corpus-tests-select-column {
+    width: 62px;
+}
+
+.corpus-tests-status-column,
+.corpus-tests-time-column,
+.corpus-tests-errors-column {
+    width: 72px;
+}
+
+.corpus-tests-results-table .corpus-tests-no-column {
+    width: 44px;
+}
+
+.corpus-tests-results-table .corpus-tests-document-column {
+    width: 96px;
+}
+
+.corpus-tests-results-table .corpus-tests-count-column {
+    width: 58px;
+}
+
+.corpus-tests-description-cell,
+.corpus-tests-results-table td:last-child {
+    color: #445c69;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.corpus-tests-table .group,
+.corpus-tests-results-table tbody tr {
+    cursor: pointer;
+}
+
+.corpus-tests-group-heading > td {
+    background: #eef6f8 !important;
+    color: #174f69;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+}
+
+.corpus-tests-table tr.group.wrong > td {
+    background: #fff3f1 !important;
+}
+
+.corpus-tests-table tr.group.corect > td {
+    background: #f1faf4 !important;
+}
+
+.corpus-tests-table tr.group.selected > td {
+    background: #d8edf5 !important;
+    color: #21394d;
+}
+
+.corpus-tests-table tr.group.selected > td:first-child {
+    border-left: 3px solid #1f6f93;
+}
+
+.corpus-tests-table .test_process,
+.corpus-tests-table .test_time,
+.corpus-tests-table .test_result,
+.corpus-tests-results-table td:nth-child(1),
+.corpus-tests-results-table td:nth-child(2),
+.corpus-tests-results-table td:nth-child(3) {
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+.corpus-tests-table .test_result {
+    font-weight: 700;
+}
+
+.corpus-tests-table .test_result i {
+    color: #83949f;
+    font-style: italic;
+}
+
+.corpus-tests-table .ajax_indicator,
+.buttonTestAjaxIndicator {
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.corpus-tests-annotations {
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.corpus-tests-annotations-form {
+    padding: 10px;
+}
+
+.corpus-tests-annotations-list {
+    list-style: none;
+    margin: 0;
+}
+
+.corpus-tests-annotation-item {
+    border: 0;
+    color: #445c69;
+    font-size: 11px;
+    line-height: 1.35;
+    margin: 0;
+    padding: 4px 6px;
+}
+
+.corpus-tests-annotation-item label {
+    color: #174f69;
+    font-weight: 700;
+    margin: 0 0 0 4px;
+}
+
+.corpus-tests-annotation-separator {
+    color: #7f919b;
+    font-weight: 700;
+    margin: 0 4px;
+}
+
+.corpus-tests-footer {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.corpus-tests-run-button {
+    align-items: center;
+    border-radius: 5px !important;
+    box-shadow: 0 6px 14px rgba(31, 111, 147, 0.16);
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    line-height: 1.2;
+    padding: 6px 10px;
+}
+
+.corpus-tests-run-button:hover,
+.corpus-tests-run-button:focus {
+    box-shadow: 0 8px 18px rgba(23, 79, 105, 0.20);
+}
+
+.corpus-tests-results-wrapper {
+    min-height: 0;
+}
+
+.corpus-tests-empty {
+    min-height: 160px;
+}
+
+.corpus-tests-results-empty {
+    display: flex;
+}
+
+.corpus-tests-results-table ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.corpus-tests-results-table li {
+    margin-bottom: 4px;
+}
+
+.corpus-tests-results-table a {
+    color: #174f69;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.corpus-tests-results-table a:hover,
+.corpus-tests-results-table a:focus {
+    color: #1f6f93;
+    text-decoration: underline;
+}
+
+@media (max-width: 991px) {
+    .corpus-tests-column {
+        width: 100%;
+    }
+
+    .corpus-tests-panel {
+        min-height: 0;
+    }
+
+    .corpus-tests-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .corpus-tests-table,
+    .corpus-tests-results-table {
+        table-layout: auto;
+    }
+}

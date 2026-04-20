@@ -26,7 +26,7 @@
                         <th>Id</th>
                         <th>Type</th>
                         <th>Text</th>
-                        <th>Attributes</th>
+                        <th>Attr.</th>
                         <th class="range">From:to</th>
                         <th></th>
                     </thead>

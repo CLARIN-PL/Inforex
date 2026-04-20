@@ -49,16 +49,19 @@ class DbAnnotationSet{
     static function getCorporaAnnotationSetStats($annotation_set_id){
         global $db;
 
-        $sql = "SELECT c.id, c.name, c.public, c.description, count(ra.id) AS 'count_uses' FROM annotation_types at
-                JOIN annotation_sets_corpora ascr ON at.group_id = ascr.annotation_set_id
+        $sql = "SELECT c.id, c.name, c.public, c.description, COALESCE(stats.count_uses, 0) AS count_uses
+                FROM annotation_sets_corpora ascr
                 JOIN corpora c ON c.id = ascr.corpus_id
-                LEFT JOIN reports_annotations ra ON 
-                (at.name = ra.type AND report_id IN 
-                  (SELECT id FROM reports r WHERE r.corpora = c.id)
-                )
-                WHERE (at.group_id = ? AND ascr.annotation_set_id = ? AND c.public = 1)
-                GROUP BY c.id
-                ORDER BY count_uses";
+                LEFT JOIN (
+                    SELECT r.corpora AS corpus_id, COUNT(ra.id) AS count_uses
+                    FROM annotation_types at
+                    JOIN reports_annotations_optimized ra ON ra.type_id = at.annotation_type_id
+                    JOIN reports r ON r.id = ra.report_id
+                    WHERE at.group_id = ?
+                    GROUP BY r.corpora
+                ) stats ON stats.corpus_id = c.id
+                WHERE ascr.annotation_set_id = ? AND c.public = 1
+                ORDER BY count_uses DESC, c.name";
         $corpora = $db->fetch_rows($sql, array($annotation_set_id, $annotation_set_id));
 
         return $corpora;

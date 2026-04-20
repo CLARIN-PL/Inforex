@@ -83,11 +83,9 @@ function updateSaveButtonStatus(){
 	var later = $("input[value=later]:checked").length;
 	var btn = $("#buttonSave");
 	if ( later == decisions ){
-		btn.removeClass("btn-danger");
-		btn.addClass("btn-default");
+		btn.removeClass("report-autoextension-save-pending");
 	} else {
-		btn.removeClass("btn-default");
-		btn.addClass("btn-danger");
+		btn.addClass("report-autoextension-save-pending");
 
 	}
 };

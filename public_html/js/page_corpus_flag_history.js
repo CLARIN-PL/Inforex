@@ -7,15 +7,6 @@ var user_cookie = "corpus_flag_history_user";
 var flag_cookie = "corpus_flag_history_flag";
 
 $(function(){
-    //Changes the number of pages available in Datatables pagination
-    // e.g. 1 ... 10 instead of 1,2,3,4,5 ... 10 when numbers_length = 3;
-    $.fn.DataTable.ext.pager.numbers_length = 5;
-
-    $('#flag_history').DataTable({
-        "bInfo": false,
-        "ordering": false
-    });
-
     var selected_user = $.cookie(user_cookie);
     var selected_flag = $.cookie(flag_cookie);
 

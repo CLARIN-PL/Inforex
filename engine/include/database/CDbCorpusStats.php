@@ -7,6 +7,10 @@
  */
 
 class DbCorpusStats{
+
+	static function getWordFrequencyTagWhereClause($disamb = true){
+		return " tto.user_id IS NULL AND tto.stage = 'tagger' " . ($disamb ? "AND tto.disamb = 1 " : "");
+	}
 	
 	static function getUniqueBaseCount($corpus_id, $subcorpus_id, $class, $disamb=true, $phrases=null){
 		global $db;
@@ -31,15 +35,15 @@ class DbCorpusStats{
 			$phrases_sql = implode(" OR ", $phrases_sql);
 		}
 		
-		$sql = "SELECT COUNT(DISTINCT base_id) AS c" .
-				" FROM tokens t" .
-				" JOIN reports r ON (t.report_id=r.id)" .
-				" JOIN tokens_tags_optimized tto USING (token_id)" .
+		$sql = "SELECT COUNT(DISTINCT tto.base_id) AS c" .
+				" FROM reports r" .
+				" STRAIGHT_JOIN tokens t ON (t.report_id = r.id)" .
+				" STRAIGHT_JOIN tokens_tags_optimized tto ON (tto.token_id = t.token_id)" .
 				($phrases_sql ? " JOIN bases b ON (b.id = tto.base_id)" : "").
 				" WHERE r.corpora = ?" .
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
 				($class ? " AND tto.pos = ?"  : "") .
-				($disamb ? " AND tto.disamb = 1" : "") .
+				" AND " . self::getWordFrequencyTagWhereClause($disamb) .
 				($phrases_sql ? " AND $phrases_sql" : "");
 		return $db->fetch_one($sql, $params);			
 	}
@@ -72,15 +76,15 @@ class DbCorpusStats{
 			$phrases_sql = implode(" OR ", $phrases_sql);
 		}
 		
-		$sql = "SELECT base_id AS id, b.text AS base, tto.pos, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
-				" FROM tokens t" .
-				" JOIN reports r ON (t.report_id=r.id)" .
-				" JOIN tokens_tags_optimized tto USING (token_id)" .
+		$sql = "SELECT tto.base_id AS id, b.text AS base, tto.pos, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
+				" FROM reports r" .
+				" STRAIGHT_JOIN tokens t ON (t.report_id = r.id)" .
+				" STRAIGHT_JOIN tokens_tags_optimized tto ON (tto.token_id = t.token_id)" .
 				" JOIN bases b ON (b.id = tto.base_id)" .
 				" WHERE r.corpora = ?" .
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
 				($class ? " AND tto.pos = ?"  : "") . 
-				($disamb ? " AND tto.disamb = 1" : "") .
+				" AND " . self::getWordFrequencyTagWhereClause($disamb) .
 				($phrases_sql ? " AND $phrases_sql" : "").
 				" GROUP BY tto.base_id" .
 				" ORDER BY c DESC" .
@@ -95,14 +99,68 @@ class DbCorpusStats{
 		return $rows;
 	}
 
+	static function getWordsFrequncesWithTotal($corpus_id, $subcorpus_id=null, $class=null, $disamb=true, $phrases=null, $limit_from=null, $limit_by=null){
+		global $db;
+
+		$params = array($corpus_id);
+
+		if ($subcorpus_id){
+			$params[] = $subcorpus_id;
+		}
+
+		if ($class){
+			$params[] = $class;
+		}
+
+		$phrases_sql = null;
+		if ($phrases !== null ){
+			$phrases_sql = array();
+			foreach ( $phrases as $p ){
+				$phrases_sql[] = " b.text LIKE ? ";
+				$params[] = $p;
+			}
+			$phrases_sql = implode(" OR ", $phrases_sql);
+		}
+
+		$sql = "SELECT SQL_CALC_FOUND_ROWS tto.base_id AS id, b.text AS base, tto.pos, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
+			" FROM reports r" .
+			" STRAIGHT_JOIN tokens t ON (t.report_id = r.id)" .
+			" STRAIGHT_JOIN tokens_tags_optimized tto ON (tto.token_id = t.token_id)" .
+			" JOIN bases b ON (b.id = tto.base_id)" .
+			" WHERE r.corpora = ?" .
+			($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
+			($class ? " AND tto.pos = ?"  : "") .
+			" AND " . self::getWordFrequencyTagWhereClause($disamb) .
+			($phrases_sql ? " AND $phrases_sql" : "").
+			" GROUP BY tto.base_id" .
+			" ORDER BY c DESC" .
+			($limit_from !== null && $limit_by!==null ? " LIMIT $limit_from, $limit_by" : "");
+
+		$rows = $db->fetch_rows($sql, $params);
+		$total = (int)$db->fetch_one("SELECT FOUND_ROWS()");
+
+		foreach ($rows as &$r){
+			$r['no'] = ++$limit_from;
+		}
+
+		return array(
+			'rows' => $rows,
+			'total' => $total,
+		);
+	}
+
 	/**
 	 * Return 
 	 */
-	static function getWordsFrequencesPerSubcorpus($corpus_id, $class=null, $disamb=true, $base_ids=null){
+	static function getWordsFrequencesPerSubcorpus($corpus_id, $subcorpus_id=null, $class=null, $disamb=true, $base_ids=null, $phrases=null){
 		global $db;
 
 		$params = array();
 		$params[] = $corpus_id;
+
+		if ($subcorpus_id){
+			$params[] = $subcorpus_id;
+		}
 		
 		if ($class){
 			$params[] = $class;
@@ -117,14 +175,27 @@ class DbCorpusStats{
 			}
 		}
 
-		$sql = "SELECT base_id, r.subcorpus_id, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs".
-			" FROM tokens t".
-			" JOIN reports r ON (t.report_id=r.id)".
-			" JOIN tokens_tags_optimized tto USING (token_id)".
+		$phrases_sql = null;
+		if ($phrases !== null ){
+			$phrases_sql = array();
+			foreach ( $phrases as $p ){
+				$phrases_sql[] = " b.text LIKE ? ";
+				$params[] = $p;
+			}
+			$phrases_sql = implode(" OR ", $phrases_sql);
+		}
+
+		$sql = "SELECT tto.base_id, r.subcorpus_id, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs".
+			" FROM reports r".
+			" STRAIGHT_JOIN tokens t ON (t.report_id = r.id)".
+			" STRAIGHT_JOIN tokens_tags_optimized tto ON (tto.token_id = t.token_id)".
+			($phrases_sql ? " JOIN bases b ON (b.id = tto.base_id)" : "").
 			" WHERE r.corpora = ?".
-				( $disamb ? " AND tto.disamb = 1" : "" ).
+				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
+				" AND " . self::getWordFrequencyTagWhereClause($disamb) .
 				($class ? " AND tto.pos = ?"  : "") .
 				( $base_ids_sql ? " AND " .$base_ids_sql : "") .
+				($phrases_sql ? " AND $phrases_sql" : "").
 			" GROUP BY tto.base_id, r.subcorpus_id";
 		return $db->fetch_rows($sql, $params);
 	}
@@ -327,7 +398,7 @@ class DbCorpusStats{
 				" GROUP BY an.text, an.type_id".
 				" ORDER BY c DESC".
 				($limit_from !== null && $limit_by!==null ? " LIMIT $limit_from, $limit_by" : "");
-		fb($sql);
+
 		$rows = $db->fetch_rows($sql, $params);
 				
 		foreach ($rows as &$r){
@@ -335,6 +406,53 @@ class DbCorpusStats{
 		}
 				
 		return $rows;
+	}
+
+	static function getAnnotationFrequencyWithTotal($corpus_id, $subcorpus_id, $annotation_set_id=null, $annotation_type_id=null, $phrases=null, $stage=null, $limit_from=null, $limit_by=null){
+		global $db;
+
+		$params = array($corpus_id);
+
+		if ($subcorpus_id) $params[] = $subcorpus_id;
+		if ($annotation_set_id) $params[] = $annotation_set_id;
+		if ($annotation_type_id) $params[] = $annotation_type_id;
+		if ($stage) $params[] = $stage;
+
+		$phrases_sql = null;
+		if ($phrases !== null && count($phrases) > 0 ){
+			$phrases_sql = array();
+			foreach ( $phrases as $p ){
+				$phrases_sql[] = " an.text LIKE ? ";
+				$params[] = $p;
+			}
+			$phrases_sql = implode(" OR ", $phrases_sql);
+		}
+
+		$sql = "SELECT SQL_CALC_FOUND_ROWS an.text, at.name AS type_name, COUNT(DISTINCT an.id) AS c, COUNT(DISTINCT an.report_id) AS docs".
+				" FROM reports_annotations_optimized an".
+				" JOIN reports r ON (r.id = an.report_id)".
+				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)".
+				" WHERE r.corpora = ?".
+				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				( $annotation_set_id ? " AND at.group_id=?" : "").
+				( $annotation_type_id ? " AND an.type_id = ?" : "").
+				( $stage ? " AND an.stage = ?" : "").
+				( $phrases_sql != null ? " AND ( $phrases_sql ) " : "") .
+				" GROUP BY an.text, an.type_id".
+				" ORDER BY c DESC".
+				($limit_from !== null && $limit_by!==null ? " LIMIT $limit_from, $limit_by" : "");
+
+		$rows = $db->fetch_rows($sql, $params);
+		$total = (int)$db->fetch_one("SELECT FOUND_ROWS()");
+
+		foreach ($rows as &$r){
+			$r['no'] = ++$limit_from;
+		}
+
+		return array(
+			'rows' => $rows,
+			'total' => $total,
+		);
 	}
 	
 	static function getUniqueAnnotationCount($corpus_id, $subcorpus_id, $annotation_set_id=null, $annotation_type_id=null, $phrases=null, $stage=null){

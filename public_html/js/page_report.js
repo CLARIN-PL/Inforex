@@ -137,6 +137,7 @@ function setFlag($element){
 	var xPosition = $element.offset().left-210;
 	var yPosition = $element.offset().top;
 	$dialogBox = $($("#flagStates").html()).dialog({
+		dialogClass : "report-flag-dialog",
 		modal : true,
 		title : $element.text(),
 		width : '200px', 

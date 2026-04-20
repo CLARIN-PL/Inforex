@@ -5,6 +5,9 @@
  */
 
 $(function(){
+	fitTokenizationPanelsToScreen();
+	$(window).on("resize", fitTokenizationPanelsToScreen);
+
 	$.each($("#content *"), function(index, value){
 		$(value).after('<span style="display:none">&nbsp;</span>');
 	});
@@ -207,12 +210,41 @@ $(function(){
 
 });
 
+function fitTokenizationPanelsToScreen(){
+	var contentPanel = $(".report-tokenization-content-panel");
+	var tokensPanel = $(".report-tokenization-tokens-column .report-tokenization-panel");
+	var contentBody = $(".report-tokenization-content-body");
+	var tokensBody = $(".report-tokenization-table-wrapper");
+	var documentContent = $(".report-tokenization-document-content");
+
+	if (!contentPanel.length || !tokensPanel.length || !documentContent.length) {
+		return;
+	}
+
+	var headingHeight = contentPanel.children(".panel-heading").outerHeight(true) || 0;
+	var panelHeight = contentPanel.height();
+
+	if (!panelHeight || panelHeight < 240) {
+		var top = contentPanel.offset() ? contentPanel.offset().top : 0;
+		panelHeight = Math.max($(window).height() - top - 55, 260);
+		contentPanel.height(panelHeight);
+		tokensPanel.height(panelHeight);
+	}
+
+	var scrollHeight = Math.max(panelHeight - headingHeight, 220);
+
+	contentBody.height(scrollHeight);
+	tokensBody.height(scrollHeight);
+	documentContent.height(scrollHeight);
+}
+
 function updateReportContent(reportId){
 
 	var reportContentSuccess = function(data){
 		console.log(data["content_inline"]);
 		$("#rp-content").fadeOut(800, function(){
 			$("#rp-content").html(data["content_inline"]).fadeIn().delay(2000);
+			fitTokenizationPanelsToScreen();
 		});
 	};
 

@@ -36,7 +36,8 @@ function loginForm(reload, loginCallback){
 
 	$("#dialog-form-login").dialog({
 		autoOpen: true,
-		width: 280,
+		dialogClass: 'report-login-dialog',
+		width: 420,
 		modal: true,
 		buttons: {
 			'Login': function() {

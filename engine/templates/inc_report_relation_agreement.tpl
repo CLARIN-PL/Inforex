@@ -4,13 +4,16 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
-<div id="col-agreement" class="col-main col-md-{bootstrap_column_width default=4 flags=$flags_active config=$config_active} scrollingWrapper">
-	<div class="panel panel-primary">
-		<div class="panel-heading">Resolve relations agreement</div>
-		<div class="panel-body" style="padding: 0">
+<div id="col-agreement" class="col-main col-md-{bootstrap_column_width default=4 flags=$flags_active config=$config_active} scrollingWrapper report-relation-agreement-column">
+	<div class="panel panel-primary administration-content-panel report-relation-agreement-panel">
+		<div class="panel-heading administration-content-heading report-relation-agreement-heading">
+			<span class="administration-content-heading-icon report-relation-agreement-heading-icon"><i class="fa fa-sitemap" aria-hidden="true"></i></span>
+			<span>Resolve relations agreement</span>
+		</div>
+		<div class="panel-body report-relation-agreement-body">
 			<form method="post">
-				<div id="agreement" class="scrolling">
-					<table class="table table-striped" cellspacing="1">
+				<div id="agreement" class="scrolling report-relation-agreement-table-wrapper">
+					<table class="table table-striped report-relation-agreement-table" cellspacing="1">
 					<thead>
 					<tr>
 						<th>Source</th>
@@ -26,8 +29,8 @@
 					<tbody>
 					{foreach from=$relation_agreement item=relation}
                         <tr class = "{$relation.source_from}_{$relation.source_to}/{$relation.target_from}_{$relation.target_to}">
-                            <td class="source" title = {$relation.annotation_source_name}>{$relation.source_text}</td>
-							<td class="target" title = {$relation.annotation_target_name}>{$relation.target_text}</td>
+                            <td class="source" title="{$relation.annotation_source_name|escape}">{$relation.source_text}</td>
+							<td class="target" title="{$relation.annotation_target_name|escape}">{$relation.target_text}</td>
 							{if $relation.user_agreement == 'only_a' || $relation.user_agreement == 'a_and_b'}
                             <td>
                                 {if $relation.user_agreement == 'only_a'}
@@ -230,8 +233,8 @@
 									{assign var=choose value=$choose+1}
 								{/if}
 							{/capture}
-							<td style="width: 250px" class="{$cl} agreement_actions">
-								<span style="float: right" class="toggle">(<a href="#" title="click to see more available options">more</a>)</span>
+							<td class="{$cl} agreement_actions report-relation-agreement-actions-cell">
+								<span class="toggle report-relation-agreement-toggle">(<a href="#" title="click to see more available options">more</a>)</span>
 								{$ff}
 							</td>
 						</tr>
@@ -240,9 +243,9 @@
 					</table>
 				</div>
 
-				<div class="panel-footer legend">
-					<input type="submit" value="Apply actions" class="btn btn-primary" name="submit"/>
-					<div style="float: right">
+				<div class="panel-footer legend report-relation-agreement-footer">
+					<button type="submit" class="btn btn-primary report-relation-agreement-apply-button" name="submit"><i class="fa fa-check" aria-hidden="true"></i> Apply actions</button>
+					<div class="report-relation-agreement-filters">
 						Filter annotations:
 						<span class="all"><a href="#">All: <b>{$keep+$add+$choose}</b></a></span>
 						<span class="keep"><a href="#">Final: <b>{$keep}</b></a></span>
@@ -257,23 +260,26 @@
 	</div>
 </div>
 
-<div id="col-content" class="col-md-4 scrollingWrapper">
-	<div class="panel panel-default">
-		<div class="panel-heading">Document content</div>
-		<div class="panel-body" style="padding: 0">
-			<div id="content" class="scrolling">
-				<div style="margin: 5px;" class="contentBox {$report.format}">{$content_inline|format_annotations}</div>
+<div id="col-content" class="col-md-4 scrollingWrapper report-relation-agreement-content-column">
+	<div class="panel panel-default administration-content-panel report-relation-agreement-content-panel">
+		<div class="panel-heading administration-content-heading report-relation-agreement-content-heading">
+			<span class="administration-content-heading-icon report-relation-agreement-heading-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+			<span>Document content</span>
+		</div>
+		<div class="panel-body report-relation-agreement-content-body">
+			<div id="content" class="scrolling report-relation-agreement-content-scroll">
+				<div class="contentBox {$report.format} report-relation-agreement-content-box">{$content_inline|format_annotations}</div>
 			</div>
 		</div>
 	</div>
 </div>
 
 
-<div id="col-config" class="col-md-3 scrollingWrapper" {if !$config_active}style="display: none"{/if}>
-	<div class="panel panel-info">
-		<div class="panel-heading">View configuration</div>
-		<div class="panel-body" style="padding: 0">
-			<div class="scrolling">
+<div id="col-config" class="col-md-3 scrollingWrapper report-config-column report-relation-agreement-config-column" {if !$config_active}style="display: none"{/if}>
+	<div class="panel panel-info report-config-panel report-relation-agreement-config-panel">
+		<div class="panel-heading report-config-heading"><i class="fa fa-cog" aria-hidden="true"></i> View configuration</div>
+		<div class="panel-body report-config-body">
+			<div class="scrolling report-config-scroll">
 				{include file="inc_widget_relation_type_tree.tpl"}
 				<br/>
                 {include file="inc_widget_annotation_type_tree.tpl"}
@@ -281,7 +287,7 @@
                 {include file="inc_widget_user_selection_a_b_relation_agreement.tpl"}
 			</div>
 		</div>
-		<div class="panel-footer">
+		<div class="panel-footer report-config-footer">
 			<form method="GET" action="index.php">
                 {* The information about selected annotation sets, subsets and types is passed through cookies *}{*
                 *}{* The information about selected users is paseed through cookies *}
@@ -289,7 +295,7 @@
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
 				<input type="hidden" name="subpage" value="relation_agreement"/>
 				<input type="hidden" name="id" value="{$report.id}"/>
-				<input class="btn btn-primary" type="submit" value="Apply configuration" id="apply"/>
+				<button class="btn btn-primary report-config-apply-button" type="submit" id="apply"><i class="fa fa-check" aria-hidden="true"></i> Apply</button>
 			</form>
 		</div>
 	</div>

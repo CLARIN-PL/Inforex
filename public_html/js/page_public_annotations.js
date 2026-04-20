@@ -1,10 +1,14 @@
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
+var publicCorporaCache = {};
+var publicCorporaRequest = null;
 
 
 $(function() {
 
-    $(".show_public").click(function(){
+    $(".show_public").click(function(event){
+        event.preventDefault();
+        event.stopPropagation();
 
         var annotation_set_id = $(this).closest('tr').attr('id');
 
@@ -14,7 +18,7 @@ $(function() {
     $(".tableContent").on("click", "tbody > tr", function (element) {
 
 
-        if(!$(element.target).hasClass("public_corpora_button")){
+        if(!$(element.target).hasClass("public-corpora-button")){
             $(this).siblings().removeClass("hightlighted");
             $(this).addClass("hightlighted");
             var containerType = $(this).parents(".tableContainer:first").attr('id');
@@ -25,7 +29,6 @@ $(function() {
 
                 $("#annotationSetsCorporaContainer").css('visibility', 'visibile');
                 $("#corpusContainer").css('visibility', 'visible');
-                $("#annotationTypesContainer span").hide();
                 $("#annotationTypesContainer table > tbody").empty();
             }
             else if (containerType == "annotationSubsetsContainer") {
@@ -39,25 +42,71 @@ $(function() {
 function getPublicCorpora(annotation_set_id){
 
     $("#browse_public_corpora_modal").modal("show");
+    renderPublicCorporaLoading();
+
+    if (publicCorporaCache[annotation_set_id]) {
+        renderPublicCorpora(publicCorporaCache[annotation_set_id]);
+        return;
+    }
+
+    if (publicCorporaRequest) {
+        publicCorporaRequest.abort();
+    }
 
     var _data = {
-        'annotation_set_id': annotation_set_id
+        annotation_set_id: annotation_set_id,
+        ajax: "public_annotation_sets"
     };
 
-    var success = function (data) {
-        var tableHtml = "";
-        $.each(data, function(index, value){
-            tableHtml += "<tr>" +
-                            "<td>"+value.name+"</td>"+
-                            "<td><div class = 'annotation_description'>"+value.description+"</div></td>"+
-                            "<td class = 'text-center'><span class='badge'>"+value.count_uses+"</span></td>";
-        });
-        $("#public_corpora_table").html(tableHtml);
-    };
-    var login = function (data) {
-        getPublicCorpora(annotation_set_id);
-    };
-    doAjaxSyncWithLogin("public_annotation_sets", _data, success, login);
+    publicCorporaRequest = $.ajax({
+        type: "POST",
+        url: "index.php",
+        data: _data,
+        dataType: "json",
+        success: function(data) {
+            successWrapper(data, function(result) {
+                publicCorporaCache[annotation_set_id] = result;
+                renderPublicCorpora(result);
+            }, function() {
+                $("#public_corpora_table").html('<tr><td colspan="3" class="public-annotations-empty">Unable to load public corpora.</td></tr>');
+            });
+        },
+        error: function(request, textStatus) {
+            if (textStatus !== "abort") {
+                $("#public_corpora_table").html('<tr><td colspan="3" class="public-annotations-empty">Unable to load public corpora.</td></tr>');
+            }
+        },
+        complete: function() {
+            publicCorporaRequest = null;
+        }
+    });
+}
+
+function renderPublicCorpora(data) {
+    var tableHtml = "";
+
+    if (!data || data.length === 0) {
+        $("#public_corpora_table").html('<tr><td colspan="3" class="public-annotations-empty">No public corpora found.</td></tr>');
+        return;
+    }
+
+    $.each(data, function(index, value){
+        tableHtml += "<tr>" +
+                        "<td class='public-annotation-name'>"+escapeHtml(value.name)+"</td>"+
+                        "<td>"+buildDescription(value.description)+"</td>"+
+                        "<td class='text-center'>"+buildCountBadge(value.count_uses, false)+"</td>" +
+                    "</tr>";
+    });
+    $("#public_corpora_table").html(tableHtml);
+}
+
+function renderPublicCorporaLoading() {
+    $("#public_corpora_table").html(
+        '<tr><td colspan="3" class="public-annotations-loading">' +
+            '<span class="public-annotations-loader"></span>' +
+            '<span>Loading public corpora...</span>' +
+        '</td></tr>'
+    );
 }
 
 function get($element) {
@@ -84,16 +133,16 @@ function get($element) {
                 if (_data.parent_type == "annotation_set" && index < data.length - 2) {
                     tableRows +=
                         '<tr id = "'+value.id+'">' +
-                        '<td>' + value.name + '</td>' +
-                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
+                        '<td class="public-annotation-name">' + escapeHtml(value.name) + '</td>' +
+                        '<td>' + buildDescription(value.description) + '</td>' +
                         '</tr>';
                 }
                 else if (_data.parent_type == "annotation_subset")
                     tableRows +=
                         '<tr id = '+value.id+'>' +
-                        '<td><span style="' + (value.css == null ? "" : value.css) + '">' + value.name + '</span></td>' +
-                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
-                        '<td class = "text-center"><span class="badge">'+ value.number_used +'</span></td>'+
+                        '<td><span class="public-annotation-type-name" style="' + escapeAttribute(value.css == null ? "" : value.css) + '">' + escapeHtml(value.name) + '</span></td>' +
+                        '<td>' + buildDescription(value.description) + '</td>' +
+                        '<td class = "text-center">'+ buildCountBadge(value.number_used, false) +'</td>'+
                         '<td style="display:none">' + (value.css == null ? "" : value.css) + '</td>' +
                         '</tr>';
             });
@@ -129,5 +178,22 @@ function get($element) {
         };
         doAjaxSyncWithLogin("annotation_edit_get", _data, success, login);
     }
+}
 
+function buildDescription(description) {
+    var text = description == null ? "" : description;
+
+    return '<div class="annotation_description administration-description-preview" title="' + escapeAttribute(text) + '">' + escapeHtml(text) + '</div>';
+}
+
+function buildCountBadge(count, muted) {
+    return '<span class="public-annotations-count-badge' + (muted ? ' public-annotations-count-badge-muted' : '') + '">' + escapeHtml(count) + '</span>';
+}
+
+function escapeHtml(value) {
+    return $('<div>').text(value == null ? "" : value).html();
+}
+
+function escapeAttribute(value) {
+    return escapeHtml(value).replace(/"/g, '&quot;');
 }

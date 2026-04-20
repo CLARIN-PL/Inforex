@@ -2,84 +2,106 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  *}
 
 {include file="inc_header2.tpl"}
 
-{if $action_error}
-    <div class="alert alert-danger">
-        <strong>Error!</strong> {$action_error}
-    </div>
-{/if}
+<div class="corpus-upload-page">
+    {if $action_error}
+        <div class="alert alert-danger corpus-upload-alert">
+            <strong>Error!</strong> {$action_error}
+        </div>
+    {/if}
 
-{if $warnings}
-    <div class="alert alert-warning">
-        <strong>Warning!</strong>
-        {if $warnings|@count == 1}
-            {$warnings[0]}
-        {else}
-            <ul>
-                {foreach from=$warnings item=warning}
-                    <li>{$warning}</li>
-                {/foreach}
-            </ul>
-        {/if}
-    </div>
-{/if}
+    {if $warnings}
+        <div class="alert alert-warning corpus-upload-alert">
+            <strong>Warning!</strong>
+            {if $warnings|@count == 1}
+                {$warnings[0]}
+            {else}
+                <ul>
+                    {foreach from=$warnings item=warning}
+                        <li>{$warning}</li>
+                    {/foreach}
+                </ul>
+            {/if}
+        </div>
+    {/if}
 
-{if $action_performed}
-    <div class="alert alert-success">
-        <strong>Success!</strong> {$action_performed}
-    </div>
-{/if}
+    {if $action_performed}
+        <div class="alert alert-success corpus-upload-alert">
+            <strong>Success!</strong> {$action_performed}
+        </div>
+    {/if}
 
-<div class="panel panel-primary" style="margin: 5px">
-    <div class="panel-heading">Upload a set of txt files.</div>
-    <div class="panel-body">
-
-        <form class="form-horizontal" method="post" action="index.php?corpus={$corpus.id}&page={$page}"
-              enctype="multipart/form-data">
+    <div class="panel administration-content-panel corpus-upload-panel">
+        <div class="panel-heading administration-content-heading">
+            <span class="administration-content-heading-icon"><i class="fa fa-cloud-upload" aria-hidden="true"></i></span>
+            <span>Upload a set of txt files</span>
+        </div>
+        <form method="post" action="index.php?corpus={$corpus.id}&amp;page={$page}" enctype="multipart/form-data">
             <input type="hidden" name="action" value="upload"/>
-            <div class="form-group">
-                <label for="inputEmail" class="control-label col-xs-1">Zip file</label>
-                <div class="col-xs-4">
-                    <input type="file" name="files" class="form-control" id="inputEmail" placeholder="Email">
-                    The Zip file must contain a set of <em>txt</em> files. File's metadata should be stored in a
-                    <em>ini</em> file with the same name as the <em>txt</em> file. The <em>ini</em> file must have the
-                    following format:
-                    <br/>
-                    <pre style="white-space: pre-wrap">[metadata]
-url = "<i>Path to a web with the document source</i>"
-publish_date = "<i>Publish date in the format of YYYY-MM-DD</i>"
-author = "<i>Author name</i>"
-title = "<i>Document title</i>"</pre>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword" class="control-label col-xs-1">Subcorpus</label>
-                <div class="col-xs-4">
-                    <select name="subcorpus_id" id="listSubcorpora" style="width: 400px" class="form-control">
-                        <option value="">none</option>
-                        {foreach from=$subcorpora item=s}
-                            <option value="{$s.subcorpus_id}">{$s.name}</option>
-                        {/foreach}
-                    </select>
-                    <div class="checkbox">
-                        <label style="line-height: 20px">
-                            <input type="checkbox" name="autosplit" id="checkboxSubcorpora" value="option1"> Split into
-                            subcorpora based on the file prefix: <code>
-                                <span style="text-decoration: underline" title="Subcorpus name">SUBCORPUS</span><em
-                                        title="Separator">-</em><span style="text-decoration: underline"
-                                                                      title="Document name">DOCUMENT_NAME</span>.txt</code>.
-                        </label>
+            <div class="panel-body">
+                <div class="corpus-upload-grid">
+                    <div class="corpus-upload-card corpus-upload-card-primary">
+                        <div class="corpus-upload-card-icon">
+                            <i class="fa fa-file-archive-o" aria-hidden="true"></i>
+                        </div>
+                        <div class="corpus-upload-card-content">
+                            <h3>Zip package</h3>
+                            <p>The archive must contain txt files. Optional ini files with matching names can provide document metadata.</p>
+                            <div class="form-group">
+                                <label for="corpus-upload-files">Zip file</label>
+                                <input type="file" name="files" class="form-control corpus-upload-file-input" id="corpus-upload-files">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="corpus-upload-card">
+                        <div class="corpus-upload-card-icon">
+                            <i class="fa fa-folder-open" aria-hidden="true"></i>
+                        </div>
+                        <div class="corpus-upload-card-content">
+                            <h3>Subcorpus assignment</h3>
+                            <p>Select a target subcorpus or split uploaded documents automatically using the filename prefix.</p>
+                            <div class="form-group">
+                                <label for="listSubcorpora">Subcorpus</label>
+                                <select name="subcorpus_id" id="listSubcorpora" class="form-control">
+                                    <option value="">none</option>
+                                    {foreach from=$subcorpora item=s}
+                                        <option value="{$s.subcorpus_id}">{$s.name}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            <label class="corpus-upload-checkbox">
+                                <input type="checkbox" name="autosplit" id="checkboxSubcorpora" value="option1">
+                                <span aria-hidden="true"></span>
+                                <span>Split into subcorpora based on the file prefix</span>
+                            </label>
+                            <code class="corpus-upload-pattern">
+                                <span title="Subcorpus name">SUBCORPUS</span><em title="Separator">-</em><span title="Document name">DOCUMENT_NAME</span>.txt
+                            </code>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-xs-offset-1 col-xs-10">
-                    <button type="submit" class="btn btn-primary">Upload</button>
+
+                <div class="corpus-upload-format-card">
+                    <div class="corpus-upload-format-header">
+                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                        <span>INI metadata format</span>
+                    </div>
+                    <pre>[metadata]
+url = "Path to a web with the document source"
+publish_date = "Publish date in the format of YYYY-MM-DD"
+author = "Author name"
+title = "Document title"</pre>
                 </div>
+            </div>
+            <div class="panel-footer administration-content-footer corpus-upload-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload
+                </button>
             </div>
         </form>
     </div>

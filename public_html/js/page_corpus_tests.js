@@ -119,6 +119,7 @@ function testAjax(from,error_num,test_name){
 			html += '</tr>';
 		}
 		$('#tests_document_list').find('tbody').append(html);
+        toggleCorpusTestsResultsEmpty();
 		testProcess(from + test_limit,data['error_num'],test_name);
 	};
 	
@@ -192,7 +193,8 @@ function timerStop(){
 
 $(function(){
 	corpus_id = $.url(window.location.href).param('corpus');
-	documents_in_corpus = $('.documents_in_corpus').attr('id');
+	documents_in_corpus = parseInt($('.corpus-tests-counter').first().text(), 10) || 0;
+    toggleCorpusTestsResultsEmpty();
 
 	$("tr.group").click(function(){
 		if($(this).hasClass('wrong') || $(this).hasClass('corect')){
@@ -242,3 +244,8 @@ $(function(){
 		}
 	});	
 });
+
+function toggleCorpusTestsResultsEmpty() {
+    var hasRows = $("#tests_document_list tbody tr").length > 0;
+    $(".corpus-tests-results-empty").toggle(!hasRows);
+}

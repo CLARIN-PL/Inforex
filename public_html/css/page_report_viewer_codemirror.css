@@ -1,0 +1,41 @@
+html,
+body.editbox {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+html::-webkit-scrollbar,
+body.editbox::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+html::-webkit-scrollbar-track,
+body.editbox::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+html::-webkit-scrollbar-thumb,
+body.editbox::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body.editbox::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+body.editbox {
+    background:
+        linear-gradient(90deg, rgba(23, 109, 125, 0.04) 0, rgba(23, 109, 125, 0) 18px),
+        #fff;
+    color: #263f4c;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    margin: 0;
+    padding: 9px 11px 13px;
+}

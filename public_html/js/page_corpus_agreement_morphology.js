@@ -69,24 +69,22 @@ MorphoAgreementPreview.prototype.showTokDiff = function(tok){
 	if(data.a.length === 0 && data.b.length ===0)
 		return;
 
-
-	self.$diffTable
-		.append(
-			'<tr>' +
-				'<td>' + data.from + '-' + data.to + '</td>' +
-				'<td>' + data.orth + '</td>' +
-				'<td>' + data.a.join('<br>') + '</td>' +
-				'<td>' + data.b.join('<br>') + '</td>' +
-			'</tr>');
+	self.$diffTable.row.add([
+		data.from + '-' + data.to,
+		data.orth,
+		data.a.join('<br>'),
+		data.b.join('<br>')
+	]);
 };
 
 MorphoAgreementPreview.prototype.showReportDiff = function(data){
 	var self = this;
 
-	self.$diffTable.find('tbody').empty();
+	self.$diffTable.clear();
 	for(var tok in data){
 		self.showTokDiff(data[tok]);
 	}
+	self.$diffTable.draw();
 };
 
 MorphoAgreementPreview.prototype.compare = function(decisionA, decisionB){
@@ -114,23 +112,18 @@ MorphoAgreementPreview.prototype.initDocsList = function(){
 
     self.$reportsTable.draw();
 
-	self.$reportsTable.on('click', 'tr', function(){
+	$('#reports_table').on('click', 'tbody tr', function(){
+		var row = self.$reportsTable.row(this);
+		var rowData = row.data();
 
-        self.reportsTablesRows = {
-            0: $('#reports_table tr'),
-            1: $('.table.dataTable.DTFC_Cloned tr')
-        };
+		if(!rowData){
+			return;
+		}
 
-        var rowIdx = $(this).index();
+		self.$reportsTable.$('tr.selected').removeClass('selected');
+		$(this).addClass('selected');
 
-        self.reportsTablesRows[0].removeClass('selected');
-        self.reportsTablesRows[1].removeClass('selected');
-
-        $(self.reportsTablesRows[0][rowIdx+1]).addClass('selected');
-        $(self.reportsTablesRows[1][rowIdx+2]).addClass('selected');
-
-		// + for number casting, getting id from first element
-		var id = +this.firstChild.innerHTML;
+		var id = +rowData[0];
 		var success = function(a,b){
 			self.showReportDiff(a);
 		};
@@ -148,4 +141,3 @@ MorphoAgreementPreview.prototype.initDocsList = function(){
 	});
 
 };
-

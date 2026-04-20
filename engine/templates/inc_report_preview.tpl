@@ -13,25 +13,28 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div id="col-content" class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper">
-	<div class="panel panel-primary">
-		<div class="panel-heading">Document content</div>
-		<div class="panel-body" style="padding: 0">
-			<div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-				  <div style="margin: 5px" class="contentBox {$report.format}">{$content|format_annotations}</div>
-			</div>
-		</div>
-	</div>
+<div id="col-content" class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper report-preview-content-column">
+    <div class="panel panel-primary administration-content-panel report-preview-content-panel">
+        <div class="panel-heading administration-content-heading report-preview-panel-heading">
+            <span class="administration-content-heading-icon report-preview-heading-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+            <span>Document content</span>
+        </div>
+        <div class="panel-body report-preview-content-body">
+            <div id="leftContent" style="width: {if $showRight}50%{else}100%{/if};" class="annotations scrolling content report-preview-document-content">
+                  <div class="contentBox {$report.format} report-preview-content-box">{$content|format_annotations}</div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div id="col-config" class="col-md-3 scrollingWrapper">
-	<div id="cell_annotation_wait" style="display: none;">
-		Trwa wczytywanie danych
-		<img src="gfx/ajax.gif" />
-	</div>
-	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		{include file="inc_report_annotator_configuration.tpl"}
-		{include file="inc_report_annotator_annotations.tpl"}
-		{include file="inc_report_annotator_relations.tpl"}
-	</div>
+<div id="col-config" class="col-md-3 scrollingWrapper report-preview-config-column">
+    <div id="cell_annotation_wait" class="report-preview-loading" style="display: none;">
+        <span>Trwa wczytywanie danych</span>
+        <img src="gfx/ajax.gif" />
+    </div>
+    <div class="panel-group report-preview-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+        {include file="inc_report_annotator_configuration.tpl"}
+        {include file="inc_report_annotator_annotations.tpl"}
+        {include file="inc_report_annotator_relations.tpl"}
+    </div>
 </div>

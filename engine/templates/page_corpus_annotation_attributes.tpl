@@ -7,24 +7,29 @@
  
 {include file="inc_header2.tpl"}
 
-<div class="row" style="margin-top: 20px">
+<div class="container-fluid admin_tables corpus-annotation-attributes-page">
+<div class="row corpus-annotation-attributes-grid">
 
-    <div class="col-md-3 scrollingWrapper">
-        <div class="panel panel-primary">
-            <div class="panel-heading">Attribute values assigned to annotations</div>
-            <div class="panel-body">
-                <div class="form-group" style="display:inline;">
-                    <div class="input-group" style="display:table;">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                        <input class="form-control" name="search" placeholder="Search Here" autocomplete="off" autofocus="autofocus" type="text">
-                    </div>
+    <div class="col-md-3 scrollingWrapper corpus-annotation-attributes-sidebar-column">
+        <div class="panel administration-content-panel corpus-annotation-attributes-panel">
+            <div class="panel-heading administration-content-heading">
+                <span class="administration-content-heading-icon"><i class="fa fa-tags" aria-hidden="true"></i></span>
+                <span>Attribute values</span>
+            </div>
+            <div class="panel-body corpus-annotation-attributes-toolbar">
+                <div class="input-group corpus-annotation-attributes-search">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                    <input class="form-control" name="search" placeholder="Search values" autocomplete="off" autofocus="autofocus" type="text">
                 </div>
             </div>
-            <div class="panel-body scrolling" style="padding: 0">
-                <table id="attribute-values" class="table table-striped">
+            <div class="panel-body scrolling corpus-annotation-attributes-table-panel-body">
+                <div class="administration-table-wrapper corpus-annotation-attributes-table-wrapper">
+                <table id="attribute-values" class="table table-striped table-hover administration-table corpus-annotation-attributes-table">
                     <thead>
-                    <th>Value</th>
-                    <th class="num">Count</th>
+                    <tr>
+                        <th>Value</th>
+                        <th class="num corpus-annotation-attributes-count-column">Count</th>
+                    </tr>
                     </thead>
                     <tbody>
                     {foreach from=$attribute_values item=v}
@@ -35,42 +40,62 @@
                     {/foreach}
                     </tbody>
                 </table>
+                </div>
             </div>
-            <div class="panel-footer" style="text-align: right">
-                <button id="download-attribute-values" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Download</button>
+            <div class="panel-footer corpus-annotation-attributes-footer">
+                <button id="download-attribute-values" type="button" class="btn btn-primary corpus-annotation-attributes-download-btn">
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    <span>Export CSV</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 scrollingWrapper">
-        <div class="panel panel-primary">
-            <div class="panel-heading">Annotations with the selected value</div>
-            <div class="panel-body scrolling" style="padding: 0" id="panelAnnotations">
-                <table id="annotations" class="table table-striped">
+    <div class="col-md-6 scrollingWrapper corpus-annotation-attributes-main-column">
+        <div class="panel administration-content-panel corpus-annotation-attributes-panel">
+            <div class="panel-heading administration-content-heading">
+                <span class="administration-content-heading-icon"><i class="fa fa-list-ul" aria-hidden="true"></i></span>
+                <span>Annotations with the selected value</span>
+            </div>
+            <div class="panel-body scrolling corpus-annotation-attributes-table-panel-body" id="panelAnnotations">
+                <div id="annotations-loading" class="administration-wsd-loading corpus-annotation-attributes-loading" style="display: none;">
+                    <img src="gfx/ajax.gif" alt="Loading"/>
+                    <span>Loading annotations...</span>
+                </div>
+                <div class="administration-table-wrapper corpus-annotation-attributes-table-wrapper">
+                <table id="annotations" class="table table-striped table-hover administration-table corpus-annotation-attributes-annotations-table">
                     <thead>
-                    <th>Id</th>
-                    <th>Type</th>
-                    <th>Text</th>
-                    <th>Lemma</th>
-                    <th>Document</th>
+                    <tr>
+                        <th class="corpus-annotation-attributes-id-column">Id</th>
+                        <th class="corpus-annotation-attributes-type-column">Type</th>
+                        <th>Text</th>
+                        <th class="corpus-annotation-attributes-lemma-column">Lemma</th>
+                        <th class="corpus-annotation-attributes-document-column">Document</th>
+                    </tr>
                     </thead>
                     <tbody>
-
+                        <tr class="corpus-annotation-attributes-empty-row">
+                            <td colspan="5"><div class="corpus-annotation-attributes-empty">Choose an attribute value</div></td>
+                        </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <form method="get" action="index.php">
+    <form method="get" action="index.php" class="col-md-3 scrollingWrapper corpus-annotation-attributes-config-column">
         <input type="hidden" name="corpus" value="{$corpus.id}"/>
         <input type="hidden" name="page" value="{$page}"/>
-        <div class="col-md-3 scrollingWrapper">
-            <div class="panel panel-info">
-                <div class="panel-heading">View configuration</div>
-                <div class="panel-body scrolling">
+        <div class="panel administration-content-panel corpus-annotation-attributes-panel corpus-annotation-attributes-config-panel">
+            <div class="panel-heading administration-content-heading">
+                <span class="administration-content-heading-icon"><i class="fa fa-sliders" aria-hidden="true"></i></span>
+                <span>View configuration</span>
+            </div>
+            <div class="panel-body corpus-annotation-attributes-config-body">
+                <div class="corpus-annotation-attributes-config-fields">
                     <div class="form-group">
-                        <label for="attribute_id">Shared attribute</label>
+                        <label for="annotation-attribute">Shared attribute</label>
                         <select id="annotation-attribute" name="attribute_id" class="form-control">
                             <option value="" {if ""==$attribute_id}selected="selected"{/if}>All</option>
                             {foreach from=$attributes item=attribute}
@@ -88,7 +113,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="subcorpus">Subcorpus</label>
+                        <label for="annotation-subcorpus">Subcorpus</label>
                         <select id="annotation-subcorpus" name="subcorpus_id" class="form-control">
                             <option value="" {if ""==$subcorpus_id}selected="selected"{/if}>All</option>
                             {foreach from=$subcorpora item=subcorpus}
@@ -96,14 +121,18 @@
                             {/foreach}
                         </select>
                     </div>
-                </div>
-                <div class="panel-footer">
-                    <input type="submit" class="btn btn-primary btn-sm" value="Apply">
+                    <div class="corpus-annotation-attributes-config-actions">
+                        <button type="submit" class="btn btn-primary corpus-annotation-attributes-apply-btn">
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                            <span>Apply</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </form>
 
+</div>
 </div>
 
 {include file="inc_footer.tpl"}

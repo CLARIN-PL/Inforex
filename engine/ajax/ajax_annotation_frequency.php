@@ -27,18 +27,17 @@ class Ajax_annotation_frequency extends CPageCorpus {
 		$annotation_set_id = intval($_POST['annotation_set_id']);
 		
 		$phrases = explode(",", $phrases);
-		array_walk($phrases, trim);
+		$phrases = array_map('trim', $phrases);
 		$phrases = array_filter($phrases);		
 		if ( count($phrases) == 0 ) $phrases = null;
 		
 		$subcorpus_id = $_POST['subcorpus_id'];		
 		$corpus_id = $_POST['corpus'];
 		
-		$rows = DbCorpusStats::getAnnotationFrequency($corpus_id, $subcorpus_id, $annotation_set_id, $annotation_type_id, $phrases, $annotation_stage, ($page-1)*$pageElements, $pageElements);
-		$total = DbCorpusStats::getUniqueAnnotationCount($corpus_id, $subcorpus_id, $annotation_set_id, $annotation_type_id, $phrases, $annotation_stage);
+		$result = DbCorpusStats::getAnnotationFrequencyWithTotal($corpus_id, $subcorpus_id, $annotation_set_id, $annotation_type_id, $phrases, $annotation_stage, ($page-1)*$pageElements, $pageElements);
 				
 		// UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
-		echo json_encode(array('page' => $page, 'total' => $total, 'rows' => $rows, 'post' => $_POST));
+		echo json_encode(array('page' => $page, 'total' => $result['total'], 'rows' => $result['rows'], 'post' => $_POST));
 		die;
 	}
 }

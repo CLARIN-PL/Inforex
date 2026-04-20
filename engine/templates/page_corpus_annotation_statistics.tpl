@@ -7,50 +7,61 @@
  
 {include file="inc_header2.tpl"}
 
-<div class="row">
+<div class="container-fluid admin_tables annotation-statistics-page">
+    <div class="row annotation-statistics-grid">
 
-<div class="col-md-9 scrollingWrapper">
-	<div class="panel panel-primary">
-		<div class="panel-heading">Annotation statistics <small>(click the row to expand/roll-back)</small></div>
-		<div class="panel-body scrolling" style="padding: 5px">
+        <div class="col-md-9 annotation-statistics-column">
+            <div class="panel administration-content-panel annotation-statistics-panel">
+                <div class="panel-heading administration-content-heading annotation-statistics-heading">
+                    <span class="administration-content-heading-icon"><i class="fa fa-tags" aria-hidden="true"></i></span>
+                    <span>Annotation statistics</span>
+                </div>
+                <div class="panel-body annotation-statistics-panel-body">
+                    <div class="annotation-statistics-note">
+                        Click a row to expand or collapse its nested statistics.
+                    </div>
 
-			<table cellspacing="1" class="table table-striped" id="annmap">
-				<thead>
+                    <div class="administration-table-wrapper annotation-statistics-table-wrapper">
+			            <table cellspacing="1" class="table table-striped table-hover administration-table annotation-statistics-table" id="annmap">
+				            <thead>
+				            <tr>
+					            <th colspan="3">Annotation</th>
+					            <th colspan="3" class="annotation-statistics-count-group">Count</th>
+				            </tr>
+				            <tr>
+					            <th rowspan="2" class="annotation-statistics-group-column">Group</th>
+					            <th rowspan="2" class="annotation-statistics-subgroup-column">Subgroup</th>
+					            <th rowspan="2" class="annotation-statistics-value-column">Category / Value</th>
+					            <th class="annotation-statistics-number-column" title="Number of documents containing the annotation">Docs</th>
+					            <th class="annotation-statistics-number-column" title="Number of unique annotation values">Unique</th>
+					            <th class="annotation-statistics-number-column" title="Number of annotation instances">All</th>
+				            </tr>
+				            </thead>
+				            <tbody>
+				            {foreach from=$sets key=setId item=set}
+					            <tr class="setGroup expandable" name="{$setId}">
+						            {if $set.name eq ''}
+							            <td colspan="4" class="annotation-statistics-hidden-set"><span>HIDDEN::{$set.inc_name}</span></td>
+						            {else}
+							            <td colspan="4" class="annotation-statistics-set-name">{$set.name}</td>
+						            {/if}
+						            <td class="td-right">{$set.unique}</td>
+						            <td class="td-right">{$set.count}</td>
+					            </tr>
+				            {/foreach}
+				            </tbody>
+			            </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-				<tr>
-					<th colspan="3">Annotation</th>
-					<th colspan="3">Count</th>
-				</tr>
-
-				<tr>
-					<th rowspan="2" style="width: 150px">Group</th>
-					<th rowspan="2" style="width: 150px">Subgroup</th>
-					<th rowspan="2">Category/Value</th>
-					<th style="text-align: right; width: 60px" title="Number of documents containing the annotation">docs</th>
-					<th style="text-align: right; width: 60px" title="Number of unique annotation values">unique</th>
-					<th style="text-align: right; width: 60px" title="Number of annotation instances">all</th>
-				</tr>
-				</thead>
-				<tbody>
-				{foreach from=$sets key=setId item=set}
-					<tr class="setGroup expandable" name="{$setId}">
-						{if $set.name eq ''}
-							<td colspan="4"><span style="color:grey;font-style: italic;">HIDDEN::{$set.inc_name}</span></td>
-						{else}
-							<td colspan="4">{$set.name}</td>
-						{/if}
-						<td style="text-align:right">{$set.unique}</td>
-						<td style="text-align:right">{$set.count}</td>
-					</tr>
-				{/foreach}
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
-	<div class="col-md-3 scrollingWrapper">
-		{include file="inc_annotation_statistic_filter.tpl"}
-	</div>
+	    <div class="col-md-3 annotation-statistics-column">
+            <div class="annotation-statistics-filter-wrapper">
+		        {include file="inc_annotation_statistic_filter.tpl"}
+            </div>
+	    </div>
+    </div>
 </div>
 
 

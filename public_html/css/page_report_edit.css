@@ -1,0 +1,376 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.row-report {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.report-edit-content-column,
+#col-flags {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-edit-panel.administration-content-panel,
+.report-edit-confirm-panel.administration-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-edit-panel .administration-content-heading,
+.report-edit-confirm-panel .administration-content-heading {
+    border-bottom-width: 1px;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-edit-panel .administration-content-heading-icon,
+.report-edit-confirm-panel .administration-content-heading-icon {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 10px;
+    height: 16px;
+    width: 16px;
+}
+
+.report-edit-body,
+.report-edit-confirm-body {
+    background: #fbfdfe;
+    padding: 7px;
+}
+
+.report-edit-card {
+    background: #fff;
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.report-edit-card-heading {
+    align-items: center;
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69 !important;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 10px;
+    font-weight: bold;
+    gap: 6px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-edit-card-title {
+    align-items: center;
+    display: inline-flex;
+    gap: 5px;
+}
+
+.report-edit-card-title .fa {
+    color: #174f69;
+    font-size: 10px;
+    text-align: center;
+    width: 11px;
+}
+
+.report-edit-mode-actions {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    font-size: 10px;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+.report-edit-mode-button,
+.report-edit-tool-button {
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    padding: 4px 7px;
+}
+
+.report-edit-mode-button.active,
+.report-edit-mode-button.btn-primary {
+    background: #1f6f93;
+    border-color: #185a77;
+    color: #fff;
+}
+
+.report-edit-card-body {
+    background: #ffffff;
+    padding: 0;
+}
+
+.report-edit-toolbar {
+    align-items: center;
+    background: #f5fafc;
+    border-bottom: 1px solid #dce9ee;
+    display: flex;
+    justify-content: flex-end;
+    padding: 7px 8px;
+}
+
+.report-edit-tool-button {
+    align-items: center;
+    display: inline-flex;
+    gap: 5px;
+}
+
+.report-edit-textarea,
+.report-edit-comment {
+    background: #ffffff;
+    border: 0;
+    box-sizing: border-box;
+    color: #263f4c;
+    display: block;
+    font-size: 11px;
+    line-height: 1.45;
+    outline: none;
+    padding: 9px 11px 13px;
+    resize: vertical;
+    width: 100%;
+}
+
+.report-edit-textarea {
+    background:
+        linear-gradient(90deg, rgba(23, 109, 125, 0.04) 0, rgba(23, 109, 125, 0) 18px),
+        #fff;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    max-height: 55vh;
+    min-height: 280px;
+    overflow: auto;
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-edit-textarea::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-edit-textarea::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-edit-textarea::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-edit-textarea::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.report-edit-comment-card {
+    margin-bottom: 0;
+}
+
+.report-edit-comment-body {
+    background: #ffffff;
+    min-height: 50px;
+    padding: 0;
+}
+
+.report-edit-comment {
+    min-height: 54px;
+    resize: vertical;
+}
+
+.report-edit-footer {
+    align-items: center;
+    background: #f5fafc;
+    border-top: 1px solid #dce9ee;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-bottom: 0;
+    padding: 7px 8px;
+}
+
+.report-edit-save-button,
+.report-edit-confirm-button {
+    align-items: center;
+    background: #2f7d57;
+    border: 1px solid #276948;
+    border-radius: 5px;
+    box-shadow: 0 6px 14px rgba(47, 125, 87, 0.18);
+    color: #ffffff;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1.1;
+    padding: 5px 12px;
+}
+
+.report-edit-save-button:hover,
+.report-edit-save-button:focus,
+.report-edit-confirm-button:hover,
+.report-edit-confirm-button:focus {
+    background: #276948;
+    border-color: #1f573b;
+    color: #ffffff;
+}
+
+.report-edit-cancel-button {
+    align-items: center;
+    border-radius: 5px;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1.1;
+    padding: 5px 12px;
+}
+
+.report-edit-alert {
+    border-radius: 8px;
+    font-size: 10px;
+    line-height: 1.35;
+    margin: 0 0 7px;
+    padding: 8px 9px;
+}
+
+.report-edit-error {
+    color: #9c2f2f;
+    flex: 1 1 auto;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.report-edit-confirm-table {
+    color: #263f4c;
+    font-size: 10px;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.report-edit-confirm-table > tbody > tr > th {
+    background: #eaf3f7;
+    border-bottom: 1px solid #d7e4ea;
+    color: #496572;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    line-height: 1.15;
+    padding: 5px 6px;
+    text-transform: uppercase;
+}
+
+.report-edit-confirm-table > tbody > tr > td {
+    border-top: 1px solid #edf3f6;
+    line-height: 1.25;
+    padding: 5px 6px;
+    vertical-align: top;
+}
+
+.report-edit-reopen-link {
+    align-items: center;
+    color: #1d6a86;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    margin: 0 0 8px;
+    text-decoration: none;
+}
+
+.report-edit-reopen-link:hover,
+.report-edit-reopen-link:focus {
+    color: #164f63;
+    text-decoration: underline;
+}
+
+.report-edit-hidden-form {
+    background: #fbfdfe;
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    padding: 8px;
+}
+
+.report-edit-editor-frame {
+    border: 1px solid #d8e4eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.report-edit-panel .CodeMirror,
+.report-edit-panel .CodeMirror-wrapping,
+.report-edit-hidden-form .CodeMirror,
+.report-edit-hidden-form .CodeMirror-wrapping {
+    background: #ffffff;
+    border: 0;
+    color: #263f4c;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.report-edit-panel .CodeMirror-gutter,
+.report-edit-panel .CodeMirror-gutter-text,
+.report-edit-hidden-form .CodeMirror-gutter,
+.report-edit-hidden-form .CodeMirror-gutter-text {
+    background: #f4f9fb;
+    border-right: 1px solid #dce9ee;
+    color: #7d919b;
+}
+
+.report-edit-panel .CodeMirror-scroll,
+.report-edit-hidden-form .CodeMirror-scroll {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-edit-panel .CodeMirror-scroll::-webkit-scrollbar,
+.report-edit-hidden-form .CodeMirror-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-edit-panel .CodeMirror-scroll::-webkit-scrollbar-track,
+.report-edit-hidden-form .CodeMirror-scroll::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-edit-panel .CodeMirror-scroll::-webkit-scrollbar-thumb,
+.report-edit-hidden-form .CodeMirror-scroll::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-edit-panel .CodeMirror-scroll::-webkit-scrollbar-thumb:hover,
+.report-edit-hidden-form .CodeMirror-scroll::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+@media (max-width: 991px) {
+    #main-content > .container-fluid {
+        padding: 8px;
+    }
+
+    .report-edit-card-heading,
+    .report-edit-mode-actions {
+        justify-content: flex-start;
+    }
+}

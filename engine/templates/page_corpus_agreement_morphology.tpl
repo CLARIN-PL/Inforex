@@ -2,193 +2,258 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  *}
 
 {include file="inc_header2.tpl"}
 
-<div id="morpho-agreement-container">
-    <div class="row">
-        <div class="col-md-4 con-info scrollingWrapper">
-            <div class="panel panel-default">
-                <div class="panel-heading">Selected subcorpora</div>
-                <div class="panel-body scrolling left-container">
-                    <table id="reports_table" class="table table-striped dataTable no-footer hover" cellspacing="0" width="100%">
-                        <thead>
-                        <tr role="row">
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Total tokens</th>
-                            <th>Divergent tags</th>
-                            <th>PSA</th>
-                        </tr>
-                        </thead>
-                    </table>
+<div class="container-fluid admin_tables corpus-morphology-agreement-page">
+    <div class="row corpus-morphology-agreement-grid">
+        <div class="col-md-4 con-info scrollingWrapper corpus-morphology-agreement-list-column">
+            <div class="panel administration-content-panel administration-wsd-panel corpus-morphology-agreement-panel">
+                <div class="panel-heading administration-content-heading">
+                    <span class="administration-content-heading-icon"><i class="fa fa-files-o" aria-hidden="true"></i></span>
+                    <span>Selected subcorpora</span>
+                </div>
+                <div class="panel-body corpus-morphology-agreement-list-body">
+                    <div class="administration-table-wrapper corpus-morphology-agreement-reports-wrapper">
+                        <table id="reports_table" class="table table-striped table-hover administration-table dataTable no-footer" cellspacing="0" width="100%">
+                            <thead>
+                            <tr role="row">
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Total tokens</th>
+                                <th>Divergent tags</th>
+                                <th>PSA</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <ul id="subcorpora-list"></ul>
                 </div>
             </div>
-
         </div>
-        <div class="col-md-5 col-main scrollingWrapper">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Differing annotations</div>
-                <div class="panel-body scrolling" style="padding: 0">
-                    <table id="difference_table" class="table table-striped" cellspacing="1"">
-                        <thead>
-                        <tr>
-                            <th>Tok range</th>
-                            <th>Orth</th>
-                            <th>1st user decision</th>
-                            <th>2nd user decision</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+
+        <div class="col-md-5 col-main scrollingWrapper corpus-morphology-agreement-main-column">
+            <div class="panel administration-content-panel administration-wsd-panel corpus-morphology-agreement-panel">
+                <div class="panel-heading administration-content-heading">
+                    <span class="administration-content-heading-icon"><i class="fa fa-exchange" aria-hidden="true"></i></span>
+                    <span>Differing annotations</span>
+                </div>
+                <div class="panel-body corpus-morphology-agreement-diff-body">
+                    <div class="administration-table-wrapper corpus-morphology-agreement-diff-wrapper">
+                        <table id="difference_table" class="table table-striped table-hover administration-table corpus-morphology-agreement-diff-table" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th>Tok range</th>
+                                <th>Orth</th>
+                                <th>1st user decision</th>
+                                <th>2nd user decision</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <form action="index.php" method="GET">
-        <div class="col-md-3 col-config">
-            <div class="panel panel-info scrollingWrapper">
-                <div class="panel-heading">View configuration</div>
-                <div class="panel-body scrolling" style="">
-                    <input type="hidden" name="page" value="{$page}"/>
-                    <input type="hidden" name="corpus" value="{$corpus.id}"/>
+        <div class="col-md-3 col-config scrollingWrapper corpus-morphology-agreement-sidebar-column">
+            <form action="index.php" method="get">
+                <input type="hidden" name="page" value="{$page}"/>
+                <input type="hidden" name="corpus" value="{$corpus.id}"/>
 
+                <div class="panel-group corpus-morphology-agreement-accordion corpus-agreement-accordion" id="corpusMorphologyAgreementAccordion">
+                    <div class="panel administration-content-panel corpus-morphology-agreement-panel corpus-morphology-agreement-config-panel">
+                        <div class="panel-heading administration-content-heading corpus-morphology-agreement-accordion-heading corpus-agreement-accordion-heading">
+                            <a data-toggle="collapse" data-parent="#corpusMorphologyAgreementAccordion" href="#corpusMorphologyAgreementConfig" class="corpus-morphology-agreement-accordion-toggle corpus-agreement-accordion-toggle">
+                                <span class="administration-content-heading-icon"><i class="fa fa-sliders" aria-hidden="true"></i></span>
+                                <span>View configuration</span>
+                                <i class="fa fa-chevron-down corpus-morphology-agreement-accordion-chevron corpus-agreement-accordion-chevron" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <div id="corpusMorphologyAgreementConfig" class="panel-collapse collapse in">
+                            <div class="panel-body corpus-morphology-agreement-config-body">
+                                <div class="corpus-morphology-agreement-config-card">
+                                    <div class="corpus-morphology-agreement-config-card-heading">Documents</div>
+                                    <div class="corpus-morphology-agreement-config-card-body corpus-morphology-agreement-documents-card-body">
+                                        <div class="corpus-morphology-agreement-filter-block">
+                                            <div class="corpus-morphology-agreement-filter-label">By flag</div>
+                                            <div class="corpus-morphology-agreement-flag-row">
+                                                <select name="corpus_flag_id" class="form-control">
+                                                    <option value="">Select flag</option>
+                                                    {foreach from=$corpus_flags item=flag}
+                                                        <option value="{$flag.short}" {if $flag.short==$corpus_flag_id}selected="selected"{/if} title="{$flag.name|escape}">{$flag.short}</option>
+                                                    {/foreach}
+                                                </select>
+                                                <select name="flag_id" class="form-control">
+                                                    <option value="">type</option>
+                                                    {foreach from=$flags item=flag}
+                                                        <option value="{$flag.flag_id}" {if $flag.flag_id==$flag_id}selected="selected"{/if}>{$flag.name}</option>
+                                                    {/foreach}
+                                                </select>
+                                            </div>
+                                        </div>
 
-                    <div class="panel panel-default" style="margin: 5px;">
-                        <div class="panel-heading">Documents</div>
-                        <div class="panel-body" style="">
-                            <h4>By flag</h4>
-                            <select name="corpus_flag_id" style="font-size: 12px">
-                                <option style="font-style: italic">Select flag</option>
-                                {foreach from=$corpus_flags item=flag}
-                                <option value="{$flag.short}" {if $flag.short==$corpus_flag_id}selected="selected"{/if} title="{$flag.name}"><em>{$flag.short}</em></option>
-                                {/foreach}
-                            </select>
-                            <select name="flag_id" style="font-size: 12px">
-                                <option style="font-style: italic">type</option>
-                                {foreach from=$flags item=flag}
-                                <option value="{$flag.flag_id}" style="background-image:url(gfx/flag_{$flag.flag_id}.png); background-repeat: no-repeat; padding-left: 20px;" {if $flag.flag_id==$flag_id}selected="selected"{/if}>{$flag.name}</option>
-                                {/foreach}
-                            </select>
+                                        <div class="corpus-morphology-agreement-filter-block">
+                                            <div class="corpus-morphology-agreement-filter-label">By subcorpus</div>
+                                            <div class="corpus-morphology-agreement-subcorpus-list">
+                                                {foreach from=$subcorpora item=subcorpus}
+                                                    <label class="corpus-morphology-agreement-subcorpus-option">
+                                                        <input type="checkbox" name="subcorpus_ids[]" value="{$subcorpus.subcorpus_id}" {if in_array($subcorpus.subcorpus_id, $subcorpus_ids)}checked="checked"{/if} />
+                                                        <span>{$subcorpus.name}</span>
+                                                    </label>
+                                                {/foreach}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <h4>By subcorpus</h4>
-                            <div style="vertical-align: middle; line-height: 20px">
-                                {foreach from=$subcorpora item=subcorpus}
-                                <label><input type="checkbox" name="subcorpus_ids[]" value="{$subcorpus.subcorpus_id}" {if in_array($subcorpus.subcorpus_id, $subcorpus_ids)}checked="checked"{/if} /> {$subcorpus.name}</label>
-                                {/foreach}
+                                <div class="corpus-morphology-agreement-config-card">
+                                    <div class="corpus-morphology-agreement-config-card-heading">Comparison mode</div>
+                                    <div class="corpus-morphology-agreement-config-card-body">
+                                        <select name="comparision_mode" class="form-control">
+                                            {foreach from=$comparision_modes key=k item=mode}
+                                                <option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
+                                            {/foreach}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="corpus-morphology-agreement-config-card">
+                                    <div class="corpus-morphology-agreement-config-card-heading">Users</div>
+                                    <div class="corpus-morphology-agreement-config-card-body">
+                                        {if $annotators|@count == 0}
+                                            <div class="corpus-morphology-agreement-empty corpus-morphology-agreement-sidebar-empty">
+                                                <i class="fa fa-user-times" aria-hidden="true"></i>
+                                                <div>
+                                                    <strong>No agreement annotations</strong>
+                                                    <span>There are no users with agreement annotations for the selected criteria.</span>
+                                                </div>
+                                            </div>
+                                        {else}
+                                            {if $globalPSC}
+                                                <div class="corpus-morphology-agreement-global-psc">
+                                                    Users PSC in selected documents:
+                                                    <strong>{$globalPSC|string_format:"%.2f"}</strong>
+                                                </div>
+                                            {/if}
+                                            <div class="administration-table-wrapper corpus-morphology-agreement-users-wrapper">
+                                                <table class="table table-striped table-hover administration-table corpus-morphology-agreement-users-table" cellspacing="1">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="td-center corpus-morphology-agreement-users-annotator-column" title="Annotator"><i class="fa fa-user" aria-hidden="true"></i></th>
+                                                        <th class="td-right" title="Number of annotations">Anns*</th>
+                                                        <th class="td-right" title="Number of documents with user's annotations">Docs</th>
+                                                        <th class="td-center">A</th>
+                                                        <th class="td-center">B</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {foreach from=$annotators item=a}
+                                                        <tr{if $a.user_id == $annotator_a_id} class="user_a"{elseif $a.user_id == $annotator_b_id} class="user_b"{/if}>
+                                                            <td class="td-center">
+                                                                {assign var=annotator_name_normalized value=$a.screename|regex_replace:"/[^[:alnum:]]+/":" "|trim}
+                                                                {assign var=annotator_abbr value=$annotator_name_normalized|regex_replace:"/(^|[[:space:]]+)([[:alnum:]])[[:alnum:]]*/":"$2"|regex_replace:"/[^[:alnum:]]+/":""|upper}
+                                                                {assign var=annotator_short value=$a.screename|regex_replace:"/[^[:alnum:]]+/":""|truncate:3:""|upper}
+                                                                <span class="corpus-morphology-agreement-user-badge" title="{$a.screename|escape}">
+                                                                    {if $annotator_abbr|strlen > 1}
+                                                                        {$annotator_abbr}
+                                                                    {else}
+                                                                        {$annotator_short}
+                                                                    {/if}
+                                                                </span>
+                                                            </td>
+                                                            <td class="td-right">{$a.annotation_count}</td>
+                                                            <td class="td-right">{$a.document_count}</td>
+                                                            <td class="td-center"><input type="radio" name="annotator_a_id" value="{$a.user_id}" {if $a.user_id == $annotator_a_id}checked="checked"{/if}/></td>
+                                                            <td class="td-center"><input type="radio" name="annotator_b_id" value="{$a.user_id}" {if $a.user_id == $annotator_b_id}checked="checked"{/if}/></td>
+                                                        </tr>
+                                                    {/foreach}
+                                                    <tr{if "final" == $annotator_a_id} class="user_a"{elseif "final" == $annotator_b_id} class="user_b"{/if}>
+                                                        <td class="td-center"><span class="corpus-morphology-agreement-user-badge corpus-morphology-agreement-user-badge-final" title="Final annotations">FA</span></td>
+                                                        <td class="td-right"><strong>{$annotation_set_final_count}</strong></td>
+                                                        <td class="td-right"><strong>{$annotation_set_final_doc_count}</strong></td>
+                                                        <td class="td-center"><input type="radio" name="annotator_a_id" value="final" {if "final" == $annotator_a_id}checked="checked"{/if}/></td>
+                                                        <td class="td-center"><input type="radio" name="annotator_b_id" value="final" {if "final" == $annotator_b_id}checked="checked"{/if}/></td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="corpus-morphology-agreement-users-note">*Only <em>agreement</em> annotations different from default tagger decision.</div>
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer corpus-morphology-agreement-config-footer">
+                                <button type="submit" class="btn btn-primary corpus-morphology-agreement-apply-btn" id="apply">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                    <span>Apply configuration</span>
+                                </button>
                             </div>
                         </div>
                     </div>
-
-                    <div class="panel panel-default" style="margin: 5px;">
-                        <div class="panel-heading">Comparision mode</div>
-                        <div class="panel-body" style="">
-
-                            <select name="comparision_mode">
-                                {foreach from=$comparision_modes key=k item=mode}
-                                    <option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
-                                {/foreach}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="panel panel-default" style="margin: 5px;">
-                        <div class="panel-heading">Users</div>
-                        <div class="panel-body" style="">
-
-                            {if $annotators|@count == 0}
-                                {capture assign=message}
-                                <em>There are no users with agreement annotations for the selected criteria.</em>
-                                {/capture}
-                                {include file="common_message.tpl"}
-                            {else}
-                                {if $globalPSC}
-                                    <h5>Users PSC in selected documents: <b>{$globalPSC|string_format:"%.2f"}</b></h5>
-                                {/if}
-                            <table class="tablesorter" cellspacing="1" style="width: 100%; margin-top: 6px;">
-                                <tr><th>Annotator name</th>
-                                    <th title="Number of annotations">Anns*</th>
-                                    <th title="Number of documents with user's annotations">Docs</th>
-                                    <th style="text-align: center">A</th>
-                                    <th style="text-align: center">B</th>
-                                </tr>
-                                {foreach from=$annotators item=a}
-                                <tr{if $a.user_id == $annotator_a_id} class="user_a"{elseif $a.user_id == $annotator_b_id} class="user_b"{/if}>
-                                    <td style="line-height: 20px">{$a.screename}</td>
-                                    <td style="line-height: 20px; text-align: right">{$a.annotation_count}</td>
-                                    <td style="line-height: 20px; text-align: right">{$a.document_count}</td>
-                                    <td style="text-align: center;"><input type="radio" name="annotator_a_id" value="{$a.user_id}" {if $a.user_id == $annotator_a_id}checked="checked"{/if}/></td>
-                                    <td style="text-align: center;"><input type="radio" name="annotator_b_id" value="{$a.user_id}" {if $a.user_id == $annotator_b_id}checked="checked"{/if}/></td>
-                                </tr>
-                                {/foreach}
-                                <tr{if "final" == $annotator_a_id} class="user_a"{elseif "final" == $annotator_b_id} class="user_b"{/if} style="font-weight: bold">
-                                    <td style="line-height: 20px;">Final annotations</td>
-                                    <td style="line-height: 20px; text-align: right">{$annotation_set_final_count}</td>
-                                    <td style="line-height: 20px; text-align: right">{$annotation_set_final_doc_count}</td>
-                                    <td style="text-align: center;"><input type="radio" name="annotator_a_id" value="final" {if "final" == $annotator_a_id}checked="checked"{/if}/></td>
-                                    <td style="text-align: center;"><input type="radio" name="annotator_b_id" value="final" {if "final" == $annotator_b_id}checked="checked"{/if}/></td>
-                                </tr>
-                            </table>
-                            <em>*Only <i>agreement</i> annotations different from default tagger decision.</em>
-                            {/if}
-                        </div>
-                    </div>
-
                 </div>
-                <div class="panel-footer">
-                    <input type="submit" value="Apply configuration" class="btn btn-primary" id="apply"/>
-                </div>
-            </div>
+            </form>
         </div>
-        </form>
-
     </div>
 </div>
 
 <script>
-	var reports = {$reports|@json_encode};
-	var subcorp = {$selectedSubcorp|@json_encode};
-	var usersMorphoDisamb = []; //{$usersMorphoDisambSet|@json_encode};
-	var annotator_a_id = {$annotator_a_id|@json_encode}; 
-	var annotator_b_id = {$annotator_b_id|@json_encode}; 
-	var annotators = {$annotators|@json_encode}; 
+    var reports = {$reports|@json_encode};
+    var subcorp = {$selectedSubcorp|@json_encode};
+    var usersMorphoDisamb = [];
+    var annotator_a_id = {$annotator_a_id|@json_encode};
+    var annotator_b_id = {$annotator_b_id|@json_encode};
+    var annotators = {$annotators|@json_encode};
 
-	var selectedAnnotators = [];
-	selectedAnnotators.push(annotators.find(
-	    function(it){ldelim}
-	        return it.user_id === annotator_a_id;
+    var selectedAnnotators = [];
+    selectedAnnotators.push(annotators.find(
+        function(it){ldelim}
+            return it.user_id === annotator_a_id;
         {rdelim}));
 
     selectedAnnotators.push(annotators.find(
-	    function(it){ldelim}
-	        return it.user_id === annotator_b_id;
+        function(it){ldelim}
+            return it.user_id === annotator_b_id;
         {rdelim}));
 
-    var reportsTable = $('#reports_table').DataTable( {ldelim}
-        scrollY:        "65vh",
-        scrollX:        true,
-        scrollCollapse: true,
-        paging:         false,
-        fixedColumns:   {ldelim}
-            leftColumns: 2
-        {rdelim},
-        fixedColumns:   true,
-        bInfo:			false,
-    {rdelim} );
+    var reportsTable = $('#reports_table').DataTable({ldelim}
+        scrollX: false,
+        paging: true,
+        pageLength: 10,
+        lengthChange: false,
+        searching: false,
+        info: true,
+        ordering: false,
+        autoWidth: false,
+        pagingType: "full_numbers",
+        dom: 't<"administration-wsd-datatables-footer"ip>',
+        createdRow: function(row, data) {ldelim}
+            $('td:eq(1)', row).attr('title', data[1]);
+        {rdelim}
+    {rdelim});
 
-    var diffTable = $('#difference_table');
+    var diffTable = $('#difference_table').DataTable({ldelim}
+        paging: true,
+        pageLength: 10,
+        lengthChange: false,
+        searching: false,
+        info: true,
+        ordering: false,
+        autoWidth: false,
+        pagingType: "full_numbers",
+        dom: 't<"administration-wsd-datatables-footer"ip>'
+    {rdelim});
 
-	var morphoAgreementModule = new MorphoAgreementPreview(
-	    reportsTable,
+    var morphoAgreementModule = new MorphoAgreementPreview(
+        reportsTable,
         diffTable,
-		[annotator_a_id, annotator_b_id ],
+        [annotator_a_id, annotator_b_id],
         reports,
-		subcorp,
-		usersMorphoDisamb
-	);
+        subcorp,
+        usersMorphoDisamb
+    );
 </script>
 {include file="inc_footer.tpl"}

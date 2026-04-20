@@ -11,7 +11,9 @@
 {assign var="button_text" value="Create document"}
 {assign var="add_content" value="report_content"}
 {assign var="header" value="Add document"}
-{include file="inc_report_wrong_changes.tpl"}
-{include file="inc_document_metadata_form.tpl"}
+<div class="corpus-document-add-page">
+    {include file="inc_report_wrong_changes.tpl"}
+    {include file="inc_document_metadata_form.tpl"}
+</div>
 
 {include file="inc_footer.tpl"}

@@ -1,3 +1,841 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.row-report {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.report-annotator-content-column,
+.report-annotator-config-column,
+.report-annotator-details-column,
+#col-flags {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.report-annotator-content-panel.administration-content-panel,
+.report-annotator-details-panel.administration-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-annotator-content-panel .administration-content-heading,
+.report-annotator-details-panel .administration-content-heading {
+    border-bottom-width: 1px;
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-annotator-content-panel .administration-content-heading-icon,
+.report-annotator-details-panel .administration-content-heading-icon {
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 10px;
+    height: 16px;
+    width: 16px;
+}
+
+.report-annotator-content-body {
+    background: #fbfdfe;
+    padding: 0;
+}
+
+.report-annotator-document-content {
+    background:
+        linear-gradient(90deg, rgba(23, 109, 125, 0.04) 0, rgba(23, 109, 125, 0) 18px),
+        #fff;
+    border-right: 1px solid #d7e4ea;
+    float: left;
+}
+
+.report-annotator-content-column .scrolling,
+.report-annotator-content-column .scrollingAccordion,
+.report-annotator-config-column .scrolling,
+.report-annotator-config-column .scrollingAccordion,
+.report-annotator-details-column .scrolling,
+.report-annotator-details-column .scrollingAccordion,
+.report-annotator-document-content,
+.report-annotator-config-column #annotation-types,
+.report-annotator-config-column #annotation_layers,
+.report-annotator-config-column #annotationList,
+.report-annotator-config-column #relationList,
+.report-annotator-config-column #widget_annotation,
+.report-annotator-details-column .relationsContainer {
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-annotator-content-column .scrolling::-webkit-scrollbar,
+.report-annotator-content-column .scrollingAccordion::-webkit-scrollbar,
+.report-annotator-config-column .scrolling::-webkit-scrollbar,
+.report-annotator-config-column .scrollingAccordion::-webkit-scrollbar,
+.report-annotator-details-column .scrolling::-webkit-scrollbar,
+.report-annotator-details-column .scrollingAccordion::-webkit-scrollbar,
+.report-annotator-document-content::-webkit-scrollbar,
+.report-annotator-config-column #annotation-types::-webkit-scrollbar,
+.report-annotator-config-column #annotation_layers::-webkit-scrollbar,
+.report-annotator-config-column #annotationList::-webkit-scrollbar,
+.report-annotator-config-column #relationList::-webkit-scrollbar,
+.report-annotator-config-column #widget_annotation::-webkit-scrollbar,
+.report-annotator-details-column .relationsContainer::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-annotator-content-column .scrolling::-webkit-scrollbar-track,
+.report-annotator-content-column .scrollingAccordion::-webkit-scrollbar-track,
+.report-annotator-config-column .scrolling::-webkit-scrollbar-track,
+.report-annotator-config-column .scrollingAccordion::-webkit-scrollbar-track,
+.report-annotator-details-column .scrolling::-webkit-scrollbar-track,
+.report-annotator-details-column .scrollingAccordion::-webkit-scrollbar-track,
+.report-annotator-document-content::-webkit-scrollbar-track,
+.report-annotator-config-column #annotation-types::-webkit-scrollbar-track,
+.report-annotator-config-column #annotation_layers::-webkit-scrollbar-track,
+.report-annotator-config-column #annotationList::-webkit-scrollbar-track,
+.report-annotator-config-column #relationList::-webkit-scrollbar-track,
+.report-annotator-config-column #widget_annotation::-webkit-scrollbar-track,
+.report-annotator-details-column .relationsContainer::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-annotator-content-column .scrolling::-webkit-scrollbar-thumb,
+.report-annotator-content-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.report-annotator-config-column .scrolling::-webkit-scrollbar-thumb,
+.report-annotator-config-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.report-annotator-details-column .scrolling::-webkit-scrollbar-thumb,
+.report-annotator-details-column .scrollingAccordion::-webkit-scrollbar-thumb,
+.report-annotator-document-content::-webkit-scrollbar-thumb,
+.report-annotator-config-column #annotation-types::-webkit-scrollbar-thumb,
+.report-annotator-config-column #annotation_layers::-webkit-scrollbar-thumb,
+.report-annotator-config-column #annotationList::-webkit-scrollbar-thumb,
+.report-annotator-config-column #relationList::-webkit-scrollbar-thumb,
+.report-annotator-config-column #widget_annotation::-webkit-scrollbar-thumb,
+.report-annotator-details-column .relationsContainer::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-annotator-content-column .scrolling::-webkit-scrollbar-thumb:hover,
+.report-annotator-content-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.report-annotator-config-column .scrolling::-webkit-scrollbar-thumb:hover,
+.report-annotator-config-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.report-annotator-details-column .scrolling::-webkit-scrollbar-thumb:hover,
+.report-annotator-details-column .scrollingAccordion::-webkit-scrollbar-thumb:hover,
+.report-annotator-document-content::-webkit-scrollbar-thumb:hover,
+.report-annotator-config-column #annotation-types::-webkit-scrollbar-thumb:hover,
+.report-annotator-config-column #annotation_layers::-webkit-scrollbar-thumb:hover,
+.report-annotator-config-column #annotationList::-webkit-scrollbar-thumb:hover,
+.report-annotator-config-column #relationList::-webkit-scrollbar-thumb:hover,
+.report-annotator-config-column #widget_annotation::-webkit-scrollbar-thumb:hover,
+.report-annotator-details-column .relationsContainer::-webkit-scrollbar-thumb:hover {
+    background: #82aebb;
+}
+
+.report-annotator-content-box {
+    color: #263f4c;
+    font-size: 11px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 9px 11px 13px;
+}
+
+.report-annotator-content-box * {
+    line-height: inherit;
+}
+
+.report-annotator-config-column .panel,
+.report-annotator-relations-panel {
+    background: #fff;
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(32, 56, 73, 0.05);
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.report-annotator-config-column .panel > .panel-heading,
+.report-annotator-card-heading {
+    align-items: center;
+    background:
+        linear-gradient(135deg, #ffffff 0%, #eef7f6 100%),
+        radial-gradient(circle at top right, rgba(31, 111, 147, 0.10), transparent 34%);
+    border: 0;
+    border-bottom: 1px solid #d8e4eb;
+    color: #174f69 !important;
+    display: flex;
+    font-size: 10px;
+    font-weight: bold;
+    gap: 5px;
+    line-height: 1.1;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-annotator-config-column .panel-group {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.report-annotator-config-column .panel + .panel {
+    margin-top: 8px;
+}
+
+.report-annotator-config-column .panel-title {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+    width: 100%;
+}
+
+.report-annotator-config-column .panel-title > a {
+    align-items: center;
+    color: #174f69;
+    display: flex;
+    font-size: 10px;
+    gap: 5px;
+    justify-content: space-between;
+    line-height: 1.1;
+    text-decoration: none;
+    width: 100%;
+}
+
+.report-annotator-config-column .panel-title > a:before {
+    color: #174f69;
+    content: "\f0ae";
+    display: inline-block;
+    font-family: FontAwesome;
+    font-size: 10px;
+    margin-right: 2px;
+    text-align: center;
+    width: 11px;
+}
+
+.report-annotator-config-column #headingConfiguration .panel-title > a:before {
+    content: "\f013";
+}
+
+.report-annotator-config-column #headingPad .panel-title > a:before {
+    content: "\f02b";
+}
+
+.report-annotator-config-column #headingAnnotations .panel-title > a:before {
+    content: "\f02c";
+}
+
+.report-annotator-config-column #headingRelations .panel-title > a:before {
+    content: "\f0e8";
+}
+
+.report-annotator-config-column .panel-title > a:after {
+    color: #6e8793;
+    content: "\f107";
+    font-family: FontAwesome;
+    font-size: 10px;
+    margin-left: auto;
+}
+
+.report-annotator-config-column .panel-title > a[aria-expanded="true"]:after {
+    content: "\f106";
+}
+
+.report-annotator-config-column .panel-body,
+.report-annotator-config-column .scrollingAccordion {
+    background: #fbfdfe;
+}
+
+.report-annotator-config-column #collapseConfiguration,
+.report-annotator-config-column #collapsePad,
+.report-annotator-config-column #collapseAnnotations,
+.report-annotator-config-column #collapseRelations {
+    padding: 0 !important;
+}
+
+.report-annotator-config-column .panel-body {
+    padding: 7px;
+}
+
+.report-annotator-config-column .panel .panel {
+    border-color: #e0ebf0;
+    border-radius: 8px;
+    box-shadow: none;
+    margin-bottom: 8px;
+}
+
+.report-annotator-config-column .panel .panel > .panel-heading {
+    background: #eef6f8;
+    border-bottom: 1px solid #dce9ee;
+    color: #2f5969;
+    font-size: 10px;
+    font-weight: 700;
+    min-height: 0;
+    padding: 6px 8px;
+}
+
+.report-annotator-config-column .panel .panel > .panel-body {
+    background: #fff;
+    padding: 7px;
+}
+
+.report-annotator-config-column .panel-footer {
+    background: #f5fafc;
+    border-top: 1px solid #dce9ee;
+    padding: 7px 8px;
+    text-align: right;
+}
+
+.report-annotator-config-column .form-horizontal {
+    background: #f8fcfd;
+    border: 1px solid #e1ebf0;
+    border-radius: 7px;
+    margin: 0 0 7px;
+    padding: 7px;
+}
+
+.report-annotator-config-column .form-group {
+    margin-bottom: 5px;
+}
+
+.report-annotator-config-column .control-label {
+    color: #456674;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    padding-top: 5px;
+    text-transform: uppercase;
+}
+
+.report-annotator-config-column .form-control {
+    background: #ffffff;
+    border: 1px solid #c9dce4;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #263f4c;
+    font-size: 10px;
+    height: 24px;
+    line-height: 1.2;
+    padding: 2px 6px;
+}
+
+.report-annotator-config-column .form-control:focus {
+    border-color: #1f6f93;
+    box-shadow: 0 0 0 2px rgba(31, 111, 147, 0.12);
+}
+
+.report-annotator-config-column hr {
+    border-color: #e3edf2;
+    margin: 6px 0;
+}
+
+.report-annotator-config-column .table {
+    color: #2f4754;
+    font-size: 10px;
+    margin-bottom: 0;
+}
+
+.report-annotator-config-column #annotationList table,
+.report-annotator-config-column #relationList table {
+    font-size: 9px !important;
+    table-layout: fixed;
+}
+
+.report-annotator-config-column #annotationList th,
+.report-annotator-config-column #annotationList td,
+.report-annotator-config-column #relationList th,
+.report-annotator-config-column #relationList td {
+    line-height: 1.15;
+    padding: 3px 4px;
+}
+
+.report-annotator-config-column #annotationList th:nth-child(1),
+.report-annotator-config-column #annotationList td:nth-child(1) {
+    width: 34px;
+}
+
+.report-annotator-config-column #annotationList th:nth-child(2),
+.report-annotator-config-column #annotationList td:nth-child(2) {
+    width: 58px;
+}
+
+.report-annotator-config-column #annotationList th:nth-child(5),
+.report-annotator-config-column #annotationList td:nth-child(5) {
+    width: 46px;
+}
+
+.report-annotator-config-column #annotationList th:nth-child(6),
+.report-annotator-config-column #annotationList td:nth-child(6) {
+    width: 42px;
+}
+
+.report-annotator-config-column #annotationList td:nth-child(2),
+.report-annotator-config-column #annotationList td:nth-child(3),
+.report-annotator-config-column #annotationList td.attributes,
+.report-annotator-config-column #relationList td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.report-annotator-config-column #relationList th:nth-child(1),
+.report-annotator-config-column #relationList td:nth-child(1) {
+    width: 58px;
+}
+
+.report-annotator-config-column .table > thead > tr > th,
+.report-annotator-config-column .table > thead > th {
+    background: #eaf3f7;
+    border-bottom: 1px solid #d7e4ea;
+    color: #496572;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    line-height: 1.15;
+    padding: 4px 5px;
+    text-transform: uppercase;
+}
+
+.report-annotator-config-column .table > tbody > tr > td {
+    border-top: 1px solid #edf3f6;
+    line-height: 1.2;
+    padding: 4px 5px;
+    vertical-align: middle;
+}
+
+.report-annotator-config-column #annotation_layers table,
+.report-annotator-config-column #relation-sets {
+    table-layout: fixed;
+}
+
+.report-annotator-config-column #annotation_layers th:first-child,
+.report-annotator-config-column #annotation_layers td:first-child,
+.report-annotator-config-column #relation-sets th:first-child,
+.report-annotator-config-column #relation-sets td:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.report-annotator-config-column #annotation_layers th:last-child,
+.report-annotator-config-column #annotation_layers td:last-child,
+.report-annotator-config-column #relation-sets th:last-child,
+.report-annotator-config-column #relation-sets td:last-child {
+    text-align: center;
+    width: 52px !important;
+}
+
+.report-annotator-config-column #annotation_layers td,
+.report-annotator-config-column #relation-sets td {
+    font-size: 9px;
+}
+
+.report-annotator-config-column .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f8fbfc;
+}
+
+.report-annotator-config-column .table-striped > tbody > tr:hover {
+    background-color: #dff2f7;
+}
+
+.report-annotator-config-column .icons,
+.report-annotator-config-column .range,
+.report-annotator-config-column #relation-sets th:last-child,
+.report-annotator-config-column #relation-sets td:last-child,
+.report-annotator-config-column #annotation_layers th:last-child,
+.report-annotator-config-column #annotation_layers td:last-child {
+    white-space: nowrap;
+}
+
+.report-annotator-config-column #relation-sets input[type="checkbox"],
+.report-annotator-config-column #annotation_layers input[type="checkbox"],
+.report-annotator-config-column #splitSentences {
+    height: 12px;
+    margin: 0;
+    width: 12px;
+}
+
+.report-annotator-config-column .hoverIcons a {
+    align-items: center;
+    background: #eef6f8;
+    border: 1px solid #d4e6ed;
+    border-radius: 5px;
+    color: #176d7d;
+    display: inline-flex;
+    height: 18px;
+    justify-content: center;
+    margin-left: 2px;
+    width: 18px;
+}
+
+.report-annotator-config-column .hoverIcons a .fa {
+    font-size: 9px;
+}
+
+.report-annotator-config-column .hoverIcons a.annotationDelete {
+    color: #b84d4d;
+}
+
+.report-annotator-config-column .alert-warning {
+    background: #fff7e4;
+    border: 1px solid #f1d89a;
+    border-radius: 8px;
+    color: #77591f;
+    font-size: 11px;
+    margin: 10px;
+}
+
+.report-annotator-config-column .checkbox input[type="checkbox"],
+.report-annotator-config-column input[type="checkbox"] {
+    accent-color: #197b8c;
+}
+
+.report-annotator-config-column #annotation-types {
+    background: #ffffff;
+    border: 1px solid #e1ebf0;
+    border-radius: 7px;
+    color: #2f4754;
+    font-size: 10px;
+    padding: 7px !important;
+}
+
+.report-annotator-config-column #annotation-types .tree {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.report-annotator-config-column #annotation-types .tree > div {
+    color: #5d6f7d;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 5px 6px;
+}
+
+.report-annotator-config-column #annotation-types ul,
+.report-annotator-config-column #annotation-types li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.report-annotator-config-column #annotation-types ul {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.report-annotator-config-column #annotation-types li {
+    color: #345462;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.report-annotator-config-column #annotation-types .subsets,
+.report-annotator-config-column #annotation-types .types {
+    border-left: 1px solid #dce9ee;
+    gap: 3px;
+    margin: 4px 0 0 8px;
+    padding-left: 7px;
+}
+
+.report-annotator-config-column #annotation-types a,
+.report-annotator-config-column #annotation-types label {
+    color: #345462;
+    font-size: 10px;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.report-annotator-config-column #annotation-types a:hover,
+.report-annotator-config-column #annotation-types a:focus {
+    color: #176d7d;
+    text-decoration: none;
+}
+
+.report-annotator-config-column #annotation-types a.toggle_cookie,
+.report-annotator-config-column #annotation-types a.short_all {
+    align-items: center;
+    background: #eef6f8;
+    border: 1px solid #d4e6ed;
+    border-radius: 5px;
+    color: #176d7d;
+    display: inline-flex;
+    font-size: 9px;
+    font-weight: 700;
+    gap: 4px;
+    line-height: 1.1;
+    margin: 2px 3px 2px 0;
+    padding: 3px 5px;
+}
+
+.report-annotator-config-column #annotation-types a.toggle_cookie:before {
+    content: "\f06e";
+    font-family: FontAwesome;
+    font-size: 9px;
+}
+
+.report-annotator-config-column #annotation-types a.short_all:before {
+    content: "\f0ca";
+    font-family: FontAwesome;
+    font-size: 9px;
+}
+
+.report-annotator-config-column #annotation-types .tree > ul > li,
+.report-annotator-config-column #annotation-types .tree > li,
+.report-annotator-config-column #annotation-types .annotation-set,
+.report-annotator-config-column #annotation-types .annotation_subset,
+.report-annotator-config-column #annotation-types .subset {
+    background: #f8fcfd;
+    border: 1px solid #e1ebf0;
+    border-radius: 7px;
+    padding: 6px;
+}
+
+.report-annotator-config-column #annotation-types .types li,
+.report-annotator-config-column #annotation-types li[class*="annotation_type"] {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #edf3f6;
+    border-radius: 6px;
+    display: flex;
+    gap: 5px;
+    min-height: 24px;
+    padding: 3px 5px;
+}
+
+.report-annotator-config-column #annotation-types .types li:hover,
+.report-annotator-config-column #annotation-types li[class*="annotation_type"]:hover {
+    background: #eef7f6;
+    border-color: #c8dde5;
+}
+
+.report-annotator-config-column #annotation-types input[type="radio"] {
+    accent-color: #197b8c;
+    height: 12px;
+    margin: 0 5px 0 0;
+    width: 12px;
+}
+
+.report-annotator-config-column #annotation-types input[type="radio"]:checked + span,
+.report-annotator-config-column #annotation-types input[type="radio"]:checked + label,
+.report-annotator-config-column #annotation-types input[type="radio"]:checked ~ span {
+    color: #1f6f52;
+    font-weight: 700;
+}
+
+.report-annotator-config-column #annotation-types .hightlighted,
+.report-annotator-config-column #annotation-types .highlighted,
+.report-annotator-config-column #annotation-types .selected {
+    background: #e6f4f0 !important;
+    border-color: #9fcfc0 !important;
+    color: #1f6f52 !important;
+}
+
+.report-annotator-config-column #quick_add_cancel {
+    background: #fff7e4;
+    border: 1px solid #f1d89a;
+    border-radius: 5px;
+    color: #77591f;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    padding: 4px 7px;
+}
+
+.report-annotator-working-mode-panel .panel-body {
+    background: #ffffff;
+    padding: 7px !important;
+}
+
+.report-annotator-working-mode-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.report-annotator-working-mode-option.radio {
+    margin: 0;
+}
+
+.report-annotator-working-mode-option label {
+    align-items: center;
+    background: #f8fcfd;
+    border: 1px solid #e1ebf0;
+    border-radius: 7px;
+    color: #345462;
+    cursor: pointer;
+    display: flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 7px;
+    line-height: 1.15;
+    margin: 0;
+    min-height: 28px;
+    padding: 6px 8px;
+    text-transform: capitalize;
+    transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+}
+
+.report-annotator-working-mode-option label:hover {
+    background: #eef7f6;
+    border-color: #c8dde5;
+    color: #174f69;
+}
+
+.report-annotator-working-mode-option input[type="radio"] {
+    accent-color: #197b8c;
+    height: 12px;
+    margin: 0;
+    position: static;
+    width: 12px;
+}
+
+.report-annotator-working-mode-option label:has(input[type="radio"]:checked) {
+    background: #e6f4f0;
+    border-color: #9fcfc0;
+    color: #1f6f52;
+}
+
+.report-annotator-config-column #applyLayer {
+    align-items: center;
+    background: #2f7d57;
+    border: 1px solid #276948;
+    border-radius: 5px;
+    box-shadow: 0 6px 14px rgba(47, 125, 87, 0.18);
+    color: #fff;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1.1;
+    padding: 5px 10px;
+}
+
+.report-annotator-config-column #applyLayer:before {
+    content: "\f00c";
+    font-family: FontAwesome;
+    font-size: 10px;
+}
+
+.report-annotator-config-column #applyLayer:hover,
+.report-annotator-config-column #applyLayer:focus {
+    background: #276948;
+    border-color: #1f573b;
+    color: #fff;
+}
+
+.report-annotator-details-body,
+.report-annotator-relations-body {
+    background: #ffffff;
+    padding: 0;
+}
+
+.report-annotator-details-table,
+.report-annotator-relations-table {
+    color: #263f4c;
+    font-size: 10px;
+    margin-bottom: 0;
+}
+
+.report-annotator-details-table > tbody > tr > th,
+.report-annotator-relations-table > thead > tr > th {
+    background: #eaf3f7;
+    border-bottom: 1px solid #d7e4ea;
+    color: #496572;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    line-height: 1.15;
+    padding: 5px 6px;
+    text-transform: uppercase;
+    width: 78px;
+}
+
+.report-annotator-details-table > tbody > tr > td,
+.report-annotator-relations-table > tbody > tr > td {
+    border-top: 1px solid #edf3f6;
+    line-height: 1.25;
+    padding: 5px 6px;
+    vertical-align: middle;
+}
+
+.report-annotator-details-table .form-control {
+    border: 1px solid #c9dce4;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #263f4c;
+    font-size: 10px;
+    height: 24px;
+    padding: 3px 7px;
+}
+
+.report-annotator-type-change {
+    float: right;
+}
+
+.report-annotator-footer {
+    align-items: center;
+    background: #f5fafc;
+    border-top: 1px solid #dce9ee;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding: 7px 8px;
+}
+
+.report-annotator-close-button {
+    align-items: center;
+    border-radius: 5px;
+    display: inline-flex;
+    font-size: 10px;
+    height: 22px;
+    justify-content: center;
+    margin-left: auto;
+    padding: 0;
+    width: 24px;
+}
+
+.report-annotator-save-button {
+    background: #2f7d57;
+    border-color: #276948;
+    border-radius: 5px;
+    box-shadow: 0 6px 14px rgba(47, 125, 87, 0.18);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    padding: 5px 10px;
+}
+
+.report-annotator-save-button:hover,
+.report-annotator-save-button:focus {
+    background: #276948;
+    border-color: #1f573b;
+}
+
+.report-annotator-delete-button {
+    align-items: center;
+    border-radius: 5px;
+    display: inline-flex;
+    height: 24px;
+    justify-content: center;
+    margin-left: auto;
+    padding: 0;
+    width: 26px;
+}
+
+.report-annotator-loading.administration-wsd-loading {
+    margin: 0 0 8px;
+    min-height: 120px;
+}
+
 span.annotation.new-relation-target { cursor: crosshair; border-color: red; border-style: solid; }
 
 .relation-types .dropdown-menu { height: 400px; overflow: auto; }
