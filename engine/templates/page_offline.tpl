@@ -26,7 +26,7 @@
 		<div class="row">
 			<div class="col-sm-12" style="text-align: center;">
 				<div style="margin: 40px;">
-					<a href="{$Config.url}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
+					<a href="{$Config.url}"><img src="gfx/inforex-logo.svg" style="margin: 4px" title="Inforex home page" alt="Inforex"/></a>
 				</div>
 				<div class="alert alert-info" style="font-size: 24px; margin: 40px;">
 					Our website is currently down for maintenance.
@@ -43,4 +43,3 @@
 </div>
 </body>
 </html>
-

@@ -99,7 +99,11 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 	margin-left: 10px;
 	margin-right: 10px;
 }
-#logo a img { border-width: 0; }
+#logo a img {
+    border-width: 0;
+    height: 31px;
+    width: auto;
+}
 
 #menu_box { float: left; padding: 4px; }
 #menu_box ul { margin: 0px; padding: 4px; }

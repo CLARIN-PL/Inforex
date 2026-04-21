@@ -9,7 +9,7 @@
 	<nav class="navbar navbar-default inforex-main-nav">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="inforex-main-logo" href="index.php" aria-label="Inforex home"><img class="logo" src="gfx/inforex_logo.png" alt="Inforex"></a>
+				<a class="inforex-main-logo" href="index.php" aria-label="Inforex home"><img class="logo" src="gfx/inforex-logo.svg" alt="Inforex"></a>
 			</div>
 			<ul class="nav navbar-nav">
 				<li class="{if $page=="home"} active{/if}">

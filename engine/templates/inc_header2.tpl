@@ -5,8 +5,10 @@
 
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta http-equiv="Content-Language" content="en" />
-		<link rel="icon" type="image/x-icon" href="{$smarty.server.SCRIPT_NAME|dirname}/js/DataTables/images/favicon.ico" />
-		<link rel="shortcut icon" type="image/x-icon" href="{$smarty.server.SCRIPT_NAME|dirname}/js/DataTables/images/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/favicon-16x16.png" />
+		<link rel="manifest" href="{$smarty.server.SCRIPT_NAME|dirname}/site.webmanifest" />
 
 		<link rel="StyleSheet" href="css/page.css?{$rev}" TYPE="text/css"/>
 		<link rel="StyleSheet" href="css/annotations.css?{$rev}" TYPE="text/css"/>

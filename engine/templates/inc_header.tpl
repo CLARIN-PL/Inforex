@@ -13,8 +13,10 @@
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
-	<link rel="icon" type="image/x-icon" href="{$smarty.server.SCRIPT_NAME|dirname}/js/DataTables/images/favicon.ico" />
-	<link rel="shortcut icon" type="image/x-icon" href="{$smarty.server.SCRIPT_NAME|dirname}/js/DataTables/images/favicon.ico" />
+	<link rel="apple-touch-icon" sizes="180x180" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/apple-touch-icon.png" />
+	<link rel="icon" type="image/png" sizes="32x32" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/favicon-32x32.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/favicon-16x16.png" />
+	<link rel="manifest" href="{$smarty.server.SCRIPT_NAME|dirname}/site.webmanifest" />
 
 	<link rel="StyleSheet" href="css/styles.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/annotations.css?20130903" TYPE="text/css"/>
@@ -163,7 +165,7 @@
 	{/if}
 
 	<div id="logo">
-		<a href="{Config::Cfg()->get_url()}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
+		<a href="{Config::Cfg()->get_url()}"><img src="gfx/inforex-logo.svg" style="margin: 4px" title="Inforex home page" alt="Inforex"/></a>
 	</div>
 
 	<div style="float: right; margin-right: 10px; line-height: 30px;">
