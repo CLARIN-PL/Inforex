@@ -13,10 +13,10 @@
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
-	<link rel="apple-touch-icon" sizes="180x180" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/apple-touch-icon.png" />
-	<link rel="icon" type="image/png" sizes="32x32" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/favicon-32x32.png" />
-	<link rel="icon" type="image/png" sizes="16x16" href="{$smarty.server.SCRIPT_NAME|dirname}/gfx/favicon-16x16.png" />
-	<link rel="manifest" href="{$smarty.server.SCRIPT_NAME|dirname}/site.webmanifest" />
+	<link rel="apple-touch-icon" sizes="180x180" href="gfx/apple-touch-icon.png" />
+	<link rel="icon" type="image/png" sizes="32x32" href="gfx/favicon-32x32.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="gfx/favicon-16x16.png" />
+	<link rel="manifest" href="site.webmanifest" />
 
 	<link rel="StyleSheet" href="css/styles.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/annotations.css?20130903" TYPE="text/css"/>
@@ -45,7 +45,7 @@
 	<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
-	<script src="{$smarty.server.SCRIPT_NAME|dirname}/js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>
