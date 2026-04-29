@@ -4,6 +4,7 @@ namespace Inforex\Lpmn\Request;
 
 use Inforex\Lpmn\Http\HttpClient;
 use Inforex\Lpmn\Http\MultipartStreamBuilder;
+use Inforex\Lpmn\Result\JsonlMerger;
 use RuntimeException;
 
 class FileRequest
@@ -89,7 +90,7 @@ class FileRequest
             throw new RuntimeException('File download failed: ' . $response->getBody());
         }
 
-        return $response->getBody();
+        return JsonlMerger::mergeIfNeeded($response->getBody());
     }
 
     public function downloadFile($fileId, $outputPath)
