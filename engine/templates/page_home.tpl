@@ -51,7 +51,14 @@
 						<div class="home-corpora-empty">
 							<i class="fa fa-folder-open-o" aria-hidden="true"></i>
 							{if !$user_id && !$Config.federationLoginUrl}
-								<span><button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm">Login</button> to see the list.</span>
+								<span>
+									{if $Config.oidcEnabled}
+										<a href="index.php?page=login_oidc" class="btn btn-success btn-sm">Federated login</a>
+									{else}
+										<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm">Login</button>
+									{/if}
+									to see the list.
+								</span>
 							{else}
 								<span>No public corpora available.</span>
 							{/if}
@@ -117,7 +124,14 @@
 						<div class="home-corpora-empty">
 							<i class="fa fa-folder-open-o" aria-hidden="true"></i>
 							{if !$user_id && !$Config.federationLoginUrl}
-								<span><button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm">Login</button> to see the list.</span>
+								<span>
+									{if $Config.oidcEnabled}
+										<a href="index.php?page=login_oidc" class="btn btn-success btn-sm">Federated login</a>
+									{else}
+										<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm">Login</button>
+									{/if}
+									to see the list.
+								</span>
 							{else}
 								<span>No corpora available, please log in.</span>
 							{/if}

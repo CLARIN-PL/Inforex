@@ -18,9 +18,6 @@ class Ajax_user_edit extends CPageAdministration {
         $values['login'] = strval($_POST['login']);
         $values['screename'] = strval($_POST['name']);
         $values['email'] = strval($_POST['email']);
-        if ($_POST['password'] != ""){
-            $values['password'] = md5(strval($_POST['password']));
-        }
         $keys['user_id'] = intval($user_id);
         $this->getDb()->update("users", $values, $keys);
 

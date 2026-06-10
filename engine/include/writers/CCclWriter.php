@@ -28,13 +28,39 @@ class CclWriter{
         return $xml; 
 
     } // formatPropToXML()
+
+    protected function formatMetadataToXML($metadata) {
+
+        if (!$metadata || !is_array($metadata) || count($metadata) === 0) {
+            return '';
+        }
+
+        $xml = " <metadata>\n";
+        foreach ($metadata as $key => $value) {
+            $xml .= "  <prop key=\"" . htmlspecialchars((string)$key) . "\">" . htmlspecialchars((string)$value) . "</prop>\n";
+        }
+        $xml .= " </metadata>\n";
+
+        return $xml;
+
+    } // formatMetadataToXML()
 	
     private function makeXmlData($ccl,$mode) {
 
 		$xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		$xml .= "<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n";
+        if ($mode == self::$REL) {
+		    $xml .= "<!DOCTYPE relations SYSTEM \"ccl-rel.dtd\">\n";
+        } elseif ($mode == self::$CCLREL || $mode == self::$CCL) {
+		    $xml .= "<!DOCTYPE document SYSTEM \"ccl-document.dtd\">\n";
+        }
+        $wrapDocument = ($mode == self::$CCLREL || $mode == self::$CCL);
+
+        if ($wrapDocument) {
+            $xml .= "<document>\n";
+        }
 		
 		if ($mode == self::$CCLREL || $mode == self::$CCL){
+            $xml .= $this->formatMetadataToXML(method_exists($ccl, 'getMetadata') ? $ccl->getMetadata() : array());
 			$xml .= "<chunkList>\n";
 			$chunks = $ccl->getChunks();
 			foreach ($chunks as &$chunk){
@@ -81,6 +107,10 @@ class CclWriter{
 		}
 		if ($mode==self::$CCL || $mode==self::$CCLREL)
 			$xml .= "</chunkList>\n";		
+
+        if ($wrapDocument) {
+            $xml .= "</document>\n";
+        }
 
         return $xml;
 

@@ -42,27 +42,9 @@ try{
 	$db = new Database(Config::Cfg()->get_dsn(), Config::Cfg()->get_log_sql(), Config::Cfg()->get_log_output(), Config::Cfg()->get_db_charset());
 	
 	$auth = new UserAuthorize(Config::Cfg()->get_dsn());
+    $auth->handleRequest();
 	$auth->authorize(isset($_POST['logout']) && ($_POST['logout']=="1"));
 	$user = $auth->getUserData();
-
-	// federation login is enabled
-	if(Config::Cfg()->get_federationLoginUrl()){
-		$clarinUser = $auth->getClarinUser();
-
-		// try to connect to local account
-		if($clarinUser){
-            $user = $auth->getClarinLogin();
-
-            // show initial clarin login page if this is users first time logging with federation login
-            if(!$user)
-                $_GET['page']='login_clarin';
-		}
-		// if clarin token not present/ expired
-		else{
-            $auth->authorize(true);
-            $user = null;
-		}
-    }
 
     // load corpus after finally set $user data
     $corpus = RequestLoader::loadCorpus();

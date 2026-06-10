@@ -43,6 +43,7 @@
 					<th style="text-align: left;" data-field="login" data-sortable="true">Login</th>
 					<th style="text-align: left;">Name</th>
 					<th style="text-align: left;">Email</th>
+					<th style="text-align: left;">Authentication</th>
 					<th style="text-align: left;">Roles</th>
 					<th style="text-align: left;">Actions</th>
 				</tr>
@@ -54,6 +55,7 @@
 					<td class="login">{$user.login}</td>
 					<td class="screename">{$user.screename}</td>
 					<td class="email">{$user.email}</td>
+					<td class="auth_identity">{if $user.auth_provider}{$user.auth_provider}{if $user.auth_username}: {$user.auth_username}{/if}{else}local only{/if}</td>
 						<td class="user_roles">{$user.roles}</td>
 						<td><a href="#" class="edit_user_button administration-edit-link" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary btn-sm">Edit</button></a></td>
 				</tr>
@@ -91,8 +93,7 @@
 						<input type = "text" class="form-control" name = "email" id="create_user_email">
 					</div>
 					<div class="form-group">
-						<label for="create_user_password">Password <span class = "required_field">*</span></label>
-						<input class="form-control" type = "password" name = "password" id="create_user_password">
+						<p class="administration-form-hint">Password is no longer managed locally. The account will be linked on first Keycloak login.</p>
 					</div>
 				</form>
 			</div>
@@ -128,9 +129,9 @@
 						<input class="form-control" name = "email" id="edit_user_email">
 					</div>
 					<div class="form-group">
-						<label for="edit_user_password">Password: <span class = "required_field">*</span></label>
-						<p class="administration-form-hint">(Password will not change if the field is empty.)</p>
-						<input class="form-control"  type = "password" name = "password" id="edit_user_password">
+						<label for="edit_user_auth_username">Authentication identity</label>
+						<p class="administration-form-hint">This field is informative. Linking happens during Keycloak login or by updating auth fields directly in the database.</p>
+						<input class="form-control" name="auth_username" id="edit_user_auth_username" disabled>
 					</div>
 					<div class = "form-group roles">
 

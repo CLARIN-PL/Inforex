@@ -502,7 +502,7 @@ class CorpusExporter{
 
     } // getFormatName()
 
-    protected function exportReportContent($report,$file_path_without_ext) {
+    protected function getReportContentText($report) {
 
         try {
             // getHtmlStr() need $report['format'] field, which isn't
@@ -526,13 +526,67 @@ class CorpusExporter{
                 $errorMsg.": ".$exceptionMsg, 8, $error_params);
             return False;
         } // catch()
-        $content = $html->getContent();
+        return custom_html_entity_decode($html->getContent());
+
+    } // getReportContentText()
+
+    protected function exportReportContent($report,$file_path_without_ext, $content = null) {
+
+        if ($content === null) {
+            $content = $this->getReportContentText($report);
+        }
+        if ($content === False) {
+            return False;
+        }
         file_put_contents($file_path_without_ext .".txt", $content);
         return True;
 
     } // exportReportContent()
 
-    protected function updateLists($flags,$reportFileName,&$lists) {
+    protected function buildDocumentMetadata($report, $subcorpora) {
+
+        $ext = $this->getReportExtById($report["id"]);
+        $basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
+        $metadata = array();
+        $report["subcorpus"] = isset($subcorpora[$report['subcorpus_id']]) ? $subcorpora[$report['subcorpus_id']] : "";
+
+        foreach ($basic as $name) {
+            $metadata[$name] = isset($report[$name]) ? $report[$name] : "";
+        }
+
+        if (is_array($ext) && (count($ext) > 0)) {
+            foreach ($ext as $key => $val) {
+                if ($key != "id") {
+                    $normalizedKey = preg_replace("/[^\p{L}|\p{N}]+/u", "_", $key);
+                    $metadata[$normalizedKey] = $val;
+                }
+            }
+        }
+
+        return $metadata;
+
+    } // buildDocumentMetadata()
+
+    protected function getPrimaryExportExtension($export_format) {
+
+        switch ($export_format) {
+            case ConllAndJsonFactory::FORMAT_TEXT:
+                return '.txt';
+            case ConllAndJsonFactory::FORMAT_CONLLU_CLARIN:
+            case ConllAndJsonFactory::FORMAT_CONLLU_STANDARD:
+                return '.conllu';
+            case ConllAndJsonFactory::FORMAT_CLARIN_JSON:
+                return '.json';
+            case ConllAndJsonFactory::FORMAT_LEGACY:
+            default:
+                return '.xml';
+        }
+
+    } // getPrimaryExportExtension()
+
+    protected function updateLists($flags,$reportFileName,&$lists, $export_format = null) {
+
+        $suffix = $this->getPrimaryExportExtension($export_format);
 
         /* Przypisanie dokumentu do list */
         foreach ( $lists as $ix=>$list){
@@ -540,7 +594,7 @@ class CorpusExporter{
                 $flag_name = $flag["flag_name"];
                 $flag_ids = $flag["flag_ids"];
                 if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
-                    $lists[$ix]["document_names"][$reportFileName.".xml"] = 1;
+                    $lists[$ix]["document_names"][$reportFileName . $suffix] = 1;
                 }
             }
         }
@@ -550,25 +604,11 @@ class CorpusExporter{
 
     protected function createIniFile($report,$subcorpora,$file_path_without_ext) {
 
-        $ext = $this->getReportExtById($report["id"]);
-
-        $basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
+        $metadata = $this->buildDocumentMetadata($report, $subcorpora);
         $lines = array();
-        $lines[] = "[document]";
-        $report["subcorpus"] = isset($subcorpora[$report['subcorpus_id']]) ? $subcorpora[$report['subcorpus_id']] : "";
-
-        foreach ($basic as $name){
-            $lines[] = sprintf("%s = %s", $name, $report[$name]);
-        }
-        if ( is_array($ext) && (count($ext) > 0) ){
-            $lines[] = "";
-            $lines[] = "[metadata]";
-            foreach ($ext as $key=>$val){
-                if ($key != "id"){
-                    $key = preg_replace("/[^\p{L}|\p{N}]+/u", "_", $key);
-                    $lines[] = sprintf("%s = %s", $key, $val);
-                }
-            }
+        $lines[] = "[metadata]";
+        foreach ($metadata as $key => $val) {
+            $lines[] = sprintf("%s = %s", $key, $val);
         }
         file_put_contents($file_path_without_ext.".ini", implode("\n", $lines));
 
@@ -743,7 +783,7 @@ class CorpusExporter{
 	 * @param $extractors_stats Tablica ze statystykami ekstraktorów
 	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	protected function export_document($report_id, $extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
+	protected function export_document($report_id, $extractors, $disamb_only, &$extractor_stats, &$lists, $output_target, $subcorpora, $tagging_method, $export_format){
 		$flags = $this->getFlagsByReportId($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 
@@ -758,6 +798,8 @@ class CorpusExporter{
 		$tags_by_tokens = $this->getReportTagsByTokens($report_id, $tokens_ids, $disamb_only, $tagging_method);
 
 		$report = $this->getReportById($report_id);
+        $report_ext = $this->getReportExtById($report_id);
+        $plain_text = $this->getReportContentText($report);
 
 		$ccl = $this->generateCcl($report,$tokens,$tags_by_tokens);
 		if($ccl===False) { return; }
@@ -774,20 +816,71 @@ class CorpusExporter{
 		/* Sprawdzenie lematów */
 		$this->checkIfAnnotationForLemmaExists($report_id,$lemmas,$annotations_by_id);
 
-        $file_path_without_ext = $output_folder . "/" . $ccl->getFileName();
+        $file_path_without_ext = $output_target . "/" . $ccl->getFileName();
+        $factory = new ConllAndJsonFactory();
 
-        /* Wygeneruj CONLL i JSON */
-		(new ConllAndJsonFactory())->exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas);
+        if ($export_format === ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST) {
+            $structuredRecord = $factory->buildClarinJsonlZstDocument(
+                $ccl,
+                $relations,
+                $annotations,
+                $tokens_ids,
+                $report,
+                $report_ext,
+                $plain_text === False ? '' : $plain_text,
+                $attributes
+            );
+            file_put_contents(
+                $output_target,
+                json_encode($structuredRecord, JSON_UNESCAPED_UNICODE) . "\n",
+                FILE_APPEND
+            );
+            $this->updateLists($flags, $ccl->getFileName(), $lists, $export_format);
+            return;
+        }
 
-        /* Wygeneruj xml i rel.xml */
-        (new XmlFactory())->exportToXmlAndRelxml($file_path_without_ext,$ccl,$annotations,$relations,$lemmas,$attributes);
+        if ($export_format === ConllAndJsonFactory::FORMAT_TEXT) {
+            $this->createIniFile($report,$subcorpora,$file_path_without_ext);
+            $this->updateLists($flags,$ccl->getFileName(),$lists, $export_format);
+            $this->exportReportContent($report,$file_path_without_ext, $plain_text);
+            return;
+        }
 
-		/* Eksport metadanych */
-        $this->createIniFile($report,$subcorpora,$file_path_without_ext);
+        if ($export_format === ConllAndJsonFactory::FORMAT_LEGACY) {
+            /* Wygeneruj xml i rel.xml */
+            (new XmlFactory())->exportToXmlAndRelxml(
+                $file_path_without_ext,
+                $ccl,
+                $annotations,
+                $relations,
+                $lemmas,
+                $attributes,
+                $this->buildDocumentMetadata($report, $subcorpora)
+            );
+        } else {
+		    $factory->exportToConllAndJson(
+                $file_path_without_ext,
+                $ccl,
+                $tokens,
+                $relations,
+                $annotations,
+                $tokens_ids,
+                $annotations_by_id,
+                $lemmas,
+                $attributes,
+                array(
+                    'format' => $export_format,
+                    'tags_by_tokens' => $tags_by_tokens,
+                    'report' => $report,
+                    'report_ext' => $report_ext,
+                    'plain_text' => $plain_text === False ? '' : $plain_text,
+                    'tagging_method' => $tagging_method
+                )
+            );
+        }
 
 		/* Przypisanie dokumentu do list */
-		$this->updateLists($flags,$ccl->getFileName(),$lists);
-        $this->exportReportContent($report,$file_path_without_ext);
+		$this->updateLists($flags,$ccl->getFileName(),$lists, $export_format);
 
 	} // export_document()
 
@@ -819,12 +912,21 @@ class CorpusExporter{
 	 * @param $lists Lista opisu indeksów plików
 	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	public function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description, $export_id = null, $tagging_method='tagger'){
+	public function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description, $export_id = null, $tagging_method='tagger', $export_format = 'legacy'){
 
 		/* Przygotuje katalog docelowy */
-		if ( !file_exists("$output_folder/documents") ){
-			mkdir("$output_folder/documents", 0777, true);
-		}
+        $structuredOutputFile = null;
+        if ($export_format === ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST) {
+            if ( !file_exists($output_folder) ){
+                mkdir($output_folder, 0777, true);
+            }
+            $structuredOutputFile = $output_folder . DIRECTORY_SEPARATOR . "inforex_export.jsonl";
+            file_put_contents($structuredOutputFile, '');
+        } else {
+		    if ( !file_exists("$output_folder/documents") ){
+			    mkdir("$output_folder/documents", 0777, true);
+		    }
+        }
 
 		/* Przygotuj listę podkorpusów w postaci tablicy id=>nazwa*/
 		$subcorpora = $this->getSubcorporaList();
@@ -856,7 +958,17 @@ class CorpusExporter{
 
 		foreach ($document_ids as $id){
             $current_doc += 1;
-            $this->export_document($id, $extractors, true, $extractor_stats, $lists, "$output_folder/documents", $subcorpora, $tagging_method);
+            $this->export_document(
+                $id,
+                $extractors,
+                true,
+                $extractor_stats,
+                $lists,
+                $structuredOutputFile ? $structuredOutputFile : "$output_folder/documents",
+                $subcorpora,
+                $tagging_method,
+                $export_format
+            );
             $percent_done = floor(100 * $current_doc / $number_of_docs);
             if($percent_done > $progress){
                 $progress = $percent_done;
@@ -864,15 +976,17 @@ class CorpusExporter{
                 $this->writeConsoleMessage(intval($progress) . "%" . "\n");
             }
 		}
-		foreach ($lists as $list){
-			$this->writeConsoleMessage(sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]));
-			$lines = array();
-			foreach ( array_keys($list["document_names"]) as $document_name ){
-				$lines[] = "./documents/" . $document_name;
-			}
-			sort($lines);
-			file_put_contents("$output_folder/{$list['name']}", implode("\n", $lines));
-		}
+        if ($export_format !== ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST) {
+		    foreach ($lists as $list){
+			    $this->writeConsoleMessage(sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]));
+			    $lines = array();
+			    foreach ( array_keys($list["document_names"]) as $document_name ){
+				    $lines[] = "./documents/" . $document_name;
+			    }
+			    sort($lines);
+			    file_put_contents("$output_folder/{$list['name']}", implode("\n", $lines));
+		    }
+        }
 
 		$types = array();
 		$max_len_name = 0;
@@ -902,9 +1016,11 @@ class CorpusExporter{
         }
 
         if(!empty($extractor_stats)){
-            /* Utworzenie pliku */
-			$stats_file = fopen("$output_folder/statistics.txt", "w");
-            fwrite($stats_file, $stats_str);
+            if ($export_format !== ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST) {
+                /* Utworzenie pliku */
+			    $stats_file = fopen("$output_folder/statistics.txt", "w");
+                fwrite($stats_file, $stats_str);
+            }
             DbExport::saveStatistics($export_id, $extractor_stats);
         }
 

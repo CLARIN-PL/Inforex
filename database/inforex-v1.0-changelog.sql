@@ -999,3 +999,150 @@ SET @tto_stage_user_idx_sql = IF(
 PREPARE tokens_tags_optimized_stage_user_disamb_pos_token_base_idx_stmt FROM @tto_stage_user_idx_sql;
 EXECUTE tokens_tags_optimized_stage_user_disamb_pos_token_base_idx_stmt;
 DEALLOCATE PREPARE tokens_tags_optimized_stage_user_disamb_pos_token_base_idx_stmt;
+
+--changeset tn:32
+
+SET @users_auth_provider_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'auth_provider'
+);
+SET @users_auth_provider_sql = IF(
+    @users_auth_provider_exists = 0,
+    'ALTER TABLE `users` ADD COLUMN `auth_provider` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `clarin_login`',
+    'SELECT 1'
+);
+PREPARE users_auth_provider_stmt FROM @users_auth_provider_sql;
+EXECUTE users_auth_provider_stmt;
+DEALLOCATE PREPARE users_auth_provider_stmt;
+
+SET @users_auth_subject_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'auth_subject'
+);
+SET @users_auth_subject_sql = IF(
+    @users_auth_subject_exists = 0,
+    'ALTER TABLE `users` ADD COLUMN `auth_subject` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `auth_provider`',
+    'SELECT 1'
+);
+PREPARE users_auth_subject_stmt FROM @users_auth_subject_sql;
+EXECUTE users_auth_subject_stmt;
+DEALLOCATE PREPARE users_auth_subject_stmt;
+
+SET @users_auth_username_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'auth_username'
+);
+SET @users_auth_username_sql = IF(
+    @users_auth_username_exists = 0,
+    'ALTER TABLE `users` ADD COLUMN `auth_username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `auth_subject`',
+    'SELECT 1'
+);
+PREPARE users_auth_username_stmt FROM @users_auth_username_sql;
+EXECUTE users_auth_username_stmt;
+DEALLOCATE PREPARE users_auth_username_stmt;
+
+SET @users_auth_email_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'auth_email'
+);
+SET @users_auth_email_sql = IF(
+    @users_auth_email_exists = 0,
+    'ALTER TABLE `users` ADD COLUMN `auth_email` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `auth_username`',
+    'SELECT 1'
+);
+PREPARE users_auth_email_stmt FROM @users_auth_email_sql;
+EXECUTE users_auth_email_stmt;
+DEALLOCATE PREPARE users_auth_email_stmt;
+
+SET @users_auth_email_verified_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'auth_email_verified'
+);
+SET @users_auth_email_verified_sql = IF(
+    @users_auth_email_verified_exists = 0,
+    'ALTER TABLE `users` ADD COLUMN `auth_email_verified` tinyint(1) NOT NULL DEFAULT 0 AFTER `auth_email`',
+    'SELECT 1'
+);
+PREPARE users_auth_email_verified_stmt FROM @users_auth_email_verified_sql;
+EXECUTE users_auth_email_verified_stmt;
+DEALLOCATE PREPARE users_auth_email_verified_stmt;
+
+SET @users_auth_linked_at_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'auth_linked_at'
+);
+SET @users_auth_linked_at_sql = IF(
+    @users_auth_linked_at_exists = 0,
+    'ALTER TABLE `users` ADD COLUMN `auth_linked_at` datetime DEFAULT NULL AFTER `auth_email_verified`',
+    'SELECT 1'
+);
+PREPARE users_auth_linked_at_stmt FROM @users_auth_linked_at_sql;
+EXECUTE users_auth_linked_at_stmt;
+DEALLOCATE PREPARE users_auth_linked_at_stmt;
+
+SET @users_last_login_at_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND COLUMN_NAME = 'last_login_at'
+);
+SET @users_last_login_at_sql = IF(
+    @users_last_login_at_exists = 0,
+    'ALTER TABLE `users` ADD COLUMN `last_login_at` datetime DEFAULT NULL AFTER `auth_linked_at`',
+    'SELECT 1'
+);
+PREPARE users_last_login_at_stmt FROM @users_last_login_at_sql;
+EXECUTE users_last_login_at_stmt;
+DEALLOCATE PREPARE users_last_login_at_stmt;
+
+SET @users_auth_identity_uidx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users'
+      AND INDEX_NAME = 'users_auth_identity_uidx'
+);
+SET @users_auth_identity_uidx_sql = IF(
+    @users_auth_identity_uidx_exists = 0,
+    'ALTER TABLE `users` ADD UNIQUE INDEX `users_auth_identity_uidx` (`auth_provider`, `auth_subject`)',
+    'SELECT 1'
+);
+PREPARE users_auth_identity_uidx_stmt FROM @users_auth_identity_uidx_sql;
+EXECUTE users_auth_identity_uidx_stmt;
+DEALLOCATE PREPARE users_auth_identity_uidx_stmt;
+
+--changeset tn:33
+SET @exports_export_format_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'exports'
+      AND COLUMN_NAME = 'export_format'
+);
+SET @exports_export_format_sql = IF(
+    @exports_export_format_exists = 0,
+    'ALTER TABLE `exports` ADD COLUMN `export_format` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ''legacy'' AFTER `tagging`',
+    'SELECT 1'
+);
+PREPARE exports_export_format_stmt FROM @exports_export_format_sql;
+EXECUTE exports_export_format_stmt;
+DEALLOCATE PREPARE exports_export_format_stmt;

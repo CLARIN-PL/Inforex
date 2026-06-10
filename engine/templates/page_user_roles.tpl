@@ -12,12 +12,6 @@
 		<div class="panel-heading administration-content-heading">
 			<span class="administration-content-heading-icon"><i class="fa fa-user-circle" aria-hidden="true"></i></span>
 			<span>Your profile</span>
-			{if $user.role.loggedin}
-				<button type="button" class="btn btn-primary user-profile-header-action" data-toggle="modal" data-target="#password_change_modal">
-					<i class="fa fa-lock" aria-hidden="true"></i>
-					Change password
-				</button>
-			{/if}
 		</div>
 		<div class="panel-body">
 
@@ -36,6 +30,12 @@
 									<span class="user-profile-role-badge user-profile-role-badge-system" title="{$description|escape}">{$role}</span>
 								{/foreach}
 							</div>
+							{if $Config.oidcEnabled}
+								<hr>
+								<p><strong>Authentication:</strong> Keycloak</p>
+								{if $user.auth_username}<p><strong>Keycloak username:</strong> {$user.auth_username|escape}</p>{/if}
+								{if $user.auth_email}<p><strong>Keycloak email:</strong> {$user.auth_email|escape}</p>{/if}
+							{/if}
 						</div>
 					</div>
 				</div>
@@ -85,39 +85,5 @@
 		</div>
 	</div>
 </div>
-
-{if $user.role.loggedin}
-<div class="modal fade settingsModal administration-form-modal user-profile-password-modal" id="password_change_modal" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<form class="password_change_form user-profile-password-form" action="index.php?page=user_roles" method="post">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title"><i class="fa fa-lock" aria-hidden="true"></i> Change password</h4>
-				</div>
-				<div class="modal-body">
-					<input type="hidden" name="action" value="user_password_change"/>
-					<div class="form-group">
-						<label for="user_old_pass">Old password</label>
-						<input id="user_old_pass" class="form-control password_change" type="password" name="old_pass" />
-					</div>
-					<div class="form-group">
-						<label for="user_new_pass1">New password</label>
-						<input id="user_new_pass1" class="form-control password_change" type="password" name="new_pass1" maxlength="20"/>
-					</div>
-					<div class="form-group">
-						<label for="user_new_pass2">Repeat password</label>
-						<input id="user_new_pass2" class="form-control password_change" type="password" name="new_pass2" maxlength="20"/>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					<input type="submit" class="btn btn-primary password_change" value="Change password" disabled="disabled" />
-				</div>
-			</form>
-		</div>
-	</div>
-</div>
-{/if}
 
 {include file="inc_footer.tpl"}

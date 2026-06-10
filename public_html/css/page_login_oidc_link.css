@@ -1,0 +1,94 @@
+.oidc-link-page {
+	padding-bottom: 10px;
+}
+
+.oidc-link-hero {
+	background:
+		linear-gradient(135deg, #ffffff 0%, #f4fafb 100%),
+		radial-gradient(circle at top right, rgba(31, 111, 147, 0.14), transparent 34%);
+	border: 1px solid #d8e4eb;
+	border-radius: 12px;
+	margin: 5px 5px 10px;
+	padding: 18px 22px;
+}
+
+.oidc-link-hero-badge {
+	color: #1f6f93;
+	display: inline-flex;
+	font-size: 11px;
+	font-weight: bold;
+	gap: 6px;
+	letter-spacing: 0.04em;
+	margin-bottom: 8px;
+	text-transform: uppercase;
+}
+
+.oidc-link-hero-title {
+	color: #174f69;
+	font-size: 26px;
+	font-weight: bold;
+	line-height: 1.2;
+	margin: 0 0 6px;
+}
+
+.oidc-link-hero-text {
+	color: #5d6f7d;
+	font-size: 13px;
+	line-height: 1.5;
+	margin: 0;
+	max-width: 760px;
+}
+
+.oidc-link-panel {
+	min-height: calc(100vh - 255px);
+}
+
+.oidc-link-intro {
+	flex: 0 0 auto;
+	font-size: 12px;
+	margin-bottom: 10px;
+	min-height: 170px;
+}
+
+.oidc-link-form {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.oidc-link-toolbar {
+	margin-bottom: 0;
+}
+
+.oidc-link-toolbar label {
+	min-width: 88px;
+}
+
+.oidc-link-actions {
+	margin-top: auto;
+	padding-top: 6px;
+}
+
+.oidc-link-submit {
+	justify-content: center;
+	width: 100%;
+}
+
+@media (max-width: 991px) {
+	.oidc-link-panel {
+		min-height: 0;
+	}
+
+	.oidc-link-intro {
+		min-height: 0;
+	}
+
+	.oidc-link-hero {
+		padding: 16px 18px;
+	}
+
+	.oidc-link-hero-title {
+		font-size: 22px;
+	}
+}

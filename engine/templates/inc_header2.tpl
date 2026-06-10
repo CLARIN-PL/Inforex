@@ -82,6 +82,9 @@
 		<script type="text/javascript" src="js/core_dialogs.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_login.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_url.js?{$rev}"></script>
+		<script type="text/javascript">
+			window.inforexAuthMode = {if $Config.oidcEnabled}"oidc"{else}"local"{/if};
+		</script>
 
 		<script type="text/javascript" src="js/lib_normalize_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/lib_selected_text.js?{$rev}"></script>

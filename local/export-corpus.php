@@ -63,6 +63,7 @@ $opt->addParameter(new ClioptParameter("selector", "s", "description", "opis sel
 $opt->addParameter(new ClioptParameter("extractor", "e", "description", "opis esktraktora anotacji i relacji w zależności od wartości flagi, np. names=3,4:annotation_set_id=1"));
 $opt->addParameter(new ClioptParameter("list", "l", "description", "generator listy dokumentów"));
 $opt->addParameter(new ClioptParameter("output", "o", "path", "ścieżka do katalogu, w którym ma być zapisany korpus"));
+$opt->addParameter(new ClioptParameter("format", "f", "name", "format eksportu: legacy, text, conllu, conllu_standard, clarin_json albo clarin_parquet_zst"));
 
 
 //--------------------------------------------------------
@@ -91,6 +92,7 @@ try {
 	$config->selectors = splitArrayElementsOnWhitechars($opt->getParameters("selector"));
     $config->extractors = splitArrayElementsOnWhitechars($opt->getParameters("extractor"));
 	$config->lists = splitArrayElementsOnWhitechars($opt->getParameters("list"));
+    $config->format = $opt->get("format") ? $opt->get("format") : 'legacy';
 }
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -106,7 +108,7 @@ catch(Exception $ex){
  	
  	$exporter = new CorpusExporter();
     $manualExportFakeID = 0; // for writing to export_error TABLE w/o errors
- 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists, $manualExportFakeID, 'tagger');
+ 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists, $manualExportFakeID, 'tagger', $config->format);
  }
  catch(Exception $ex){
 	print "\n!! ". $ex->getMessage() . " !!\n";
@@ -115,4 +117,3 @@ catch(Exception $ex){
 }
 
 ?>
-

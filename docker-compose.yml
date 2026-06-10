@@ -14,6 +14,9 @@ services:
        - "80"
       links:
        - db
+       - keycloak
+      extra_hosts:
+       - "host.docker.internal:host-gateway"
       volumes:
         - ./public_html:/home/inforex/public_html
         - ./local:/home/inforex/local
@@ -24,6 +27,7 @@ services:
         - ./vendor:/home/inforex/vendor
       depends_on:
       - db
+      - keycloak
       restart: always     
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
@@ -54,6 +58,32 @@ services:
          MYSQL_DATABASE: 'inforex'
       command: --sql_mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
       volumes:
-       - ./database/init:/docker-entrypoint-initdb.d
+       - ./database/init:/docker-entrypoint-initdb.d:ro
+       - ./database/inforex-v1.0.sql:/home/inforex-bootstrap/inforex-v1.0.sql:ro
        - ./docker/mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
       restart: always     
+    keycloak:
+      image: quay.io/keycloak/keycloak:26.2
+      ports:
+       - "9081:8080"
+      environment:
+         KEYCLOAK_ADMIN: admin
+         KEYCLOAK_ADMIN_PASSWORD: admin
+         KC_BOOTSTRAP_ADMIN_USERNAME: admin
+         KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      command:
+       - start-dev
+       - --http-enabled=true
+       - --hostname=http://localhost:9081
+       - --hostname-strict=false
+       - --proxy-headers=xforwarded
+       - --import-realm
+      healthcheck:
+        test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+        interval: 10s
+        timeout: 5s
+        retries: 12
+        start_period: 20s
+      volumes:
+       - ./docker/keycloak/realm-inforex.json:/opt/keycloak/data/import/realm-inforex.json:ro
+      restart: always

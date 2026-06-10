@@ -7,6 +7,8 @@
  */
 
 class CclExportDocument extends CclDocument {
+
+    protected $metadata = array();
 	
 	/**
 	 * $report --- tablica asocjacyjna z atrybutami dokumentu (jak z tabeli reports)
@@ -224,5 +226,17 @@ class CclExportDocument extends CclDocument {
         $this->setAnnotationProperties($attributes);
 
     } // setCclProperties()
+
+    public function setMetadata(array $metadata) {
+
+        $this->metadata = $metadata;
+
+    } // setMetadata()
+
+    public function getMetadata() {
+
+        return $this->metadata;
+
+    } // getMetadata()
 
 } // CclExportDocument class

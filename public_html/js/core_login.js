@@ -9,6 +9,10 @@
  */
 
 function login(){
+    if (window.inforexAuthMode === "oidc") {
+        window.location.href = "index.php?page=login_oidc";
+        return;
+    }
 	loginForm(true, null);	
 }
 
@@ -20,6 +24,10 @@ function login(){
  * @return
  */
 function loginForm(reload, loginCallback){
+    if (window.inforexAuthMode === "oidc") {
+        window.location.href = "index.php?page=login_oidc";
+        return;
+    }
 
 	$("body").append(''+
 			'<div id="dialog-form-login" title="Login to Inforex" style="">'+
@@ -108,6 +116,10 @@ $(function(){
 		return false;
 	});
 	$("#logout_link").click(function(){
+        if (window.inforexAuthMode === "oidc") {
+            window.location.href = "index.php?page=logout_oidc";
+            return false;
+        }
 		$.post("index.php", {logout: 1}, function(){ window.location.reload(); });
 		return false;
 	});

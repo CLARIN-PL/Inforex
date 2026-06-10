@@ -54,7 +54,7 @@ function user_add(){
 				email: true
             },
             password: {
-                required: true
+                required: false
             }
         },
         messages: {
@@ -68,9 +68,7 @@ function user_add(){
             email: {
                 required: "Email is required."
             },
-            password: {
-                required: "Password is required."
-            }
+            password: {}
         }
     });
 
@@ -80,13 +78,10 @@ function user_add(){
             var login = $("#create_user_login").val();
             var username = $("#create_user_username").val();
             var email = $("#create_user_email").val();
-            var password = $("#create_user_password").val();
-
             var data = {
                 'login': login,
                 'name': username,
-                'email' : email,
-                'password': password
+                'email' : email
             };
 
             var success = function(_data){
@@ -95,6 +90,7 @@ function user_add(){
                                     '<td class="login">'+login+'</td>' +
                                     '<td class="screename">'+username+'</td>' +
                                     '<td class="email">'+email+'</td>' +
+                                    '<td class="auth_identity">local only</td>' +
                                     '<td class="user_roles"></td>' +
                                     '<td><a href="#" class="edit_user_button administration-edit-link" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary btn-sm">Edit</button></a></td>'+
                                 '</tr>';
@@ -121,6 +117,7 @@ function user_edit(user_id, tr){
     });
     var success = function(data){
         var user = data;
+        var authIdentity = user.auth_provider ? user.auth_provider + (user.auth_username ? ": " + user.auth_username : "") : "local only";
 
 
         var rolesForm = '<div class="administration-roles-list">';
@@ -139,6 +136,7 @@ function user_edit(user_id, tr){
         $("#user_id").val(data.user_id);
         $("#edit_user_username").val(data.screename);
         $("#edit_user_email").val(data.email);
+        $("#edit_user_auth_username").val(authIdentity);
 
         $("#edit_user_form" ).validate({
             rules: {
@@ -181,7 +179,6 @@ function user_edit(user_id, tr){
                 var login = $("#edit_user_login").val();
                 var username = $("#edit_user_username").val();
                 var email = $("#edit_user_email").val();
-                var password = $("#edit_user_password").val();
                 var roles = [];
                 var roles_string = "";
 
@@ -202,7 +199,6 @@ function user_edit(user_id, tr){
                     'login': login,
                     'name': username,
                     'email' : email,
-                    'password': password,
                     'roles': roles
                 };
 
@@ -210,6 +206,7 @@ function user_edit(user_id, tr){
                     $(tr).find(".login").html(login);
                     $(tr).find(".screename").html(username);
                     $(tr).find(".email").html(email);
+                    $(tr).find(".auth_identity").html(authIdentity);
                     $(tr).find(".user_roles").html(roles_string);
 
                     $('#edit_user_modal').modal('hide');

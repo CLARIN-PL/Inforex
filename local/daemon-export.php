@@ -149,7 +149,15 @@ class TaskExport{
 		$extractors = array_filter(explode("\n",trim($task['extractors'])));
 		$indices = array_filter(explode("\n",trim($task['indices'])));
 		
-		$this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices, $task['tagging']);
+		$this->process(
+            $task['export_id'],
+            $task['corpus_id'],
+            $selectors,
+            $extractors,
+            $indices,
+            $task['tagging'],
+            isset($task['export_format']) ? $task['export_format'] : 'legacy'
+        );
 
 		$message = "Eksport zakończony";
 		$status = "done";
@@ -168,15 +176,23 @@ class TaskExport{
 	 * @param $indices Lista indeksów do utworzenia
 	 * @param $tagging String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	function process($task_id, $corpus_id, $selectors, $extractors, $indices, $tagging){
+	function process($task_id, $corpus_id, $selectors, $extractors, $indices, $tagging, $export_format){
 
 		$output_folder = "/tmp/inforex_export_{$task_id}";
-		$zip_file = $this->path_exports . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.zip", $task_id);
 		$exporter = new CorpusExporter();
-		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id, $tagging);
+		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id, $tagging, $export_format);
 		echo "packing...\n";
 
-		$this->zipDirectory($output_folder, $zip_file);
+        if ($export_format === 'clarin_parquet_zst' || $export_format === 'clarin_jsonl_zst') {
+            $source_file = $output_folder . DIRECTORY_SEPARATOR . "inforex_export.jsonl";
+            $parquet_file = $output_folder . DIRECTORY_SEPARATOR . "inforex_export.parquet";
+            $target_file = $this->path_exports . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.parquet.zst", $task_id);
+            $this->convertJsonlToParquet($source_file, $parquet_file);
+            $this->compressZstd($parquet_file, $target_file);
+        } else {
+		    $zip_file = $this->path_exports . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.zip", $task_id);
+		    $this->zipDirectory($output_folder, $zip_file);
+        }
 		echo "finished.\n\n";
 
 		return true;
@@ -206,6 +222,40 @@ class TaskExport{
 
 		$zip->close();
 	}
+
+    function compressZstd($source_file, $target_file){
+        if (!is_file($source_file)) {
+            throw new Exception("Cannot create zst export, source file missing: $source_file");
+        }
+
+        $command = sprintf(
+            'zstd -q -f %s -o %s 2>&1',
+            escapeshellarg($source_file),
+            escapeshellarg($target_file)
+        );
+        exec($command, $output, $status);
+        if ($status !== 0) {
+            throw new Exception("Cannot create export zst: " . implode("\n", $output));
+        }
+    }
+
+    function convertJsonlToParquet($source_file, $target_file){
+        $script = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'jsonl_to_parquet.py';
+        if (!is_file($script)) {
+            throw new Exception("Cannot convert export to parquet, helper script missing: $script");
+        }
+
+        $command = sprintf(
+            'python3 %s %s %s 2>&1',
+            escapeshellarg($script),
+            escapeshellarg($source_file),
+            escapeshellarg($target_file)
+        );
+        exec($command, $output, $status);
+        if ($status !== 0) {
+            throw new Exception("Cannot create parquet export: " . implode("\n", $output));
+        }
+    }
 }
 
 ?>

@@ -1,0 +1,13 @@
+<!ELEMENT relations (rel+)>
+<!ELEMENT rel (from,to)>
+<!ATTLIST rel
+   name CDATA #REQUIRED
+   set CDATA #IMPLIED>
+<!ELEMENT from (#PCDATA)>
+<!ATTLIST from
+   chan CDATA #REQUIRED
+   sent IDREF #REQUIRED>
+<!ATTLIST to
+   chan CDATA #REQUIRED
+   sent IDREF #REQUIRED>
+<!ELEMENT to (#PCDATA)>

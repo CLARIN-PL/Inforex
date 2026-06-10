@@ -68,6 +68,13 @@ $(document).ready(function(){
         doAjaxSync("export_get_errors", data, success);
     });
 
+    $("#history").on('click', '.export_repeat_button', function(){
+        var export_id = $(this).attr('id');
+        doAjaxWithLogin("export_repeat", {'export_id': export_id}, function(){
+            window.location.reload(true);
+        });
+    });
+
     $(".table").on('change', '.select_mode', function(){
         if($(this).val() === "standard"){
             $(this).parent().find('.element_user').hide();
@@ -121,7 +128,7 @@ $(document).ready(function(){
 	$("#export").click(function(){
 		var result = validateExportForm();
 		if ( result!=false ){
-			submit_new_export(result.description, result.selectors, result.extractors, result.indices, result.taggingMethod);
+			submit_new_export(result.description, result.selectors, result.extractors, result.indices, result.taggingMethod, result.exportFormat);
 		}
 	});
 
@@ -137,7 +144,7 @@ $(document).ready(function(){
  * If any error found set error msgs in instante_error box after bad defined 
  * element, set global error msg for form and return false.
  * If form is ok, returns definition of export as object with field:
- *  description, selectors, extractors, indices, taggingMethod
+ *  description, selectors, extractors, indices, taggingMethod, exportFormat
  *
  * @returns if form is valid object with definition, false if not
  *
@@ -155,6 +162,7 @@ function validateExportForm() {
    	result["extractors"] = collect_extractors();
   	result["indices"] = collect_indices();
 	result["taggingMethod"] = get_tagging_method();
+    result["exportFormat"] = get_export_format();
 
     	if ( $(".instant_error").size() > 0 ){
       		$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."));
@@ -524,7 +532,7 @@ function getCurrentExports(){
  * @param taggingMethod
  * @returns
  */
-function submit_new_export(description, selectors, extractors, indices, taggingMethod){
+function submit_new_export(description, selectors, extractors, indices, taggingMethod, exportFormat){
 	var params = {};	
 	params['url'] = $.url(window.location.href).attr("query");
 	params['description'] = description;
@@ -532,12 +540,13 @@ function submit_new_export(description, selectors, extractors, indices, taggingM
 	params['extractors'] = extractors;
 	params['indices'] = indices;
 	params['tagging'] = taggingMethod;
+    params['export_format'] = exportFormat;
 
 
 	doAjaxWithLogin("export_new", params, function(){
 		window.location.reload(true);
 	}, function(){
-		submit_new_export(description, selectors, extractors, indices, taggingMethod);
+		submit_new_export(description, selectors, extractors, indices, taggingMethod, exportFormat);
 	});
 	
 }
@@ -691,6 +700,10 @@ function get_tagging_method(){
         taggingMethod += ':' + $('select[name="morpho-user"]').val();
     }
     return taggingMethod;
+}
+
+function get_export_format(){
+    return $('select[name="select-export-format"]').val();
 }
 
 /**

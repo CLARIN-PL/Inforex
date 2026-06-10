@@ -193,8 +193,14 @@
 						<a class="inforex-main-nav-collapse-link" title="Administration" href="index.php?page=administration_users"><i class="fa fa-cogs" aria-hidden="true"></i> <span class="inforex-main-nav-collapse-label">Administration</span></a></li>
                 {/if}
 				<li>
-					{*if not using federation login show usual login buttons*}
-					{if !($Config.federationLoginUrl)}
+					{if $Config.oidcEnabled}
+						{if $user}
+							<a id="logout_link" href="index.php?page=logout_oidc" class="btn btn-danger btn-xs inforex-main-nav-auth-button" title="Logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <span class="inforex-main-nav-auth-label">Logout</span></a>
+						{else}
+							<a href="index.php?page=login_oidc" class="btn btn-success btn-xs inforex-main-nav-auth-button" title="Federated login"><i class="fa fa-sign-in" aria-hidden="true"></i> <span class="inforex-main-nav-auth-label">Federated login</span></a>
+						{/if}
+					{else}
+						{*if not using federation login show usual login buttons*}
 						{if $user}
 							 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
 							<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs inforex-main-nav-auth-button" title="Logout" data-toggle="modal" data-target="#loginForm"><i class="fa fa-sign-out" aria-hidden="true"></i> <span class="inforex-main-nav-auth-label">Logout</span></button>
@@ -212,6 +218,7 @@
 	</nav>
 </div>
 
+{if !$Config.oidcEnabled}
 <!-- Modal -->
 <div class="modal fade" id="loginForm" role="dialog">
 	<div class="modal-dialog login-form-modal-dialog">
@@ -255,6 +262,7 @@
 
 	</div>
 </div>
+{/if}
 	
 {if $page=="report"}
 	<ul class="pager report-document-pager">

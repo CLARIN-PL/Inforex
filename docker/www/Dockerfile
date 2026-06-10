@@ -1,9 +1,11 @@
 #FROM php:8.4.19-apache as php-base
 FROM php:7.4.33-apache as php-base
 
-RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install software-properties-common wget less -y
-RUN apt-get install vim p7zip-full libpng-dev -y
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install -y software-properties-common wget less p7zip-full libpng-dev zstd python3 python3-pip \
+    && pip3 install --no-cache-dir pyarrow \
+    && rm -rf /var/lib/apt/lists/*
 
 # Workaround for write permission on write to MacOS X volumes
 # See https://github.com/boot2docker/boot2docker/pull/534
@@ -19,13 +21,14 @@ RUN a2enmod headers
 RUN a2enmod expires
 
 #Installing some PHP libraries
-RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y libzip-dev \
+RUN apt-get update -y \
+    && apt-get install -y libmcrypt-dev zlib1g zlib1g-dev libzip-dev re2c \
 	&& docker-php-ext-install mysqli \
 	&& docker-php-ext-install zip \
 	&& docker-php-ext-install gd \
-	&& apt-get install re2c -y \
     	&& pecl install mcrypt-1.0.3 \
-    	&& docker-php-ext-enable mcrypt
+    	&& docker-php-ext-enable mcrypt \
+        && rm -rf /var/lib/apt/lists/*
 
 # Xdiff install
 RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.gz" \
@@ -37,10 +40,10 @@ RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.g
     &&  pecl install xdiff-2.0.1 && docker-php-ext-enable xdiff
 
 # Supervisor
-RUN apt-get update -y && apt-get install supervisor -y
+RUN apt-get update -y && apt-get install -y supervisor && rm -rf /var/lib/apt/lists/*
 
 # Git
-RUN apt-get install git -y
+RUN apt-get update -y && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 FROM php-base
 

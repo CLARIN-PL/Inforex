@@ -17,7 +17,11 @@
     </div>
 </div>
 <script type="text/javascript">
-    $("#loginForm").modal("show");
+    if (window.inforexAuthMode === "oidc") {
+        window.location.href = "index.php?page=login_oidc";
+    } else {
+        $("#loginForm").modal("show");
+    }
 </script>
 {else}
 <div class="panel panel-default">

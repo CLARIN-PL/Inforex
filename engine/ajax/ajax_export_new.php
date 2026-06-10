@@ -21,6 +21,10 @@ class Ajax_export_new extends CPageCorpus {
 		$description = $_POST['description'];
 		$indices = $_POST['indices'];
 		$tagging = $_POST['tagging'];
+        $export_format = isset($_POST['export_format']) ? strtolower(trim($_POST['export_format'])) : 'legacy';
+        if (!in_array($export_format, array('legacy', 'text', 'conllu', 'conllu_standard', 'clarin_json', 'clarin_parquet_zst', 'clarin_jsonl_zst'))) {
+            $export_format = 'legacy';
+        }
 
 		$attributes = array();
 		$attributes['corpus_id'] = $corpus_id;
@@ -30,6 +34,7 @@ class Ajax_export_new extends CPageCorpus {
 		$attributes['selectors'] = strtolower(strval($selectors));
 		$attributes['indices'] = strtolower(strval($indices));
 		$attributes['tagging'] = strtolower(strval($tagging));
+        $attributes['export_format'] = $export_format;
 		$attributes['status'] = "new";
 		
 		fb($attributes);

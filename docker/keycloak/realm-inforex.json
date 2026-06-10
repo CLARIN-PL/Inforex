@@ -1,0 +1,47 @@
+{
+  "realm": "inforex",
+  "enabled": true,
+  "displayName": "Inforex Local",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "clients": [
+    {
+      "clientId": "inforex-local",
+      "name": "Inforex Local",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "inforex-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:9080/inforex/*"
+      ],
+      "webOrigins": [
+        "http://localhost:9080"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:9080/inforex/*"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "demo",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "User",
+      "email": "demo@example.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo123",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

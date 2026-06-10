@@ -80,7 +80,28 @@ Than build the docker by executing the following script.
 
 Links:
 * http://localhost:9080/inforex — default admin account admin/admin,
-* http://localhost:7080 — phpMyAdmin with default an account inforex/password.   
+* http://localhost:7080 — phpMyAdmin with default an account inforex/password,
+* http://localhost:9081 — local Keycloak admin console (`admin` / `admin`).
+
+Database bootstrap notes:
+* Docker no longer mounts `database/inforex-v1.0.sql` directly into MySQL startup.
+* Initial schema bootstrap is handled from `database/init/001-bootstrap-inforex.sh`.
+* Structural changes for existing databases must be added to `database/inforex-v1.0-changelog.sql` and are applied by Liquibase.
+
+OIDC / Keycloak test setup:
+* realm: `inforex`,
+* public issuer: `http://localhost:9081/realms/inforex`,
+* internal issuer base for Docker: `http://keycloak:8080`,
+* client id: `inforex-local`,
+* client secret: `inforex-secret`,
+* redirect uri: `http://localhost:9080/inforex/index.php?page=oidc_callback`,
+* test user: `demo` / `demo123`.
+
+On first login through Keycloak, Inforex will ask whether the user wants to:
+* link the Keycloak identity to an existing local account using the old local password,
+* or create a new local Inforex profile while keeping roles and permissions stored locally.
+
+If Keycloak does not start and reports `Provided hostname is neither a plain hostname nor a valid URL`, verify that `KC_HOSTNAME` includes the scheme, for example `http://localhost:9081`.
 
 When new source files are added it is required to reload the composer dependencies 
 by executing the following command:

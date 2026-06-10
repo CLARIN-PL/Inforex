@@ -12,6 +12,8 @@ class Page_export_download extends CPage{
 	function execute(){
 		$export_id = intval($_GET['export_id']);
 		$file = Page_corpus_export::getExportFilePath($export_id);
+        $downloadName = Page_corpus_export::getExportDownloadFilename($export_id);
+        $contentType = substr($downloadName, -4) === '.zst' ? 'application/zstd' : 'application/octet-stream';
 	    if (is_file($file) && is_readable($file)) {
 			session_write_close();
 			set_time_limit(0);
@@ -19,8 +21,8 @@ class Page_export_download extends CPage{
 			while (ob_get_level() > 0) {
 				ob_end_clean();
 			}
-		    header('Content-Type: application/octet-stream');
-		    header("Content-Disposition: attachment; filename=\"inforex_export_{$export_id}.zip\"");
+		    header('Content-Type: ' . $contentType);
+		    header("Content-Disposition: attachment; filename=\"{$downloadName}\"");
 			header('Content-Transfer-Encoding: binary');
 			header('Content-Encoding: identity');
 			header('Content-Length: ' . filesize($file));

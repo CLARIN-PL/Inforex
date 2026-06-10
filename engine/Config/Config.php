@@ -36,6 +36,15 @@ class Config extends Singleton\Singleton{
 	/* set $federationLoginUrl to null if regular login is to be used */
         "federationLoginUrl" => null,
     	"federationValidateTokenUrl" => null,
+        "oidcEnabled" => false,
+        "oidcIssuerUrl" => null,
+        "oidcDiscoveryUrl" => null,
+        "oidcInternalBaseUrl" => null,
+        "oidcClientId" => null,
+        "oidcClientSecret" => null,
+        "oidcRedirectUri" => null,
+        "oidcPostLogoutRedirectUri" => null,
+        "oidcScopes" => "openid profile email",
 
 		"url" => 'http://localhost/inforex',
 		"dsn" => array(

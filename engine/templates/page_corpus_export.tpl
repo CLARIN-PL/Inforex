@@ -40,6 +40,22 @@
                         <td class="corpus-export-add-column"></td>
                     </tr>
                     <tr>
+                        <th style="vertical-align: top">Format<br/>
+                            <small style="font-weight: normal">Choose export package format</small>
+                        </th>
+                        <td class="corpus-export-tagging-cell" style="text-align: left; vertical-align: top;">
+                            <select name="select-export-format" class="form-control" style="min-width: 70px">
+                                <option value="legacy">CCL XML</option>
+                                <option value="text">Text format</option>
+                                <option value="conllu">CoNLL-U CLARIN</option>
+                                <option value="conllu_standard">CoNLL-U</option>
+                                <option value="clarin_json">CLARIN JSON</option>
+                                <option value="clarin_parquet_zst">CLARIN Parquet ZST</option>
+                            </select>
+                        </td>
+                        <td class="corpus-export-add-column"></td>
+                    </tr>
+                    <tr>
                         <th style="vertical-align: top">Selectors<br/><small style="font-weight: normal">Definie citeria used to select document to export</small></th>
 
                         <td class="flags"></td>
@@ -217,6 +233,7 @@
                     <col class="col-time">
                     <col class="col-selectors">
                     <col class="col-tagging">
+                    <col class="col-tagging">
                     <col class="col-operations">
                 </colgroup>
                 <thead>
@@ -229,6 +246,7 @@
                     <th class="col-time" title="Processing end time">Finished</th>
                     <th class="col-selectors">Filters</th>
                     <th class="col-tagging">Tagging method</th>
+                    <th class="col-tagging">Format</th>
                     <th class="col-operations">Operations</th>
                 </tr>
                 </thead>
@@ -266,7 +284,13 @@
                             </span>
                         </td>
                         <td class="col-tagging export_column">{$export.tagging}</td>
+                        <td class="col-tagging export_column">{$export.export_format|default:'legacy'}</td>
                         <td class="col-operations corpus-export-action-cell">
+                            <span class="corpus-export-operation">
+                                <button class="btn btn-xs btn-default export_repeat_button" id="{$export.export_id}" title="Run again">
+                                    <i class="fa fa-repeat" aria-hidden="true"></i>
+                                </button>
+                            </span>
                             <span id="export_message_{$export.export_id}" class="corpus-export-operation">
                             {if $export.errors > 0}
                                 <button class="btn btn-xs btn-warning export_message_button" id = "{$export.export_id}" title="Errors">

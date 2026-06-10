@@ -27,9 +27,6 @@ class Action_user_edit extends CAction{
 		$values['login'] = strval($_POST['login']);
 		$values['screename'] = strval($_POST['name']);
 		$values['email'] = strval($_POST['email']);
-		if ( isset($_POST['password']) ){
-			$values['password'] = md5(strval($_POST['password']));
-		}
 		$keys['user_id'] = intval($user_id);
 		$this->getDb()->update("users", $values, $keys);
 		

@@ -26,12 +26,25 @@ class DbUser{
 	 */
 	static function get($user_id){
 		global $db;
-		return $db->fetch("SELECT * FROM users WHERE user_id = ?", $user_id);
+		return $db->fetch("SELECT * FROM users WHERE user_id = ?", array($user_id));
 	}
+
+    static function getByLogin($login){
+        global $db;
+        return $db->fetch("SELECT * FROM users WHERE login = ?", array($login));
+    }
+
+    static function getByAuthIdentity($provider, $subject){
+        global $db;
+        return $db->fetch(
+            "SELECT * FROM users WHERE auth_provider = ? AND auth_subject = ?",
+            array($provider, $subject)
+        );
+    }
 
 	static function getByClarinLogin($clarinLogin){
 	    global $db;
-        return $db->fetch("SELECT * FROM users WHERE clarin_login LIKE ?", $clarinLogin);
+        return $db->fetch("SELECT * FROM users WHERE clarin_login LIKE ?", array($clarinLogin));
     }
 
     static function updateClarinUser($id, $clarin_login){
@@ -44,11 +57,67 @@ class DbUser{
             throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
     }
 
-    static function createNewUser($login, $screename, $email, $password='None', $clarin_login=null){
+    static function updateAuthIdentity($id, $provider, array $claims){
         global $db;
-        $sql = "INSERT INTO users ( login, screename, email, password, clarin_login ) ".
-          "VALUES (?,?,?,?,?)";
-        $db->execute($sql,array($login, $screename, $email, $password, $clarin_login));
+        $sql = "UPDATE users
+                SET auth_provider = ?,
+                    auth_subject = ?,
+                    auth_username = ?,
+                    auth_email = ?,
+                    auth_email_verified = ?,
+                    auth_linked_at = IF(auth_linked_at IS NULL, NOW(), auth_linked_at),
+                    last_login_at = NOW()
+                WHERE user_id = ?";
+        $db->execute($sql, array(
+            $provider,
+            $claims['subject'],
+            $claims['username'],
+            $claims['email'],
+            $claims['email_verified'] ? 1 : 0,
+            $id
+        ));
+
+        $error = $db->errorInfo();
+        if(isset($error[0]))
+            throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
+    }
+
+    static function updateLastLoginAt($id){
+        global $db;
+        $db->execute("UPDATE users SET last_login_at = NOW() WHERE user_id = ?", array($id));
+    }
+
+    static function verifyLegacyPassword($login, $password){
+        global $db;
+        $user = $db->fetch(
+            "SELECT * FROM users WHERE login = ? AND password = MD5(?)",
+            array($login, $password)
+        );
+
+        return $user ? $user : null;
+    }
+
+    static function createNewUser($login, $screename, $email, $password='None', $clarin_login=null, $authProvider=null, $authClaims=null){
+        global $db;
+        $sql = "INSERT INTO users (
+                    login, screename, email, password, clarin_login,
+                    auth_provider, auth_subject, auth_username, auth_email,
+                    auth_email_verified, auth_linked_at, last_login_at
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+        $db->execute($sql,array(
+            $login,
+            $screename,
+            $email,
+            $password,
+            $clarin_login,
+            $authProvider,
+            $authClaims ? $authClaims['subject'] : null,
+            $authClaims ? $authClaims['username'] : null,
+            $authClaims ? $authClaims['email'] : null,
+            $authClaims && $authClaims['email_verified'] ? 1 : 0,
+            $authProvider ? date('Y-m-d H:i:s') : null,
+            $authProvider ? date('Y-m-d H:i:s') : null
+        ));
 
         $error = $db->errorInfo();
         if(isset($error[0]))

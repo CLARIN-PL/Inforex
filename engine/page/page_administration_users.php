@@ -11,6 +11,7 @@ class Page_administration_users extends CPageAdministration {
 	function execute(){
 		global $db;
 		$sql = "SELECT u.user_id, u.login, u.screename, u.email, " .
+				"	u.auth_provider, u.auth_username, u.last_login_at, " .
 				"	group_concat(role SEPARATOR ', ') AS roles" .
 				" FROM users u" .
 				" LEFT JOIN users_roles ur USING (user_id)" .

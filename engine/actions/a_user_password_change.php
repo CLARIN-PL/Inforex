@@ -19,17 +19,7 @@ class Action_user_password_change extends CAction{
 	} 
 	
 	function execute(){
-		global $db, $user;
-		
-		$sql = "SELECT PASSWORD FROM users WHERE user_id = {$user['user_id']}";
-		if($db->fetch_one($sql) == md5($_POST['old_pass'])){
-			$sql = "UPDATE users SET password = MD5('{$_POST['new_pass2']}') WHERE user_id = {$user['user_id']}";
-			$db->execute($sql);
-			$this->set("action_performed", "Hasło zostało zmienione");	
-		}
-		else{
-			$this->set("action_error", "Błędne stare hasło");
-		}
+		$this->set("action_error", "Zmiana hasła lokalnego jest wyłączona. Uwierzytelnianie jest obsługiwane przez Keycloak.");
 		
 		return null;
 	}	

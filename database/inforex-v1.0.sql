@@ -716,6 +716,7 @@ CREATE TABLE `exports` (
   `extractors` text COLLATE utf8mb4_unicode_ci,
   `indices` text COLLATE utf8mb4_unicode_ci,
   `tagging` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'tagger',
+  `export_format` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'legacy',
   `message` text COLLATE utf8mb4_unicode_ci,
   `progress` int(11) NOT NULL DEFAULT '0',
   `statistics` text COLLATE utf8mb4_unicode_ci,
@@ -1861,8 +1862,16 @@ CREATE TABLE `users` (
   `email` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unknown',
   `password` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `clarin_login` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_provider` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_subject` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_email` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_email_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `auth_linked_at` datetime DEFAULT NULL,
+  `last_login_at` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY `login` (`login`)
+  UNIQUE KEY `login` (`login`),
+  UNIQUE KEY `users_auth_identity_uidx` (`auth_provider`,`auth_subject`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

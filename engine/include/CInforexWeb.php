@@ -200,7 +200,8 @@ class InforexWeb
                 "log_sql" => Config::Cfg()->get_log_sql(),
                 "url" => Config::Cfg()->get_url(),
                 "wccl_match_enable" => Config::Cfg()->get_wccl_match_enable(),
-                "federationLoginUrl" => Config::Cfg()->get_federationLoginUrl()
+                "federationLoginUrl" => Config::Cfg()->get_federationLoginUrl(),
+                "oidcEnabled" => Config::Cfg()->get_oidcEnabled()
             ));
             foreach ($variables as $k => $v) {
                 $o->set($k, $v);

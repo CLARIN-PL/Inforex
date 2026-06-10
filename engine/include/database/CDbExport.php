@@ -8,6 +8,13 @@
  */
 class DbExport
 {
+    static function getExport($export_id){
+        global $db;
+
+        $sql = "SELECT * FROM exports WHERE export_id = ?";
+        return $db->fetch($sql, array($export_id));
+    }
+
     static function getExportErrors($export_id){
         global $db;
 
