@@ -8,6 +8,7 @@ class ConllAndJsonFactory {
     const FORMAT_CONLLU_STANDARD = 'conllu_standard';
     const FORMAT_CLARIN_JSON = 'clarin_json';
     const FORMAT_CLARIN_PARQUET_ZST = 'clarin_parquet_zst';
+    const FORMAT_DIALOG_PARQUET_ZST = 'dialog_parquet_zst';
     protected $annotationSetNameCache = array();
 
     protected function makeLemmaCache(array $lemma) {
@@ -783,6 +784,495 @@ class ConllAndJsonFactory {
 
     } // getUtf8TextSlice()
 
+    protected function normalizeDialogText($text) {
+
+        $text = custom_html_entity_decode((string)$text);
+        $text = preg_replace('/\s+/u', ' ', trim($text));
+        return $text;
+
+    } // normalizeDialogText()
+
+    protected function getCompactTextLength($text) {
+
+        $compact = preg_replace('/\s+/u', '', (string)$text);
+        return mb_strlen($compact, 'UTF-8');
+
+    } // getCompactTextLength()
+
+    protected function loadDialogDom($content) {
+
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        libxml_use_internal_errors(true);
+        $loaded = $dom->loadXML((string)$content);
+        libxml_clear_errors();
+        libxml_use_internal_errors(false);
+
+        if (!$loaded) {
+            return null;
+        }
+        if ($dom->documentElement && strtolower($dom->documentElement->nodeName) === 'body') {
+            return $dom;
+        }
+
+        $bodies = $dom->getElementsByTagName('body');
+        if ($bodies->length > 0) {
+            return $dom;
+        }
+
+        return null;
+
+    } // loadDialogDom()
+
+    protected function addDialogSegment(array &$segments, $segmentType, $text, $compactCursor, $turnId = null) {
+
+        $text = $this->normalizeDialogText($text);
+        $compactLength = $this->getCompactTextLength($text);
+        if ($compactLength <= 0) {
+            return array($compactCursor, null);
+        }
+
+        $segment = array(
+            'segment_type' => $segmentType,
+            'turn_id' => $turnId,
+            'text' => $text,
+            'compact_start' => intval($compactCursor),
+            'compact_stop' => intval($compactCursor + $compactLength - 1)
+        );
+        $segments[] = $segment;
+
+        return array($compactCursor + $compactLength, $segment);
+
+    } // addDialogSegment()
+
+    protected function parseDialogStructure($content, $dialogId) {
+
+        $dom = $this->loadDialogDom($content);
+        if ($dom === null) {
+            $fallbackText = $this->normalizeDialogText(strip_tags((string)$content));
+            return array(
+                'subtitle' => null,
+                'participants' => array(),
+                'turns' => array(
+                    array(
+                        'turn_id' => $dialogId . '-turn-1',
+                        'sequence_no' => 1,
+                        'speaker' => null,
+                        'raw_author' => null,
+                        'text' => $fallbackText,
+                        'kind' => 'document',
+                        'author_compact_start' => null,
+                        'author_compact_stop' => null,
+                        'content_compact_start' => 0,
+                        'content_compact_stop' => max(0, $this->getCompactTextLength($fallbackText) - 1)
+                    )
+                ),
+                'segments' => array(
+                    array(
+                        'segment_type' => 'content',
+                        'turn_id' => $dialogId . '-turn-1',
+                        'text' => $fallbackText,
+                        'compact_start' => 0,
+                        'compact_stop' => max(0, $this->getCompactTextLength($fallbackText) - 1)
+                    )
+                )
+            );
+        }
+
+        $body = strtolower($dom->documentElement->nodeName) === 'body'
+            ? $dom->documentElement
+            : $dom->getElementsByTagName('body')->item(0);
+
+        $subtitle = null;
+        $participants = array();
+        $turns = array();
+        $segments = array();
+        $compactCursor = 0;
+        $turnNo = 1;
+
+        foreach ($body->childNodes as $child) {
+            if (!($child instanceof DOMElement)) {
+                continue;
+            }
+            $nodeName = strtolower($child->nodeName);
+
+            if ($nodeName === 'subtitle') {
+                $subtitle = $this->normalizeDialogText($child->textContent);
+                list($compactCursor,) = $this->addDialogSegment($segments, 'subtitle', $subtitle, $compactCursor, null);
+                continue;
+            }
+
+            if ($nodeName === 'out') {
+                $participant = $this->normalizeDialogText($child->textContent);
+                if ($participant !== '') {
+                    $participants[] = $participant;
+                    list($compactCursor,) = $this->addDialogSegment($segments, 'participant', $participant, $compactCursor, null);
+                }
+                continue;
+            }
+
+            if ($nodeName !== 'message') {
+                continue;
+            }
+
+            $authorNode = null;
+            $contentNode = null;
+            foreach ($child->childNodes as $messageChild) {
+                if (!($messageChild instanceof DOMElement)) {
+                    continue;
+                }
+                $messageNodeName = strtolower($messageChild->nodeName);
+                if ($messageNodeName === 'author') {
+                    $authorNode = $messageChild;
+                } elseif ($messageNodeName === 'content') {
+                    $contentNode = $messageChild;
+                }
+            }
+
+            $authorText = $authorNode ? $this->normalizeDialogText($authorNode->textContent) : '';
+            $contentText = $contentNode ? $this->normalizeDialogText($contentNode->textContent) : '';
+            $turnId = $dialogId . '-turn-' . $turnNo;
+            $turnNo++;
+
+            $authorSegment = null;
+            if ($authorText !== '') {
+                list($compactCursor, $authorSegment) = $this->addDialogSegment($segments, 'author', $authorText, $compactCursor, $turnId);
+            }
+
+            $contentSegment = null;
+            list($compactCursor, $contentSegment) = $this->addDialogSegment($segments, 'content', $contentText, $compactCursor, $turnId);
+
+            $turns[] = array(
+                'turn_id' => $turnId,
+                'sequence_no' => count($turns) + 1,
+                'speaker' => $authorText !== '' ? $authorText : null,
+                'raw_author' => $authorText !== '' ? $authorText : null,
+                'text' => $contentText,
+                'kind' => $authorText === '' ? 'stage_direction' : 'utterance',
+                'author_compact_start' => $authorSegment ? intval($authorSegment['compact_start']) : null,
+                'author_compact_stop' => $authorSegment ? intval($authorSegment['compact_stop']) : null,
+                'content_compact_start' => $contentSegment ? intval($contentSegment['compact_start']) : null,
+                'content_compact_stop' => $contentSegment ? intval($contentSegment['compact_stop']) : null
+            );
+        }
+
+        return array(
+            'subtitle' => $subtitle,
+            'participants' => $participants,
+            'turns' => $turns,
+            'segments' => $segments
+        );
+
+    } // parseDialogStructure()
+
+    protected function findDialogSegmentForAnnotation(array $segments, $annotationFrom, $annotationTo) {
+
+        foreach ($segments as $segment) {
+            if ($annotationFrom >= $segment['compact_start'] && $annotationTo <= $segment['compact_stop']) {
+                return $segment;
+            }
+        }
+
+        return null;
+
+    } // findDialogSegmentForAnnotation()
+
+    protected function buildDialogAnnotations(array $annotations, array $attributes, array $segments) {
+
+        $attributesByAnnotationId = $this->buildAttributesByAnnotationId($attributes);
+        $dialogAnnotations = array();
+        $annotationContext = array();
+
+        foreach ($annotations as $annotation) {
+            if (!isset($annotation['from']) || !isset($annotation['to']) || intval($annotation['to']) < intval($annotation['from'])) {
+                continue;
+            }
+            $segment = $this->findDialogSegmentForAnnotation($segments, intval($annotation['from']), intval($annotation['to']));
+            if ($segment === null) {
+                continue;
+            }
+
+            $localCompactStart = intval($annotation['from']) - intval($segment['compact_start']);
+            $localCompactStop = intval($annotation['to']) - intval($segment['compact_start']);
+            $offsetMap = $this->buildCompactToPlainOffsetMap($segment['text']);
+            list($localStart, $localStop) = $this->convertOffsetsToPlainText($localCompactStart, $localCompactStop, $offsetMap);
+            $annotationId = intval($annotation['id']);
+
+            $dialogAnnotations[] = array(
+                'obj_id' => $annotationId,
+                'turn_id' => $segment['turn_id'],
+                'segment_type' => $segment['segment_type'],
+                'compact_start' => intval($annotation['from']),
+                'compact_stop' => intval($annotation['to']) + 1,
+                'local_start' => intval($localStart),
+                'local_stop' => intval($localStop),
+                'text' => $this->getUtf8TextSlice($segment['text'], $localStart, $localStop),
+                'annotation_set' => isset($annotation['group']) ? $this->getAnnotationSetDisplayName($annotation['group']) : null,
+                'annotation_type' => isset($annotation['type']) ? $annotation['type'] : '',
+                'lemma' => isset($annotation['lemma']) && $annotation['lemma'] !== '' ? $annotation['lemma'] : null,
+                'stage' => isset($annotation['stage']) && $annotation['stage'] !== '' ? $annotation['stage'] : null,
+                'source' => isset($annotation['source']) && $annotation['source'] !== '' ? $annotation['source'] : null,
+                'attributes_json' => isset($attributesByAnnotationId[$annotationId])
+                    ? $this->toNullableJson($attributesByAnnotationId[$annotationId])
+                    : null
+            );
+
+            $annotationContext[$annotationId] = array(
+                'turn_id' => $segment['turn_id'],
+                'segment_type' => $segment['segment_type']
+            );
+        }
+
+        return array($dialogAnnotations, $annotationContext);
+
+    } // buildDialogAnnotations()
+
+    protected function buildDialogRelations(array $relations, array $annotationContext) {
+
+        $dialogRelations = array();
+        foreach ($relations as $relation) {
+            $sourceId = intval($relation['source_id']);
+            $targetId = intval($relation['target_id']);
+            if (!isset($annotationContext[$sourceId]) || !isset($annotationContext[$targetId])) {
+                continue;
+            }
+            $sourceContext = isset($annotationContext[$sourceId]) ? $annotationContext[$sourceId] : array();
+            $targetContext = isset($annotationContext[$targetId]) ? $annotationContext[$targetId] : array();
+
+            $dialogRelations[] = array(
+                'obj_id' => intval($relation['id']),
+                'relation_set' => isset($relation['rsname']) && $relation['rsname'] !== '' ? $relation['rsname'] : null,
+                'relation_type' => isset($relation['name']) ? $relation['name'] : '',
+                'source_obj_id' => $sourceId,
+                'target_obj_id' => $targetId,
+                'source_turn_id' => isset($sourceContext['turn_id']) ? $sourceContext['turn_id'] : null,
+                'target_turn_id' => isset($targetContext['turn_id']) ? $targetContext['turn_id'] : null,
+                'source_segment_type' => isset($sourceContext['segment_type']) ? $sourceContext['segment_type'] : null,
+                'target_segment_type' => isset($targetContext['segment_type']) ? $targetContext['segment_type'] : null
+            );
+        }
+
+        return $dialogRelations;
+
+    } // buildDialogRelations()
+
+    protected function rebuildDialogSegmentText(array $items, $textField) {
+
+        if (empty($items)) {
+            return null;
+        }
+
+        $length = 0;
+        foreach ($items as $item) {
+            if (!isset($item['local_stop'])) {
+                continue;
+            }
+            $length = max($length, intval($item['local_stop']));
+        }
+
+        if ($length <= 0) {
+            return '';
+        }
+
+        $chars = array_fill(0, $length, ' ');
+        foreach ($items as $item) {
+            if (!isset($item[$textField])) {
+                continue;
+            }
+            $start = isset($item['local_start']) ? intval($item['local_start']) : 0;
+            $stop = isset($item['local_stop']) ? intval($item['local_stop']) : $start;
+            if ($stop < $start) {
+                continue;
+            }
+            $itemChars = $this->splitUtf8Chars((string)$item[$textField]);
+            $max = min($stop - $start, count($itemChars));
+            for ($index = 0; $index < $max; $index++) {
+                $chars[$start + $index] = $itemChars[$index];
+            }
+        }
+
+        return rtrim(implode('', $chars));
+
+    } // rebuildDialogSegmentText()
+
+    protected function hydrateDialogStructureFromTokens(array $structure, array $dialogTokens) {
+
+        if (empty($dialogTokens) || empty($structure['segments'])) {
+            return $structure;
+        }
+
+        foreach ($structure['segments'] as &$segment) {
+            $segmentTokens = array();
+            foreach ($dialogTokens as $token) {
+                if ($token['segment_type'] !== $segment['segment_type']) {
+                    continue;
+                }
+                if ($token['turn_id'] !== $segment['turn_id']) {
+                    continue;
+                }
+                if ($token['compact_start'] < $segment['compact_start'] || ($token['compact_stop'] - 1) > $segment['compact_stop']) {
+                    continue;
+                }
+                $segmentTokens[] = $token;
+            }
+
+            if (empty($segmentTokens)) {
+                continue;
+            }
+
+            usort($segmentTokens, function($left, $right) {
+                return intval($left['local_start']) - intval($right['local_start']);
+            });
+
+            $segment['text'] = $this->rebuildDialogSegmentText($segmentTokens, 'orth');
+            $segment['compact_start'] = intval($segmentTokens[0]['compact_start']);
+            $segment['compact_stop'] = intval($segmentTokens[count($segmentTokens) - 1]['compact_stop'] - 1);
+        }
+        unset($segment);
+
+        foreach ($structure['turns'] as &$turn) {
+            $authorSegment = null;
+            $contentSegment = null;
+            foreach ($structure['segments'] as $segment) {
+                if ($segment['turn_id'] !== $turn['turn_id']) {
+                    continue;
+                }
+                if ($segment['segment_type'] === 'author') {
+                    $authorSegment = $segment;
+                } elseif ($segment['segment_type'] === 'content') {
+                    $contentSegment = $segment;
+                }
+            }
+
+            if ($authorSegment !== null) {
+                $turn['speaker'] = $authorSegment['text'] !== '' ? $authorSegment['text'] : null;
+                $turn['raw_author'] = $authorSegment['text'] !== '' ? $authorSegment['text'] : null;
+                $turn['author_compact_start'] = intval($authorSegment['compact_start']);
+                $turn['author_compact_stop'] = intval($authorSegment['compact_stop']);
+            }
+            if ($contentSegment !== null) {
+                $turn['text'] = $contentSegment['text'];
+                $turn['content_compact_start'] = intval($contentSegment['compact_start']);
+                $turn['content_compact_stop'] = intval($contentSegment['compact_stop']);
+            }
+        }
+        unset($turn);
+
+        foreach ($structure['segments'] as $segment) {
+            if ($segment['segment_type'] === 'subtitle') {
+                $structure['subtitle'] = $segment['text'];
+                break;
+            }
+        }
+
+        $subtitleTokens = array();
+        foreach ($dialogTokens as $token) {
+            if ($token['segment_type'] === 'subtitle') {
+                $subtitleTokens[] = $token;
+            }
+        }
+        if (!empty($subtitleTokens)) {
+            usort($subtitleTokens, function($left, $right) {
+                return intval($left['local_start']) - intval($right['local_start']);
+            });
+            $structure['subtitle'] = $this->rebuildDialogSegmentText($subtitleTokens, 'orth');
+        }
+
+        $participantSegments = array();
+        foreach ($structure['segments'] as $segment) {
+            if ($segment['segment_type'] === 'participant') {
+                $participantSegments[] = $segment['text'];
+            }
+        }
+        if (!empty($participantSegments)) {
+            $structure['participants'] = $participantSegments;
+        }
+
+        return $structure;
+
+    } // hydrateDialogStructureFromTokens()
+
+    protected function selectPreferredSubtitleTokens(array $dialogTokens) {
+
+        $subtitleGroups = array();
+        $currentGroup = array();
+        $lastLocalStart = null;
+
+        foreach ($dialogTokens as $token) {
+            if ($token['segment_type'] !== 'subtitle') {
+                continue;
+            }
+            $localStart = isset($token['local_start']) ? intval($token['local_start']) : 0;
+            if ($lastLocalStart !== null && $localStart <= $lastLocalStart) {
+                if (!empty($currentGroup)) {
+                    $subtitleGroups[] = $currentGroup;
+                }
+                $currentGroup = array();
+            }
+            $currentGroup[] = $token['token_id'];
+            $lastLocalStart = $localStart;
+        }
+
+        if (!empty($currentGroup)) {
+            $subtitleGroups[] = $currentGroup;
+        }
+
+        if (count($subtitleGroups) <= 1) {
+            return $dialogTokens;
+        }
+
+        $preferredIds = array_flip($subtitleGroups[count($subtitleGroups) - 1]);
+        $filtered = array();
+        foreach ($dialogTokens as $token) {
+            if ($token['segment_type'] === 'subtitle' && !isset($preferredIds[$token['token_id']])) {
+                continue;
+            }
+            $filtered[] = $token;
+        }
+
+        return $filtered;
+
+    } // selectPreferredSubtitleTokens()
+
+    protected function buildDialogTokens(array $tokens, array $tagsByTokens, array $segments) {
+
+        $dialogTokens = array();
+        $tokenSequence = 1;
+
+        foreach ($tokens as $token) {
+            $segment = $this->findDialogSegmentForAnnotation($segments, intval($token['from']), intval($token['to']));
+            if ($segment === null) {
+                continue;
+            }
+
+            $localCompactStart = intval($token['from']) - intval($segment['compact_start']);
+            $localCompactStop = intval($token['to']) - intval($segment['compact_start']);
+            $offsetMap = $this->buildCompactToPlainOffsetMap($segment['text']);
+            list($localStart, $localStop) = $this->convertOffsetsToPlainText($localCompactStart, $localCompactStop, $offsetMap);
+            $tokenTags = isset($tagsByTokens[$token['token_id']]) && is_array($tagsByTokens[$token['token_id']])
+                ? $tagsByTokens[$token['token_id']]
+                : array();
+            $primaryTag = count($tokenTags) > 0 ? $tokenTags[0] : array();
+
+            $dialogTokens[] = array(
+                'token_id' => intval($token['token_id']),
+                'turn_id' => $segment['turn_id'],
+                'segment_type' => $segment['segment_type'],
+                'sequence_no' => $tokenSequence++,
+                'orth' => $this->getUtf8TextSlice($segment['text'], $localStart, $localStop),
+                'lemma' => isset($primaryTag['base']) ? $primaryTag['base'] : (isset($primaryTag['base_text']) ? $primaryTag['base_text'] : null),
+                'pos' => isset($primaryTag['ctag']) ? $primaryTag['ctag'] : null,
+                'compact_start' => intval($token['from']),
+                'compact_stop' => intval($token['to']) + 1,
+                'local_start' => intval($localStart),
+                'local_stop' => intval($localStop),
+                'eos' => isset($token['eos']) ? boolval($token['eos']) : false
+            );
+        }
+
+        return $dialogTokens;
+
+    } // buildDialogTokens()
+
     protected function buildMetadataPayload($report, $reportExt) {
 
         $metadata = array();
@@ -1030,6 +1520,32 @@ class ConllAndJsonFactory {
         );
 
     } // buildClarinJsonlZstDocument()
+
+    public function buildDialogParquetDocument($report, $reportExt, $annotations, $relations, $attributes = array(), $tokens = array(), $tagsByTokens = array()) {
+
+        list($metadata, $metadataTypes) = $this->buildMetadataPayload($report, $reportExt);
+        $docId = isset($report['filename']) && $report['filename'] !== '' ? $report['filename'] : str_pad(isset($report['id']) ? $report['id'] : '', 8, '0', STR_PAD_LEFT);
+        $dialogId = $docId !== '' ? (string)$docId : ('dialog-' . (isset($report['id']) ? intval($report['id']) : 0));
+        $structure = $this->parseDialogStructure(isset($report['content']) ? $report['content'] : '', $dialogId);
+        $dialogTokens = $this->buildDialogTokens($tokens, $tagsByTokens, $structure['segments']);
+        $dialogTokens = $this->selectPreferredSubtitleTokens($dialogTokens);
+        $structure = $this->hydrateDialogStructureFromTokens($structure, $dialogTokens);
+        list($dialogAnnotations, $annotationContext) = $this->buildDialogAnnotations($annotations, $attributes, $structure['segments']);
+
+        return array(
+            'doc_id' => $docId !== '' ? (string)$docId : null,
+            'dialog_id' => $dialogId,
+            'subtitle' => $structure['subtitle'],
+            'participants' => $structure['participants'],
+            'metadata_json' => empty($metadata) ? null : json_encode($metadata, JSON_UNESCAPED_UNICODE),
+            'metadata_types_json' => empty($metadataTypes) ? null : json_encode($metadataTypes, JSON_UNESCAPED_UNICODE),
+            'turns' => $structure['turns'],
+            'tokens' => $dialogTokens,
+            'annotations' => $dialogAnnotations,
+            'relations' => $this->buildDialogRelations($relations, $annotationContext)
+        );
+
+    } // buildDialogParquetDocument()
 
     protected function wrapSentenceSpans(array $sentences) {
 

@@ -22,7 +22,7 @@ class Ajax_export_new extends CPageCorpus {
 		$indices = $_POST['indices'];
 		$tagging = $_POST['tagging'];
         $export_format = isset($_POST['export_format']) ? strtolower(trim($_POST['export_format'])) : 'legacy';
-        if (!in_array($export_format, array('legacy', 'text', 'conllu', 'conllu_standard', 'clarin_json', 'clarin_parquet_zst', 'clarin_jsonl_zst'))) {
+        if (!in_array($export_format, array('legacy', 'text', 'conllu', 'conllu_standard', 'clarin_json', 'clarin_parquet_zst', 'dialog_parquet_zst', 'clarin_jsonl_zst'))) {
             $export_format = 'legacy';
         }
 

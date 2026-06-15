@@ -183,11 +183,15 @@ class TaskExport{
 		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id, $tagging, $export_format);
 		echo "packing...\n";
 
-        if ($export_format === 'clarin_parquet_zst' || $export_format === 'clarin_jsonl_zst') {
+        if ($export_format === 'clarin_parquet_zst' || $export_format === 'clarin_jsonl_zst' || $export_format === 'dialog_parquet_zst') {
             $source_file = $output_folder . DIRECTORY_SEPARATOR . "inforex_export.jsonl";
             $parquet_file = $output_folder . DIRECTORY_SEPARATOR . "inforex_export.parquet";
             $target_file = $this->path_exports . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.parquet.zst", $task_id);
-            $this->convertJsonlToParquet($source_file, $parquet_file);
+            $this->convertJsonlToParquet(
+                $source_file,
+                $parquet_file,
+                $export_format === 'dialog_parquet_zst' ? 'dialog_jsonl_to_parquet.py' : 'jsonl_to_parquet.py'
+            );
             $this->compressZstd($parquet_file, $target_file);
         } else {
 		    $zip_file = $this->path_exports . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.zip", $task_id);
@@ -239,8 +243,8 @@ class TaskExport{
         }
     }
 
-    function convertJsonlToParquet($source_file, $target_file){
-        $script = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'jsonl_to_parquet.py';
+    function convertJsonlToParquet($source_file, $target_file, $script_name = 'jsonl_to_parquet.py'){
+        $script = dirname(__FILE__) . DIRECTORY_SEPARATOR . $script_name;
         if (!is_file($script)) {
             throw new Exception("Cannot convert export to parquet, helper script missing: $script");
         }

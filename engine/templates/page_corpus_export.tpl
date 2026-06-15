@@ -51,6 +51,7 @@
                                 <option value="conllu_standard">CoNLL-U</option>
                                 <option value="clarin_json">CLARIN JSON</option>
                                 <option value="clarin_parquet_zst">CLARIN Parquet ZST</option>
+                                <option value="dialog_parquet_zst">Dialog parquet</option>
                             </select>
                         </td>
                         <td class="corpus-export-add-column"></td>

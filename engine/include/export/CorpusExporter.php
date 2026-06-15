@@ -577,6 +577,9 @@ class CorpusExporter{
                 return '.conllu';
             case ConllAndJsonFactory::FORMAT_CLARIN_JSON:
                 return '.json';
+            case ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST:
+            case ConllAndJsonFactory::FORMAT_DIALOG_PARQUET_ZST:
+                return '.parquet.zst';
             case ConllAndJsonFactory::FORMAT_LEGACY:
             default:
                 return '.xml';
@@ -839,6 +842,25 @@ class CorpusExporter{
             return;
         }
 
+        if ($export_format === ConllAndJsonFactory::FORMAT_DIALOG_PARQUET_ZST) {
+            $structuredRecord = $factory->buildDialogParquetDocument(
+                $report,
+                $report_ext,
+                $annotations,
+                $relations,
+                $attributes,
+                $tokens,
+                $tags_by_tokens
+            );
+            file_put_contents(
+                $output_target,
+                json_encode($structuredRecord, JSON_UNESCAPED_UNICODE) . "\n",
+                FILE_APPEND
+            );
+            $this->updateLists($flags, $ccl->getFileName(), $lists, $export_format);
+            return;
+        }
+
         if ($export_format === ConllAndJsonFactory::FORMAT_TEXT) {
             $this->createIniFile($report,$subcorpora,$file_path_without_ext);
             $this->updateLists($flags,$ccl->getFileName(),$lists, $export_format);
@@ -916,7 +938,8 @@ class CorpusExporter{
 
 		/* Przygotuje katalog docelowy */
         $structuredOutputFile = null;
-        if ($export_format === ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST) {
+        if ($export_format === ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST
+            || $export_format === ConllAndJsonFactory::FORMAT_DIALOG_PARQUET_ZST) {
             if ( !file_exists($output_folder) ){
                 mkdir($output_folder, 0777, true);
             }
@@ -976,7 +999,8 @@ class CorpusExporter{
                 $this->writeConsoleMessage(intval($progress) . "%" . "\n");
             }
 		}
-        if ($export_format !== ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST) {
+        if ($export_format !== ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST
+            && $export_format !== ConllAndJsonFactory::FORMAT_DIALOG_PARQUET_ZST) {
 		    foreach ($lists as $list){
 			    $this->writeConsoleMessage(sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]));
 			    $lines = array();
@@ -1016,7 +1040,8 @@ class CorpusExporter{
         }
 
         if(!empty($extractor_stats)){
-            if ($export_format !== ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST) {
+            if ($export_format !== ConllAndJsonFactory::FORMAT_CLARIN_PARQUET_ZST
+                && $export_format !== ConllAndJsonFactory::FORMAT_DIALOG_PARQUET_ZST) {
                 /* Utworzenie pliku */
 			    $stats_file = fopen("$output_folder/statistics.txt", "w");
                 fwrite($stats_file, $stats_str);

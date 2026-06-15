@@ -86,14 +86,14 @@ class Page_corpus_export extends CPageCorpus {
 	static function getExportFilePath($export_id){
         $export = DbExport::getExport($export_id);
         $format = isset($export['export_format']) ? $export['export_format'] : 'legacy';
-        $extension = ($format === 'clarin_parquet_zst' || $format === 'clarin_jsonl_zst') ? 'parquet.zst' : 'zip';
+        $extension = ($format === 'clarin_parquet_zst' || $format === 'clarin_jsonl_zst' || $format === 'dialog_parquet_zst') ? 'parquet.zst' : 'zip';
 		return Config::Cfg()->get_path_exports().DIRECTORY_SEPARATOR.sprintf("inforex_export_%d.%s", $export_id, $extension);
 	}
 
     static function getExportDownloadFilename($export_id){
         $export = DbExport::getExport($export_id);
         $format = isset($export['export_format']) ? $export['export_format'] : 'legacy';
-        if ($format === 'clarin_parquet_zst' || $format === 'clarin_jsonl_zst') {
+        if ($format === 'clarin_parquet_zst' || $format === 'clarin_jsonl_zst' || $format === 'dialog_parquet_zst') {
             return sprintf("inforex_export_%d.parquet.zst", $export_id);
         }
         return sprintf("inforex_export_%d.zip", $export_id);
