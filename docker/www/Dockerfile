@@ -62,7 +62,11 @@ RUN ln -s ../sites-available/inforex.conf inforex.conf
 
 COPY setup.sh /bin
 COPY sample.config.local.php /bin
-RUN chmod -R +x /bin/setup.sh
+COPY korpuskop-runtime /opt/korpuskop
+RUN chmod -R +x /bin/setup.sh \
+    && chmod +x /opt/korpuskop/bin/korpuskop \
+    && mkdir -p /opt/korpuskop/var/output /opt/korpuskop/var/progress \
+    && chown -R www-data:www-data /opt/korpuskop/var
 
 COPY php.ini /usr/local/etc/php/conf.d
 

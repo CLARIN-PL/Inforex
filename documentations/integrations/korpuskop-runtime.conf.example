@@ -1,0 +1,15 @@
+# Example runtime layout for Inforex + Korpuskop
+# Recommended ownership: www-data:www-data
+
+/opt/korpuskop/bin/korpuskop
+/opt/korpuskop/config/document.report.json
+/opt/korpuskop/config/dialog.report.json
+/opt/korpuskop/dics/
+/opt/korpuskop/var/progress/
+/opt/korpuskop/var/output/
+
+# System packages recommended on the web server:
+# - zstd
+# - python3
+# - python3-pyarrow
+# - php-cli

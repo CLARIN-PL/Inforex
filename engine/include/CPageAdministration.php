@@ -18,6 +18,8 @@ class CPageAdministration extends CPage {
 
     function getAdministrationPages(){
         $pages = array();
+        $pages[] = array("name" => "administration_activity_dashboard", "title"=>"Activity dashboard", "icon"=>"fa-tachometer");
+        $pages[] = array("name" => "administration_queue_monitor", "title"=>"Queue monitor", "icon"=>"fa-tasks");
         $pages[] = array("name" => "administration_users", "title"=>"Users", "icon"=>"fa-users");
         $pages[] = array("name" => "administration_annotation_schema", "title"=>"Annotation schema", "icon"=>"fa-tags");
         $pages[] = array("name" => "administration_annotation_shared_attributes", "title"=>"Annotation shared attributes", "icon"=>"fa-share-alt");

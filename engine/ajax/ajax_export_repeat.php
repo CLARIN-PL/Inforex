@@ -7,11 +7,15 @@ class Ajax_export_repeat extends CPageCorpus {
     }
 
     function execute(){
-        global $corpus, $db;
+        global $corpus, $user;
 
         $export_id = isset($_POST['export_id']) ? intval($_POST['export_id']) : 0;
         if ($export_id <= 0) {
             throw new Exception("Invalid export id");
+        }
+        $user_id = intval(isset($user['user_id']) ? $user['user_id'] : 0);
+        if ($user_id <= 0) {
+            throw new UserDataException('Do ponownego zlecenia eksportu wymagane jest aktywne konto użytkownika.');
         }
 
         $export = DbExport::getExport($export_id);
@@ -24,6 +28,7 @@ class Ajax_export_repeat extends CPageCorpus {
 
         $attributes = array();
         $attributes['corpus_id'] = intval($export['corpus_id']);
+        $attributes['user_id'] = $user_id;
         $attributes['datetime_submit'] = date("Y-m-d H:i:s");
         $attributes['description'] = strval($export['description']);
         $attributes['extractors'] = strval($export['extractors']);
@@ -38,8 +43,6 @@ class Ajax_export_repeat extends CPageCorpus {
         $attributes['datetime_start'] = null;
         $attributes['datetime_finish'] = null;
 
-        $db->insert("exports", $attributes);
-
-        return array('status' => 'ok');
+        return DbExport::createOrReuseExport($attributes);
     }
 }

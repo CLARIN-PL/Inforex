@@ -1,0 +1,373 @@
+.administration-activity-dashboard-panel {
+    border: 0;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+}
+
+.administration-activity-dashboard-hero {
+    margin-bottom: 24px;
+    padding: 24px 28px;
+    border: 1px solid #d9e2ec;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-activity-dashboard-eyebrow {
+    margin-bottom: 8px;
+    color: #829ab1;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.administration-activity-dashboard-title {
+    margin: 0 0 10px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #102a43;
+}
+
+.administration-activity-dashboard-text {
+    margin: 0;
+    max-width: 920px;
+    color: #52606d;
+    line-height: 1.65;
+}
+
+.administration-activity-dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.administration-activity-stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 138px;
+    padding: 22px 20px;
+    border-radius: 18px;
+    border: 1px solid #d9e2ec;
+    background: #fff;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+}
+
+.administration-activity-stat-card-primary {
+    border-color: #bfd7ff;
+    background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.administration-activity-stat-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #486581;
+}
+
+.administration-activity-stat-value {
+    font-size: 36px;
+    line-height: 1.1;
+    font-weight: 700;
+    color: #102a43;
+}
+
+.administration-activity-stat-help {
+    color: #7b8794;
+    font-size: 12px;
+}
+
+.administration-activity-dashboard-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.administration-activity-dashboard-column {
+    margin-bottom: 20px;
+}
+
+.administration-activity-dashboard-subpanel {
+    height: 100%;
+    border: 1px solid #d9e2ec;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.administration-activity-dashboard-subheading {
+    padding: 16px 20px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border-bottom: 1px solid #d9e2ec;
+    color: #102a43;
+    font-weight: 700;
+}
+
+.administration-activity-chart-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    color: #52606d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.administration-activity-chart-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.administration-activity-chart-legend-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+}
+
+.administration-activity-chart-legend-swatch-events {
+    background: #4f8cff;
+}
+
+.administration-activity-chart-legend-swatch-users {
+    background: #33c3a3;
+}
+
+.administration-activity-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 290px;
+    padding: 12px 8px 0;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.administration-activity-chart-column {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    height: 100%;
+}
+
+.administration-activity-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+}
+
+.administration-activity-chart-bar {
+    width: calc(50% - 4px);
+    min-height: 2px;
+    border-radius: 10px 10px 4px 4px;
+}
+
+.administration-activity-chart-bar-events {
+    background: linear-gradient(180deg, #6ba4ff 0%, #4f8cff 100%);
+}
+
+.administration-activity-chart-bar-users {
+    background: linear-gradient(180deg, #6be0c8 0%, #33c3a3 100%);
+}
+
+.administration-activity-chart-label {
+    font-size: 11px;
+    color: #7b8794;
+}
+
+.administration-activity-dashboard-table-body {
+    padding-top: 8px;
+}
+
+.administration-activity-dashboard-queue-panel {
+    margin-top: 4px;
+}
+
+.administration-activity-dashboard-queue-intro {
+    margin-bottom: 18px;
+    color: #52606d;
+    line-height: 1.65;
+}
+
+.administration-activity-dashboard-stats-queues {
+    margin-bottom: 18px;
+}
+
+.administration-activity-dashboard-table th,
+.administration-activity-dashboard-table td {
+    vertical-align: middle !important;
+}
+
+.administration-activity-dashboard-queue-table th:nth-child(n+3),
+.administration-activity-dashboard-queue-table td:nth-child(n+3) {
+    text-align: center;
+}
+
+.administration-activity-queue-name {
+    font-weight: 700;
+    color: #102a43;
+}
+
+.administration-activity-queue-group {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    border: 1px solid #d9e2ec;
+    border-radius: 999px;
+    background: #f8fbff;
+    color: #486581;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.administration-activity-queue-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+}
+
+.administration-activity-queue-count-pending {
+    color: #8a4b08;
+    background: #fff7e6;
+    border: 1px solid #f7d38b;
+}
+
+.administration-activity-queue-count-processing {
+    color: #0b5ed7;
+    background: #eef5ff;
+    border: 1px solid #c7dcff;
+}
+
+.administration-activity-queue-count-error {
+    color: #b42318;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+}
+
+.administration-activity-queue-count-completed {
+    color: #166534;
+    background: #ecfdf3;
+    border: 1px solid #bbf7d0;
+}
+
+a.administration-activity-queue-count:hover,
+a.administration-activity-queue-count:focus {
+    filter: brightness(0.97);
+    transform: translateY(-1px);
+}
+
+.administration-activity-dashboard-queue-detail-table th,
+.administration-activity-dashboard-queue-detail-table td {
+    vertical-align: top !important;
+}
+
+.administration-activity-queue-detail-main {
+    font-weight: 600;
+    color: #102a43;
+}
+
+.administration-activity-queue-detail-secondary {
+    margin-top: 4px;
+    color: #7b8794;
+    font-size: 12px;
+    white-space: pre-wrap;
+}
+
+.administration-activity-queue-action {
+    min-width: 124px;
+}
+
+.administration-activity-queue-action .administration-activity-queue-status-select {
+    margin-bottom: 6px;
+    min-width: 110px;
+}
+
+.administration-activity-queue-status-feedback {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #7b8794;
+    line-height: 1.4;
+}
+
+.administration-activity-queue-status-feedback.is-success {
+    color: #166534;
+}
+
+.administration-activity-queue-status-feedback.is-error {
+    color: #b42318;
+}
+
+.administration-activity-user-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.administration-activity-user-name {
+    font-weight: 700;
+    color: #102a43;
+}
+
+.administration-activity-user-login {
+    color: #7b8794;
+}
+
+.administration-activity-status-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.administration-activity-status-badge-active {
+    color: #166534;
+    background: #ecfdf3;
+    border: 1px solid #bbf7d0;
+}
+
+.administration-activity-status-badge-idle {
+    color: #52606d;
+    background: #f4f7fb;
+    border: 1px solid #d9e2ec;
+}
+
+@media (max-width: 1199px) {
+    .administration-activity-dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .administration-activity-dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .administration-activity-dashboard-title {
+        font-size: 24px;
+    }
+
+    .administration-activity-chart {
+        overflow-x: auto;
+        gap: 8px;
+    }
+
+    .administration-activity-chart-column {
+        min-width: 28px;
+    }
+}

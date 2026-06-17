@@ -22,3 +22,12 @@ Scripts:
 
 
 
+
+* cli-korpuskop-report.php  -- uruchamia raport Korpuskop z poziomu Inforex,
+                               przekazuje postęp JSON i plik snapshotu postępu,
+                               potrafi automatycznie rozpoznać wariant eksportu.
+* korpuskop-report-form.php -- prosty formularz WWW do ręcznego uruchamiania
+                               raportów Korpuskop na plikach .parquet.zst z Inforex.
+* detect-korpuskop-parquet-kind.py -- helper rozpoznający wariant eksportu
+                                      dokumentowego albo dialogowego po schemacie Parquet.
+* korpuskop-db.sql -- przykładowy skrypt SQL dodający historię uruchomień Korpuskop do bazy Inforex.

@@ -160,6 +160,9 @@
 									{if "tasks"|has_corpus_role_or_owner}
 										<li{if $page=="corpus_tasks"} class="active"{/if}><a href="index.php?page=corpus_tasks&amp;corpus={$corpus.id}">Batch tasks</a></li>
 									{/if}
+									{if "admin"|has_role || "report_generation"|has_role || "report_generation"|has_corpus_role}
+										<li{if $page=="corpus_korpuskop"} class="active"{/if}><a href="index.php?page=corpus_korpuskop&amp;corpus={$corpus.id}">Generate corpus report</a></li>
+									{/if}
 									<li{if $page=="corpus_wccl_match"} class="active"{/if}><a href="index.php?page=corpus_wccl_match&amp;corpus={$corpus.id}">Wccl Match</a></li>
 									{if "run_tests"|has_corpus_role_or_owner}
 										<li{if $page=="corpus_tests"} class="active"{/if}><a href="index.php?page=corpus_tests&amp;corpus={$corpus.id}">Integrity tests</a></li>

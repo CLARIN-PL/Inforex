@@ -24,16 +24,43 @@
     }
 </script>
 {else}
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-md-1" style="padding: 40px"><i class="fa fa-lock fa-5x" aria-hidden="true"></i></div>
-            <div class="col-md-11">
-                <div class="row"><h1>{$access->getMessage()}</h1></div>
-                <div class="row">This page requires one of the following roles:</div>
-                <div class="row">{foreach from=$access->getRolesRequired() item=r}<button type="button" class="btn btn-danger btn-xs" style="margin: 3px">{$r}</button>{/foreach}</div>
-                <div class="row">You are granted the following roles:</div>
-                <div class="row">{foreach from=$access->getRolesGranted() item=r}<button type="button" class="btn btn-success btn-xs" style="margin: 3px">{$r}</button>{/foreach}</div>
+<div class="access-denied-page">
+    <div class="panel administration-content-panel access-denied-panel">
+        <div class="panel-heading administration-content-heading access-denied-heading">
+            <span class="administration-content-heading-icon access-denied-heading-icon"><i class="fa fa-shield" aria-hidden="true"></i></span>
+            <span>Access denied</span>
+        </div>
+        <div class="panel-body access-denied-body">
+            <div class="access-denied-layout">
+                <div class="access-denied-hero">
+                    <div class="access-denied-hero-mark">
+                        <i class="fa fa-lock" aria-hidden="true"></i>
+                    </div>
+                    <div class="access-denied-hero-copy">
+                        <div class="access-denied-eyebrow">Permission required</div>
+                        <h1 class="access-denied-title">You do not have permission to open this page.</h1>
+                        <p class="access-denied-text">Your current account does not have the permissions required for this view. If you believe you should have access, please contact a corpus administrator.</p>
+                    </div>
+                </div>
+
+                <div class="access-denied-grid">
+                    <div class="access-denied-card access-denied-card-required">
+                        <div class="access-denied-card-label">Required roles</div>
+                        <div class="access-denied-tags">
+                            {foreach from=$access->getRolesRequired() item=r}
+                                <span class="access-denied-tag access-denied-tag-required">{$r}</span>
+                            {/foreach}
+                        </div>
+                    </div>
+                    <div class="access-denied-card access-denied-card-granted">
+                        <div class="access-denied-card-label">Your current roles</div>
+                        <div class="access-denied-tags">
+                            {foreach from=$access->getRolesGranted() item=r}
+                                <span class="access-denied-tag access-denied-tag-granted">{$r}</span>
+                            {/foreach}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

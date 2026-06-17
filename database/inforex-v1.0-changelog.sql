@@ -1146,3 +1146,101 @@ SET @exports_export_format_sql = IF(
 PREPARE exports_export_format_stmt FROM @exports_export_format_sql;
 EXECUTE exports_export_format_stmt;
 DEALLOCATE PREPARE exports_export_format_stmt;
+
+
+--changeset tn:34
+CREATE TABLE IF NOT EXISTS `korpuskop_runs` (
+  `run_id` BIGINT NOT NULL AUTO_INCREMENT,
+  `task_id` BIGINT NULL,
+  `corpus_id` INT NOT NULL,
+  `user_id` INT NULL,
+  `input_path` TEXT NOT NULL,
+  `input_kind` VARCHAR(32) NOT NULL,
+  `output_path` TEXT NOT NULL,
+  `config_json_path` TEXT NULL,
+  `progress_file` TEXT NULL,
+  `status` VARCHAR(32) NOT NULL,
+  `exit_code` INT NULL,
+  `message` MEDIUMTEXT NULL,
+  `file_size` BIGINT NULL,
+  `created_at` DATETIME NOT NULL,
+  `finished_at` DATETIME NULL,
+  PRIMARY KEY (`run_id`),
+  INDEX `korpuskop_runs_task_idx` (`task_id`),
+  INDEX `korpuskop_runs_corpus_finished_idx` (`corpus_id`, `finished_at`, `run_id`),
+  INDEX `korpuskop_runs_user_finished_idx` (`user_id`, `finished_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--changeset tn:35
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'korpuskop_runs' AND COLUMN_NAME = 'task_id'
+ALTER TABLE `korpuskop_runs` ADD COLUMN `task_id` BIGINT NULL AFTER `run_id`;
+
+--changeset tn:36
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'korpuskop_runs' AND INDEX_NAME = 'korpuskop_runs_task_idx'
+ALTER TABLE `korpuskop_runs` ADD INDEX `korpuskop_runs_task_idx` (`task_id`);
+
+--changeset tn:37
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'exports' AND COLUMN_NAME = 'user_id'
+ALTER TABLE `exports` ADD COLUMN `user_id` int(20) DEFAULT NULL AFTER `corpus_id`;
+
+--changeset tn:38
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'exports' AND INDEX_NAME = 'user_id'
+ALTER TABLE `exports` ADD INDEX `user_id` (`user_id`);
+
+--changeset tn:39
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'exports' AND INDEX_NAME = 'exports_user_status_id_idx'
+ALTER TABLE `exports` ADD INDEX `exports_user_status_id_idx` (`user_id`, `status`, `export_id`);
+
+--changeset tn:40
+SET @exports_old_sql_mode = @@SESSION.sql_mode;
+SET SESSION sql_mode = REPLACE(REPLACE(REPLACE(@@SESSION.sql_mode, 'NO_ZERO_IN_DATE', ''), 'NO_ZERO_DATE', ''), ',,', ',');
+UPDATE `exports`
+SET
+    `datetime_submit` = CASE
+        WHEN `datetime_submit` = '0000-00-00 00:00:00' THEN COALESCE(
+            NULLIF(`datetime_start`, '0000-00-00 00:00:00'),
+            NULLIF(`datetime_finish`, '0000-00-00 00:00:00'),
+            NOW()
+        )
+        ELSE `datetime_submit`
+    END,
+    `datetime_start` = NULLIF(`datetime_start`, '0000-00-00 00:00:00'),
+    `datetime_finish` = NULLIF(`datetime_finish`, '0000-00-00 00:00:00')
+WHERE `datetime_submit` = '0000-00-00 00:00:00'
+   OR `datetime_start` = '0000-00-00 00:00:00'
+   OR `datetime_finish` = '0000-00-00 00:00:00';
+SET SESSION sql_mode = @exports_old_sql_mode;
+
+--changeset tn:41
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = DATABASE() AND CONSTRAINT_NAME = 'exports_ibfk_2'
+ALTER TABLE `exports`
+    ADD CONSTRAINT `exports_ibfk_2`
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE;
+
+--changeset tn:42
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'exports' AND COLUMN_NAME = 'post_export_action'
+ALTER TABLE `exports` ADD COLUMN `post_export_action` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `export_format`;
+
+--changeset tn:43
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'exports' AND COLUMN_NAME = 'post_export_payload'
+ALTER TABLE `exports` ADD COLUMN `post_export_payload` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `post_export_action`;
+
+--changeset tn:44
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM `roles` WHERE `role` = 'report_generation'
+INSERT INTO `roles` (`role`, `description`) VALUES ('report_generation', 'Generate corpus reports.');
+
+--changeset tn:45
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM `corpus_roles` WHERE `role` = 'report_generation'
+INSERT INTO `corpus_roles` (`role`, `description`, `description_long`) VALUES ('report_generation', 'Generate corpus reports', '');

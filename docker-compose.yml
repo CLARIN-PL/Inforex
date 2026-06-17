@@ -25,10 +25,22 @@ services:
         - ./secured_data:/home/inforex/secured_data
         - ./phpunit:/home/inforex/phpunit
         - ./vendor:/home/inforex/vendor
+        - ./docker/korpuskop-data/var:/opt/korpuskop/var
       depends_on:
       - db
       - keycloak
+      - korpuskop-worker
       restart: always     
+    korpuskop-worker:
+      build:
+        context: .
+        dockerfile: docker/korpuskop-worker/Dockerfile
+      expose:
+       - "8090"
+      volumes:
+       - ./secured_data:/home/inforex/secured_data
+       - ./docker/korpuskop-data/var:/opt/korpuskop/var
+      restart: always
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
       ports:

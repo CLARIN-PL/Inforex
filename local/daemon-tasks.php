@@ -112,7 +112,7 @@ class TaskDaemon{
 	function tick(){
 		$this->db->execute("BEGIN");
 
-		$types = array('liner2', 'export', 'lpmn-postagger', 'upload-zip-txt');
+		$types = array('liner2', 'export', 'lpmn-postagger', 'upload-zip-txt', 'korpuskop');
 		$types = "'" . implode("','", $types) . "'";
 
 		$sql = "SELECT t.*, tr.report_id" .
@@ -181,21 +181,26 @@ class TaskDaemon{
                     $oTask->setStatus("done");
                     $oTask->update();
                     //$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+                } else if ( $task_type == "korpuskop" ){
+                    $this->processKorpuskop($task, $params);
                 }
 			}
 		}
 		catch(Exception $ex){
 			$this->info("Exception: " . $ex->getMessage());
 			
-			if ( $ex->getMessage() == "TIMEOUT" ){
+			if ( $task['report_id'] && $ex->getMessage() == "TIMEOUT" ){
 				$this->db->update("tasks_reports", 
 						array("status"=>"new"), 
 						array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
 			}
-			else{
+			else if ( $task['report_id'] ){
 				$this->db->update("tasks_reports", 
 						array("status"=>"error"), 
 						array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));				
+			}
+			else{
+				$this->db->update("tasks", array("status"=>"error", "message"=>$ex->getMessage()), array("task_id"=>$task['task_id']));
 			}
 			return false;
 		}			
@@ -686,6 +691,136 @@ class TaskDaemon{
 	 * @param unknown $task -- tablica z danymi tasku (pola z tabeli tasks),
 	 * @param unknown $params -- tablica z parametrami tasku uzależnionymi od rodzaju taska (sparsowany JSON z pola parameters).
 	 */
+	private function updateKorpuskopTaskState($task_id, $status, $current_step, $max_steps, $payload){
+		$this->db->update("tasks", array(
+			"status" => $status,
+			"current_step" => max(0, intval($current_step)),
+			"max_steps" => max(1, intval($max_steps)),
+			"message" => json_encode($payload),
+		), array("task_id" => $task_id));
+	}
+
+	private function updateKorpuskopRunState($task, $values){
+		$existingRun = DbKorpuskopRun::getRunByTask($task['task_id'], $task['corpus_id']);
+		if ($existingRun && isset($existingRun['run_id'])) {
+			DbKorpuskopRun::updateRunByTask($task['task_id'], $task['corpus_id'], $values);
+		}
+	}
+
+	private function storeKorpuskopRun($task, $params, $inputKind, $result, $status, $exitCode, $message){
+		$values = array(
+			'user_id' => $task['user_id'],
+			'input_path' => $params['input'],
+			'input_kind' => $inputKind,
+			'output_path' => $params['output'],
+			'config_json_path' => isset($params['config_json']) ? $params['config_json'] : null,
+			'progress_file' => $result ? $result['progress_file'] : null,
+			'status' => $status,
+			'exit_code' => $exitCode,
+			'message' => $message,
+			'file_size' => is_file($params['output']) ? filesize($params['output']) : null,
+			'finished_at' => date('Y-m-d H:i:s'),
+		);
+
+		$existingRun = DbKorpuskopRun::getRunByTask($task['task_id'], $task['corpus_id']);
+		if ($existingRun && isset($existingRun['run_id'])) {
+			DbKorpuskopRun::updateRunByTask($task['task_id'], $task['corpus_id'], $values);
+			return intval($existingRun['run_id']);
+		}
+
+		return DbKorpuskopRun::insertRun(array_merge($values, array(
+			'task_id' => $task['task_id'],
+			'corpus_id' => $task['corpus_id'],
+			'created_at' => isset($task['datetime']) ? $task['datetime'] : date('Y-m-d H:i:s'),
+		)));
+	}
+
+	function processKorpuskop($task, $params){
+		$runner = new KorpuskopRunner();
+		$inputKind = isset($params['input_kind']) ? $params['input_kind'] : KorpuskopRunner::INPUT_KIND_AUTO;
+		try{
+			$this->updateKorpuskopTaskState($task['task_id'], 'process', 1, 100, array(
+				'stage' => 'queue_dequeued',
+				'message' => 'Zadanie Korpuskop zostało pobrane z kolejki Inforex.'
+			));
+			$this->updateKorpuskopRunState($task, array(
+				'status' => 'process',
+				'message' => 'Zadanie Korpuskop zostało pobrane z kolejki Inforex.',
+				'finished_at' => null,
+			));
+
+			if ( $inputKind == KorpuskopRunner::INPUT_KIND_AUTO ){
+				$inputKind = $runner->detectInputKind($params['input']);
+			}
+
+			$this->updateKorpuskopTaskState($task['task_id'], 'process', 5, 100, array(
+				'stage' => 'inforex_input_detection',
+				'input_kind' => $inputKind,
+				'message' => 'Rozpoznano wariant eksportu Inforex.'
+			));
+			$this->updateKorpuskopRunState($task, array(
+				'status' => 'process',
+				'input_kind' => $inputKind,
+				'message' => 'Rozpoznano wariant eksportu Inforex.',
+			));
+
+			$extraArgs = array();
+			if ( isset($params['threads']) && $params['threads'] ){
+				$extraArgs['threads'] = intval($params['threads']);
+			}
+			if ( isset($params['limit_corpus_size']) && $params['limit_corpus_size'] ){
+				$extraArgs['limit-corpus-size'] = intval($params['limit_corpus_size']);
+			}
+            if (isset($params['focus_words']) && is_array($params['focus_words']) && !empty($params['focus_words'])) {
+                $extraArgs['corpus-focus-word'] = $params['focus_words'];
+            }
+
+			$result = $runner->runWithProgress(
+				isset($params['config_json']) ? $params['config_json'] : null,
+				$runner->buildInforexExportArgs($params['input'], $params['output'], $inputKind, $extraArgs),
+				function($event) use ($task){
+					$current = isset($event['current']) ? intval($event['current']) : 0;
+					$total = isset($event['total']) ? max(1, intval($event['total'])) : 100;
+					$this->updateKorpuskopTaskState($task['task_id'], 'process', $current, $total, $event);
+					$this->updateKorpuskopRunState($task, array(
+						'status' => 'process',
+						'message' => isset($event['message']) ? $event['message'] : json_encode($event),
+					));
+				}
+			);
+
+			$stderrMessage = !empty($result['stderr_lines']) ? implode("\n", $result['stderr_lines']) : '';
+			if ( intval($result['exit_code']) === 0 ){
+				$runId = $this->storeKorpuskopRun($task, $params, $inputKind, $result, 'done', 0, $stderrMessage);
+				$this->updateKorpuskopTaskState($task['task_id'], 'done', 100, 100, array(
+					'stage' => 'done',
+					'run_id' => $runId,
+					'input_kind' => $inputKind,
+					'progress_file' => $result['progress_file'],
+					'message' => 'Raport Korpuskop został wygenerowany.'
+				));
+			}
+			else{
+				$runId = $this->storeKorpuskopRun($task, $params, $inputKind, $result, 'error', intval($result['exit_code']), $stderrMessage);
+				$this->updateKorpuskopTaskState($task['task_id'], 'error', 100, 100, array(
+					'stage' => 'error',
+					'run_id' => $runId,
+					'input_kind' => $inputKind,
+					'progress_file' => $result['progress_file'],
+					'message' => $stderrMessage !== '' ? $stderrMessage : 'Proces Korpuskop zakończył się błędem.'
+				));
+			}
+		}
+		catch(Exception $ex){
+			$this->storeKorpuskopRun($task, $params, $inputKind, null, 'error', 1, $ex->getMessage());
+			$this->updateKorpuskopTaskState($task['task_id'], 'error', 100, 100, array(
+				'stage' => 'error',
+				'input_kind' => $inputKind,
+				'message' => $ex->getMessage()
+			));
+		}
+	}
+
 	function processExport($task, $params){
 		$selectors = $params['selectors'];
 		$extractors = $params['extractors'];

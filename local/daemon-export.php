@@ -13,6 +13,7 @@ Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIR
 
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
+require_once($enginePath . "/include/integration/KorpuskopTaskManager.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -165,6 +166,27 @@ class TaskExport{
 		$this->db->update("exports",
 					array("status"=>$status, "message"=>$message, "datetime_finish"=>date('Y-m-d H:i:s')),
 					array("export_id"=>$task['export_id']));
+
+        $export = DbExport::getExport($task['export_id']);
+        if (isset($export['status']) && $export['status'] === 'done' && isset($export['post_export_action']) && $export['post_export_action'] === 'korpuskop') {
+            $payload = array();
+            if (!empty($export['post_export_payload'])) {
+                $decoded = json_decode($export['post_export_payload'], true);
+                if (is_array($decoded)) {
+                    $payload = $decoded;
+                }
+            }
+            $inputKind = isset($payload['input_kind']) ? $payload['input_kind'] : KorpuskopRunner::INPUT_KIND_DOCUMENT;
+            KorpuskopTaskManager::createFromExport(
+                $export['corpus_id'],
+                $export,
+                $inputKind,
+                isset($export['user_id']) ? intval($export['user_id']) : null,
+                array(
+                    'focus_words' => isset($payload['focus_words']) ? $payload['focus_words'] : array(),
+                )
+            );
+        }
 	}
 
 	/**

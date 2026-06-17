@@ -9,7 +9,7 @@ var corpus_id = url.param("corpus");
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.
  */
 function setupRelationTree(){
-    $("#newExportForm").on("click", ".relationToggleLayer", function(){
+    $("#newExportForm, #korpuskopExportForm").on("click", ".relationToggleLayer", function(){
         if ($(this).hasClass("ui-icon-circlesmall-plus")){
             $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
             $(this).parents(".relationLayerRow").nextUntil(".relationLayerRow",".relationSublayerRow").show();

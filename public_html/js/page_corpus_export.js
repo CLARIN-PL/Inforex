@@ -7,10 +7,15 @@
 var url = $.url(window.location.href);
 var corpus_id = url.param("corpus");
 var ongoing_exports;
+var exportSubmissionInFlight = false;
 
 $(document).ready(function(){
-    handleExportProgress();
-    setupRelationTree();
+    if ($('#exportHistory').length) {
+        handleExportProgress();
+    }
+    if ($('#newExportForm').length || $('#korpuskopExportForm').length) {
+        setupRelationTree();
+    }
 
     $("#export_message_body").on('click', '.error_details_btn', function(){
         var parent_tr = $(this).closest('tr');
@@ -126,6 +131,9 @@ $(document).ready(function(){
         });
 
 	$("#export").click(function(){
+        if (exportSubmissionInFlight) {
+            return;
+        }
 		var result = validateExportForm();
 		if ( result!=false ){
 			submit_new_export(result.description, result.selectors, result.extractors, result.indices, result.taggingMethod, result.exportFormat);
@@ -347,6 +355,9 @@ function handleExportProgress(){
 }
 
 function updateQueue(){
+    if (!ongoing_exports || !ongoing_exports.scheduled_exports) {
+        return;
+    }
     var queued_exports = ongoing_exports.scheduled_exports;
     var pos = 0;
     for (var key in queued_exports) {
@@ -514,7 +525,7 @@ function fetchExportStatus(){
 
 function getCurrentExports(){
     var success = function (data) {
-        ongoing_exports = data;
+        ongoing_exports = data || {};
     };
     var data = {
         'corpus_id': corpus_id
@@ -533,6 +544,15 @@ function getCurrentExports(){
  * @returns
  */
 function submit_new_export(description, selectors, extractors, indices, taggingMethod, exportFormat){
+    if (exportSubmissionInFlight) {
+        return;
+    }
+    exportSubmissionInFlight = true;
+    $("#export").prop("disabled", true);
+    var onError = function(){
+        exportSubmissionInFlight = false;
+        $("#export").prop("disabled", false);
+    };
 	var params = {};	
 	params['url'] = $.url(window.location.href).attr("query");
 	params['description'] = description;
@@ -542,10 +562,9 @@ function submit_new_export(description, selectors, extractors, indices, taggingM
 	params['tagging'] = taggingMethod;
     params['export_format'] = exportFormat;
 
-
-	doAjaxWithLogin("export_new", params, function(){
+	doAjax("export_new", params, function(){
 		window.location.reload(true);
-	}, function(){
+	}, onError, null, null, function(){
 		submit_new_export(description, selectors, extractors, indices, taggingMethod, exportFormat);
 	});
 	

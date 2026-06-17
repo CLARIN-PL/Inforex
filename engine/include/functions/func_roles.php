@@ -34,6 +34,27 @@ function hasUserPerspectiveAccess($user_id, $corpus_id, $anyPerspective){
     return DBReportPerspective::userHasPerspectiveAccess($user_id, $corpus_id, $anyPerspective);
 }
 
+function hasUserReportGenerationAccess($user, $corpus){
+    if (!is_array($user) || !is_array($corpus) || !isset($user['user_id'])) {
+        return false;
+    }
+    if (hasUserSystemRole($user, array(ROLE_SYSTEM_USER_ADMIN))) {
+        return true;
+    }
+    $hasSystemRole = hasUserSystemRole($user, array(ROLE_SYSTEM_REPORT_GENERATION));
+    $hasCorpusRole = hasUserCorpusRole($user, $corpus, array(CORPUS_ROLE_REPORT_GENERATION));
+    if (!$hasSystemRole && !$hasCorpusRole) {
+        return false;
+    }
+    return hasUserCorpusRole($user, $corpus, array(
+        CORPUS_ROLE_REPORT_GENERATION,
+        CORPUS_ROLE_READ,
+        CORPUS_ROLE_EXPORT,
+        CORPUS_ROLE_MANAGER,
+        CORPUS_ROLE_OWNER,
+    ));
+}
+
 /**
  * Sprawdza, czy aktualnie zalogowany użytkownik posiada wskazaną rolę.
  * @param $role - nazwa roli,

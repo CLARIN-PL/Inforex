@@ -80,6 +80,9 @@
         {if "export"|has_corpus_role_or_owner}
                 <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">Export</a></li>
         {/if}
+        {if "admin"|has_role || "report_generation"|has_role || "report_generation"|has_corpus_role}
+                <li{if $page=="corpus_korpuskop"} class="active"{/if}><a href="index.php?page=corpus_korpuskop&amp;corpus={$corpus.id}">Generate corpus report</a></li>
+        {/if}
 		{if "metadata_batch_edit"|has_corpus_role_or_owner}
 			<li{if $page=="metadata_batch_edit"} class="active"{/if}><a href="index.php?page=metadata_batch_edit&amp;corpus={$corpus.id}">Metadata batch edit</a></li>
 		{/if}

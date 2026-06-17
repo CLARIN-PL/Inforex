@@ -13,7 +13,19 @@ class Ajax_roles_get extends CPage {
 	 */
 	function execute(){
 		global $db;
-		$rows = $db->fetch_rows("SELECT * FROM roles ORDER BY description");
+		$rows = $db->fetch_rows("SELECT * FROM roles WHERE role != ? ORDER BY description", array(ROLE_SYSTEM_REPORT_GENERATION));
+		$descriptions = array(
+			'admin' => 'Administrator access',
+			'create_corpus' => 'Create new corpora',
+			'editor_schema_events' => 'Edit schema events',
+			'editor_schema_relations' => 'Edit schema relations',
+		);
+		foreach ($rows as &$row) {
+			if (isset($descriptions[$row['role']])) {
+				$row['description'] = $descriptions[$row['role']];
+			}
+		}
+		unset($row);
 		return $rows;		
 	}	
 }

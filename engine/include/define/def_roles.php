@@ -8,6 +8,7 @@
 
 define("ROLE_SYSTEM_USER_ADMIN", "admin");
 define("ROLE_SYSTEM_USER_LOGGEDIN", "loggedin");
+define("ROLE_SYSTEM_REPORT_GENERATION", "report_generation");
 define("ROLE_SYSTEM_EDITOR_SCHEMA_RELATIONS", "editor_schema_relations");
 define("ROLE_SYSTEM_EDITOR_SCHEMA_EVENTS", "editor_schema_events");
 define("ROLE_SYSTEM_USER_PUBLIC", "public_user");
@@ -34,6 +35,7 @@ define("CORPUS_ROLE_MANAGER", "manager");
 define("CORPUS_ROLE_OWNER", "corpus_owner");
 define("CORPUS_ROLE_READ", "read");
 define("CORPUS_ROLE_READ_LIMITED", "read_limited");
+define("CORPUS_ROLE_REPORT_GENERATION", "report_generation");
 define("CORPUS_ROLE_RUN_TESTS", "run_tests");
 define("CORPUS_ROLE_TASKS", "tasks");
 define("CORPUS_ROLE_WCCL_MATCH", "wccl_match");

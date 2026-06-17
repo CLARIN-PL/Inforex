@@ -707,6 +707,7 @@ DROP TABLE IF EXISTS `exports`;
 CREATE TABLE `exports` (
   `export_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `corpus_id` int(20) NOT NULL,
+  `user_id` int(20) DEFAULT NULL,
   `datetime_submit` datetime NOT NULL,
   `datetime_start` datetime DEFAULT NULL,
   `datetime_finish` datetime DEFAULT NULL,
@@ -717,14 +718,19 @@ CREATE TABLE `exports` (
   `indices` text COLLATE utf8mb4_unicode_ci,
   `tagging` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'tagger',
   `export_format` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'legacy',
+  `post_export_action` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `post_export_payload` mediumtext COLLATE utf8mb4_unicode_ci,
   `message` text COLLATE utf8mb4_unicode_ci,
   `progress` int(11) NOT NULL DEFAULT '0',
   `statistics` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`export_id`),
   KEY `corpus_id` (`corpus_id`),
+  KEY `user_id` (`user_id`),
   KEY `status` (`status`),
+  KEY `exports_user_status_id_idx` (`user_id`,`status`,`export_id`),
   KEY `exports_corpus_submit_id_idx` (`corpus_id`,`datetime_submit`,`export_id`),
-  CONSTRAINT `exports_ibfk_1` FOREIGN KEY (`corpus_id`) REFERENCES `corpora` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `exports_ibfk_1` FOREIGN KEY (`corpus_id`) REFERENCES `corpora` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `exports_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tabela z historią zadań eksportu korpusów';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1537,7 +1543,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES ('admin','Prawa administratora'),('create_corpus','Prawo do tworzenia nowych korpusów.'),('editor_schema_events','Edit schema events.'),('editor_schema_relations','Edit schema relations.');
+INSERT INTO `roles` VALUES ('admin','Prawa administratora'),('create_corpus','Prawo do tworzenia nowych korpusów.'),('editor_schema_events','Edit schema events.'),('editor_schema_relations','Edit schema relations.'),('report_generation','Generate corpus reports.');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
