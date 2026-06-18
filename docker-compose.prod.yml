@@ -7,7 +7,7 @@ services:
       - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
       - www
-    restart: always
+    restart: unless-stopped
 
   www:
     build: ./docker/www
@@ -15,7 +15,6 @@ services:
       - "80"
     links:
       - db
-      - keycloak
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -29,9 +28,8 @@ services:
       - ./docker/korpuskop-data/var:/opt/korpuskop/var
     depends_on:
       - db
-      - keycloak
       - korpuskop-worker
-    restart: always
+    restart: unless-stopped
 
   korpuskop-worker:
     build:
@@ -42,14 +40,7 @@ services:
     volumes:
       - ./secured_data:/home/inforex/secured_data
       - ./docker/korpuskop-data/var:/opt/korpuskop/var
-    restart: always
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - "7080:80"
-    depends_on:
-      - db
+    restart: unless-stopped
 
   liquibase:
     build: ./docker/liquibase
@@ -77,37 +68,7 @@ services:
     volumes:
       - ./database/init:/docker-entrypoint-initdb.d:ro
       - ./docker/mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-    restart: always
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.2
-    ports:
-      - "9081:8080"
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      KC_HTTP_ENABLED: "true"
-      KC_HOSTNAME: "http://localhost:9081"
-      KC_HOSTNAME_STRICT: "false"
-      KC_PROXY_HEADERS: "xforwarded"
-    command:
-      - start-dev
-      - --http-enabled=true
-      - --hostname=http://localhost:9081
-      - --hostname-strict=false
-      - --proxy-headers=xforwarded
-      - --import-realm
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 20s
-    volumes:
-      - ./docker/keycloak/realm-inforex.json:/opt/keycloak/data/import/realm-inforex.json:ro
-    restart: always
+    restart: unless-stopped
 
   backup:
     image: fradelg/mysql-cron-backup
