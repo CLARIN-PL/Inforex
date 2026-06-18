@@ -634,6 +634,13 @@ function add_relation(spanObj){
 	};
 	
 	var success = function(data){
+        if (data && data.duplicate) {
+            dialog_error("This relation already exists for the selected annotations.");
+            cancel_relation();
+            get_relations();
+            return;
+        }
+
 		cancel_relation();
 		get_relations();
 		if($("#an" + targetObj.id).prev().hasClass('relin')){

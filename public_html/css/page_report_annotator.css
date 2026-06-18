@@ -791,6 +791,10 @@
     padding: 7px 8px;
 }
 
+.report-annotator-relations-panel .report-annotator-footer {
+    justify-content: flex-start;
+}
+
 .report-annotator-close-button {
     align-items: center;
     border-radius: 5px;

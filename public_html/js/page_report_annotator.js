@@ -22,6 +22,7 @@ $(function(){
         $("#columnAnnotation").hide();
 	});
     wAnnotationDetails.onUpdate(updateAnnotationOnList);
+    wAnnotationDetails.onUpdate(refreshAnnotationRelationsAfterUpdate);
 
     wAnnotationRelations = new WidgetAnnotationRelations("#annotation-relations", "#content");
     wAnnotationPanel = new WidgetAnnotationPanel("??");
@@ -222,6 +223,14 @@ function updateAnnotationOnList(annotation){
     annotationRow.addClass("modified");
     annotationRow.fadeOut(100);
     annotationRow.fadeIn(500);
+}
+
+function refreshAnnotationRelationsAfterUpdate() {
+    if (!wAnnotationRelations || !wAnnotationRelations.id) {
+        return;
+    }
+    var annotationMode = $.cookie("annotation_mode");
+    wAnnotationRelations.loadRelationListForSource(wAnnotationRelations.id, annotationMode);
 }
 
 /**

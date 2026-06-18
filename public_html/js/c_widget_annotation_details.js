@@ -392,6 +392,13 @@ WidgetAnnotation.prototype.deleteAnnotation = function(){
 			var annotation_node = $annContainer.find("#an"+annid);
 			annotation_node.replaceWith(annotation_node.html());
 			$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
+			if (typeof wAnnotationRelations !== "undefined" && wAnnotationRelations) {
+				if (String(wAnnotationRelations.id) === String(annid)) {
+					wAnnotationRelations.clearRelationList();
+				} else if (wAnnotationRelations.id) {
+					wAnnotationRelations.loadRelationListForSource(wAnnotationRelations.id, $.cookie("annotation_mode"));
+				}
+			}
 		}
 	};
 

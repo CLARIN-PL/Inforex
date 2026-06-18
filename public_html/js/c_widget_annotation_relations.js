@@ -19,6 +19,16 @@ function WidgetAnnotationRelations(selector, selectorContent) {
 	});
 }
 
+WidgetAnnotationRelations.prototype.clearRelationList = function() {
+    var table = this.box.find("table.relations tbody");
+    $(table).find("tr").remove();
+    this.span = null;
+    this.id = null;
+    this.box.find(".relation-cancel").hide();
+    this.box.find(".relation-types").show();
+    this.content.find("span.new-relation-target").removeClass("new-relation-target");
+};
+
 /**
  * load list of relations data from DB for source annotation
  *   id - source annotation ID
@@ -78,8 +88,7 @@ WidgetAnnotationRelations.prototype.loadRelationListForSource = function(id,anno
  */
 WidgetAnnotationRelations.prototype.set = function(annotationSpan){
 	if ( annotationSpan == null ){
-		this.span = null;
-		this.id = null;
+		this.clearRelationList();
 	} else {
 	    this.box.LoadingOverlay("show");
         this.box.LoadingOverlay("show");
@@ -139,7 +148,7 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
     var sourceId = this.span.attr("id").replace("an", "");
     var targetId = $(annotationSpan).attr("id").replace("an", "");
     var relationTypeId = this.relationTypeId;
-    var workingMode = $.cookie("annotationMode");
+    var workingMode = $.cookie("annotation_mode");
     var params = {
         source_id : sourceId,
         target_id : targetId,
@@ -149,6 +158,15 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
 
     doAjaxSync("report_add_annotation_relation", params,
         function(data){
+            if (data && data.duplicate) {
+                dialog_error("This relation already exists for the selected annotations.");
+                parent.loadRelationListForSource(sourceId, workingMode);
+                parent.box.find(".relation-cancel").hide();
+                parent.box.find(".relation-types").show();
+                parent.content.find("span.new-relation-target").removeClass("new-relation-target");
+                return;
+            }
+
             parent.box.find(".relation-cancel").hide();
             parent.box.find(".relation-types").show();
             parent.content.find("span.new-relation-target").removeClass("new-relation-target");

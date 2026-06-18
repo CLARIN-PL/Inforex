@@ -42,10 +42,12 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
         $this->debugLog(':working_mode after tunning',$working_mode);
 		
 		$sql = "SELECT * FROM relations " .
-				"WHERE relation_type_id=? AND source_id=? AND target_id=? AND user_id = ? AND stage = 'final'";
-		$result = $db->fetch_one($sql, array($relation_type_id, $source_id, $target_id, $user_id));
+				"WHERE relation_type_id=? AND source_id=? AND target_id=? AND user_id = ? AND stage = ?";
+		$result = $db->fetch($sql, array($relation_type_id, $source_id, $target_id, $user_id, $working_mode));
 
-		if (count($result)==0){
+        $isDuplicate = !empty($result);
+
+		if (!$isDuplicate){
 			$sql = "INSERT INTO relations (relation_type_id, source_id, target_id, date, user_id, stage) " .
 					"VALUES (?,?,?,now(),?,?)";
 			$db->execute($sql, array($relation_type_id, $source_id, $target_id, $user_id, $working_mode));
@@ -55,12 +57,16 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
             $testRead = $db->fetch($sql); 
             $this->debugLog('check relations DB row for lastId :',$testRead);
 		} else {
-			throw new Exception("Relacja w bazie już istnieje!");
+			$relation_id = $result['id'];
 		}
 		$sql = "SELECT name FROM relation_types " .
 				"WHERE id=? ";
-        $result = $db->fetch_one($sql, array($relation_type_id));
-        $result = array("relation_id"=>$relation_id, "relation_name"=>$result);
+        $relation_name = $db->fetch_one($sql, array($relation_type_id));
+        $result = array(
+            "relation_id" => $relation_id,
+            "relation_name" => $relation_name,
+            "duplicate" => $isDuplicate
+        );
         return $result;
 
 		//return array("relation_id"=>$relation_id, "relation_name"=>$db->fetch_one($sql, array($relation_type_id)));

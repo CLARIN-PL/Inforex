@@ -200,6 +200,11 @@ function createRelation(relation_id){
 		};
 		
 		var success = function(data){
+            if (data && data.duplicate) {
+                dialog_error("This relation already exists for the selected annotations.");
+                return;
+            }
+
 			$("#relationListContainer").append(
 				'<tr>'+
 					'<td><span class="'+$source.attr('title').split(":")[1]+'" title="an#'+sourceId+':'+$source.attr('title').split(":")[1]+'"> '+$source.text()+'</span></td>'+
