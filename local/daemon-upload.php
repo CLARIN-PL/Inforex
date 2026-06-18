@@ -137,20 +137,23 @@ class TaskUploadDaemon{
 		if ( count($task)>0 ){
 			echo sprintf("Processing task_id=%d ... ", $task['task_id']);
 			$result = $this->process($task);
-			if ($result){
-				$this->db->update("tasks",
-					array("status"=>"done"),
-					array("task_id"=>$task['task_id']));
-				echo "done\n";
-			}
-			else{ 
-				$message = "Error while importing documents"; 
-				$this->db->update("tasks",
-					array("status"=>"error",
-							"message"=>$message),
-					array("task_id"=>$task['task_id']));
-				echo sprintf("error: %s\n", $message); 
-			}
+            $currentTaskStatus = $this->db->fetch_one("SELECT status FROM tasks WHERE task_id = ?", array($task['task_id']));
+			if ($currentTaskStatus !== 'canceled') {
+			    if ($result){
+				    $this->db->update("tasks",
+					    array("status"=>"done"),
+					    array("task_id"=>$task['task_id']));
+				    echo "done\n";
+			    }
+			    else{ 
+				    $message = "Error while importing documents"; 
+				    $this->db->update("tasks",
+					    array("status"=>"error",
+							    "message"=>$message),
+					    array("task_id"=>$task['task_id']));
+				    echo sprintf("error: %s\n", $message); 
+			    }
+            }
 		}	
 		return false;
 	}

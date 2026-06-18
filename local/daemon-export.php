@@ -160,6 +160,11 @@ class TaskExport{
             isset($task['export_format']) ? $task['export_format'] : 'legacy'
         );
 
+        $freshTask = $this->db->fetch("SELECT status FROM exports WHERE export_id = ?", array($task['export_id']));
+        if (isset($freshTask['status']) && $freshTask['status'] === 'canceled') {
+            return true;
+        }
+
 		$message = "Eksport zakończony";
 		$status = "done";
 

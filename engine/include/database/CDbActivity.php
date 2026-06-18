@@ -138,6 +138,7 @@ class DbActivity
                 SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) AS pending_count,
                 SUM(CASE WHEN status = 'process' THEN 1 ELSE 0 END) AS processing_count,
                 SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) AS error_count,
+                SUM(CASE WHEN status = 'canceled' THEN 1 ELSE 0 END) AS canceled_count,
                 SUM(CASE WHEN status = 'done' AND COALESCE(datetime_start, datetime) >= NOW() - INTERVAL 24 HOUR THEN 1 ELSE 0 END) AS completed_24h,
                 MIN(CASE WHEN status = 'new' THEN datetime END) AS oldest_pending,
                 MAX(COALESCE(datetime_start, datetime)) AS last_activity
@@ -165,6 +166,7 @@ class DbActivity
                 SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) AS pending_count,
                 SUM(CASE WHEN status = 'process' THEN 1 ELSE 0 END) AS processing_count,
                 SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) AS error_count,
+                SUM(CASE WHEN status = 'canceled' THEN 1 ELSE 0 END) AS canceled_count,
                 SUM(CASE WHEN status = 'done' AND COALESCE(datetime_finish, datetime_start, datetime_submit) >= NOW() - INTERVAL 24 HOUR THEN 1 ELSE 0 END) AS completed_24h,
                 MIN(CASE WHEN status = 'new' THEN datetime_submit END) AS oldest_pending,
                 MAX(COALESCE(datetime_finish, datetime_start, datetime_submit)) AS last_activity
@@ -196,6 +198,7 @@ class DbActivity
             'pending_items' => 0,
             'processing_items' => 0,
             'error_items' => 0,
+            'canceled_items' => 0,
             'completed_24h' => 0,
         );
 
@@ -206,6 +209,7 @@ class DbActivity
             $summary['pending_items'] += $row['pending_count'];
             $summary['processing_items'] += $row['processing_count'];
             $summary['error_items'] += $row['error_count'];
+            $summary['canceled_items'] += $row['canceled_count'];
             $summary['completed_24h'] += $row['completed_24h'];
         }
 
@@ -224,6 +228,7 @@ class DbActivity
             'processing' => 'process',
             'error' => 'error',
             'completed' => 'done',
+            'canceled' => 'canceled',
         );
 
         if (!isset($statusMap[$status]) || !$queueId) {
@@ -326,6 +331,7 @@ class DbActivity
             'pending_count' => intval($row['pending_count']),
             'processing_count' => intval($row['processing_count']),
             'error_count' => intval($row['error_count']),
+            'canceled_count' => intval($row['canceled_count']),
             'completed_24h' => intval($row['completed_24h']),
             'oldest_pending' => $row['oldest_pending'],
             'oldest_pending_age' => self::humanizeAge($row['oldest_pending']),
@@ -366,6 +372,7 @@ class DbActivity
             'processing' => 'Processing',
             'error' => 'Errors',
             'completed' => 'Completed',
+            'canceled' => 'Canceled',
         );
 
         return isset($labels[$status]) ? $labels[$status] : $status;

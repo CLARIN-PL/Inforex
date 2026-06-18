@@ -24,9 +24,10 @@ function copyAjaxErrorToClipboard(){
     }
 
     var onSuccess = function(){
-        $("#ajax_error_copy_button").html('<i class="fa fa-check" aria-hidden="true"></i> Copied');
+        var $button = $(".ajax_error_modal.in:visible .ajax-error-copy-button");
+        $button.html('<i class="fa fa-check" aria-hidden="true"></i> Copied');
         window.setTimeout(function(){
-            $("#ajax_error_copy_button").html('<i class="fa fa-clipboard" aria-hidden="true"></i> Copy details');
+            $button.html('<i class="fa fa-clipboard" aria-hidden="true"></i> Copy details');
         }, 1500);
     };
 
@@ -51,7 +52,7 @@ function copyAjaxErrorToClipboard(){
 }
 
 $(function(){
-    $(document).on('click', '#ajax_error_copy_button', function(){
+    $(document).on('click', '.ajax-error-copy-button', function(){
         copyAjaxErrorToClipboard();
     });
 });

@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="modal-footer ajax-error-modal-footer">
-                <button type="button" class="btn btn-default ajax-error-copy-button" id="ajax_error_copy_button"><i class="fa fa-clipboard" aria-hidden="true"></i> Copy details</button>
+                <button type="button" class="btn btn-default ajax-error-copy-button"><i class="fa fa-clipboard" aria-hidden="true"></i> Copy details</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -38,6 +38,7 @@
                </div>
             </div>
             <div class="modal-footer ajax-error-modal-footer">
+                <button type="button" class="btn btn-default ajax-error-copy-button"><i class="fa fa-clipboard" aria-hidden="true"></i> Copy details</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>

@@ -135,15 +135,18 @@ class TaskGrabDaemon{
 		print_r($task);
 		$result = $this->process($task);
 		$result = 1;
-		if ($result)
-			$this->db->update("tasks",
-					array("status"=>"done"),
-					array("task_id"=>$task['task_id']));
-		else
-			$this->db->update("tasks",
-					array("status"=>"error",
-							"message"=>"Error while importing documents"),
-					array("task_id"=>$task['task_id']));			
+        $currentTaskStatus = $this->db->fetch_one("SELECT status FROM tasks WHERE task_id = ?", array($task['task_id']));
+		if ($currentTaskStatus !== 'canceled') {
+            if ($result)
+			    $this->db->update("tasks",
+					    array("status"=>"done"),
+					    array("task_id"=>$task['task_id']));
+		    else
+			    $this->db->update("tasks",
+					    array("status"=>"error",
+							    "message"=>"Error while importing documents"),
+					    array("task_id"=>$task['task_id']));
+        }
 		return false;
 	}
 

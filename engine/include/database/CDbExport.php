@@ -198,36 +198,73 @@ class DbExport
     static function updateExportStatus($export_id, $status){
         global $db;
 
-        if (!in_array($status, array('new', 'process', 'done', 'error'))) {
+        if (!in_array($status, array('new', 'process', 'done', 'error', 'canceled'))) {
             throw new InvalidArgumentException('Invalid export status.');
+        }
+
+        $export_id = intval($export_id);
+        $current = $db->fetch(
+            "SELECT datetime_start, datetime_finish, progress, message
+             FROM exports
+             WHERE export_id = ?",
+            array($export_id)
+        );
+
+        if (!$current) {
+            throw new InvalidArgumentException('Export not found.');
+        }
+
+        $currentDatetimeStart = array_key_exists('datetime_start', $current) ? $current['datetime_start'] : null;
+        if ($currentDatetimeStart === '0000-00-00 00:00:00' || $currentDatetimeStart === '') {
+            $currentDatetimeStart = null;
+        }
+
+        $currentDatetimeFinish = array_key_exists('datetime_finish', $current) ? $current['datetime_finish'] : null;
+        if ($currentDatetimeFinish === '0000-00-00 00:00:00' || $currentDatetimeFinish === '') {
+            $currentDatetimeFinish = null;
+        }
+
+        if ($status === 'new') {
+            $nextDatetimeStart = null;
+        } else if ($status === 'process') {
+            $nextDatetimeStart = $currentDatetimeStart ? $currentDatetimeStart : date('Y-m-d H:i:s');
+        } else {
+            $nextDatetimeStart = $currentDatetimeStart;
+        }
+
+        if ($status === 'new' || $status === 'process') {
+            $nextDatetimeFinish = null;
+        } else if (in_array($status, array('done', 'error', 'canceled'))) {
+            $nextDatetimeFinish = $currentDatetimeFinish ? $currentDatetimeFinish : date('Y-m-d H:i:s');
+        } else {
+            $nextDatetimeFinish = $currentDatetimeFinish;
+        }
+
+        $nextProgress = ($status === 'new') ? 0 : intval($current['progress']);
+        $currentMessage = array_key_exists('message', $current) ? $current['message'] : null;
+        if ($status === 'canceled') {
+            $nextMessage = trim((string)$currentMessage) !== '' ? $currentMessage : 'Export canceled by administrator.';
+        } else if ($status === 'new') {
+            $nextMessage = null;
+        } else {
+            $nextMessage = $currentMessage;
         }
 
         $sql = "UPDATE exports
                 SET status = ?,
-                    datetime_start = CASE
-                        WHEN ? = 'new' THEN NULL
-                        WHEN ? = 'process' THEN COALESCE(datetime_start, NOW())
-                        ELSE datetime_start
-                    END,
-                    datetime_finish = CASE
-                        WHEN ? IN ('new', 'process') THEN NULL
-                        WHEN ? IN ('done', 'error') THEN COALESCE(datetime_finish, NOW())
-                        ELSE datetime_finish
-                    END,
-                    progress = CASE
-                        WHEN ? = 'new' THEN 0
-                        ELSE progress
-                    END
+                    datetime_start = ?,
+                    datetime_finish = ?,
+                    progress = ?,
+                    message = ?
                 WHERE export_id = ?";
 
         $db->execute($sql, array(
             $status,
-            $status,
-            $status,
-            $status,
-            $status,
-            $status,
-            intval($export_id),
+            $nextDatetimeStart,
+            $nextDatetimeFinish,
+            $nextProgress,
+            $nextMessage,
+            $export_id,
         ));
     }
 

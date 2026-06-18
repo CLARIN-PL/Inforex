@@ -1244,3 +1244,20 @@ INSERT INTO `roles` (`role`, `description`) VALUES ('report_generation', 'Genera
 --preconditions onFail:MARK_RAN
 --precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM `corpus_roles` WHERE `role` = 'report_generation'
 INSERT INTO `corpus_roles` (`role`, `description`, `description_long`) VALUES ('report_generation', 'Generate corpus reports', '');
+
+--changeset tn:46
+ALTER TABLE `exports`
+    MODIFY COLUMN `status` enum('new','process','done','error','canceled') CHARACTER SET utf8 NOT NULL DEFAULT 'new';
+
+--changeset tn:47
+SET @tasks_old_sql_mode = @@SESSION.sql_mode;
+SET SESSION sql_mode = REPLACE(REPLACE(REPLACE(@@SESSION.sql_mode, 'NO_ZERO_IN_DATE', ''), 'NO_ZERO_DATE', ''), ',,', ',');
+ALTER TABLE `tasks`
+    MODIFY COLUMN `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data i czas utworzenia zadania.',
+    MODIFY COLUMN `datetime_start` timestamp NULL DEFAULT NULL,
+    MODIFY COLUMN `status` enum('new','process','done','error','canceled') CHARACTER SET utf8 NOT NULL DEFAULT 'new';
+SET SESSION sql_mode = @tasks_old_sql_mode;
+
+--changeset tn:48
+ALTER TABLE `tasks_reports`
+    MODIFY COLUMN `status` enum('new','process','done','error','canceled') CHARACTER SET utf8 NOT NULL;

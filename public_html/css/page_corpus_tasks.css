@@ -148,6 +148,13 @@
     color: #2b7187;
 }
 
+.corpus-tasks-status-badge.corpus-tasks-status-canceled,
+.corpus-tasks-status-badge.corpus-tasks-status-cancelled {
+    background: #f3f4f6;
+    border: 1px solid #d5d9e0;
+    color: #5b6574;
+}
+
 .corpus-tasks-row-selected > td {
     background: #d8edf5 !important;
 }

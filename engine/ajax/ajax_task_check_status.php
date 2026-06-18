@@ -27,12 +27,14 @@ class Ajax_task_check_status extends CPageCorpus {
 		$documents_status = $db->fetch_rows("SELECT * FROM tasks_reports WHERE task_id = ? ORDER BY report_id LIMIT 1000", array($task_id));
 		$processed = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status != 'new'", array($task_id));
 		$errors = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status = 'error'", array($task_id));
+        $canceled = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status = 'canceled'", array($task_id));
 		$percent = sprintf("%3.0f", $task['max_steps'] == 0 ? 0 : $task['current_step']*100.0/$task['max_steps']);
 		
 		$data = array();
 		$data['documents'] = $documents;
 		$data['processed'] = $processed;
 		$data['errors'] = $errors;
+		$data['canceled'] = $canceled;
 		$data['percent'] = $percent;
 		$data['task'] = $task;
 		$data['queue'] = intval($queue);

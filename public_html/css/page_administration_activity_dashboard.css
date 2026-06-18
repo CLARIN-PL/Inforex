@@ -257,6 +257,12 @@
     border: 1px solid #fecdca;
 }
 
+.administration-activity-queue-count-canceled {
+    color: #5b6574;
+    background: #f3f4f6;
+    border: 1px solid #d5d9e0;
+}
+
 .administration-activity-queue-count-completed {
     color: #166534;
     background: #ecfdf3;
@@ -287,12 +293,43 @@ a.administration-activity-queue-count:focus {
 }
 
 .administration-activity-queue-action {
-    min-width: 124px;
+    min-width: 132px;
 }
 
-.administration-activity-queue-action .administration-activity-queue-status-select {
-    margin-bottom: 6px;
+.administration-activity-queue-status-cell {
     min-width: 110px;
+}
+
+.administration-activity-queue-status-view {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    border: 1px solid #d9e2ec;
+    border-radius: 999px;
+    background: #f8fbff;
+    color: #486581;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.administration-activity-queue-action .administration-activity-queue-status-select-compact {
+    height: 28px;
+    min-width: 98px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 999px;
+    box-shadow: none;
+}
+
+.administration-activity-queue-action .btn {
+    min-width: 54px;
+}
+
+.administration-activity-queue-action .administration-activity-queue-status-cancel {
+    min-width: auto;
+    padding-left: 8px;
+    padding-right: 0;
 }
 
 .administration-activity-queue-status-feedback {

@@ -188,6 +188,11 @@ function checkTaskStatus(){
 					$("#taskError .message").text(data.task.message);
 					$("#taskError").show();
 				}
+                else if ( data.task.status == "canceled" ){
+                    $("#taskProgress .status").text("Canceled");
+                    $("#progressbar").hide();
+                    $("#taskProgress .status_msg").hide();
+                }
 				else{
 					$("#taskProgress .status").text(data.task.status);
 					$("#progressbar").show();

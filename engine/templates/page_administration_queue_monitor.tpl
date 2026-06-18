@@ -64,6 +64,7 @@
                                 <th>Waiting</th>
                                 <th>Processing</th>
                                 <th>Errors</th>
+                                <th>Canceled</th>
                                 <th>Completed 24h</th>
                                 <th>Oldest waiting</th>
                                 <th>Last activity</th>
@@ -96,6 +97,13 @@
                                         {/if}
                                     </td>
                                     <td>
+                                        {if $queue_row.canceled_count > 0}
+                                            <a href="index.php?page=administration_queue_monitor&amp;queue_id={$queue_row.id|escape:'url'}&amp;queue_status=canceled#queue-detail" class="administration-activity-queue-count administration-activity-queue-count-canceled">{$queue_row.canceled_count|escape}</a>
+                                        {else}
+                                            <span class="administration-activity-queue-count administration-activity-queue-count-canceled">0</span>
+                                        {/if}
+                                    </td>
+                                    <td>
                                         {if $queue_row.completed_24h > 0}
                                             <a href="index.php?page=administration_queue_monitor&amp;queue_id={$queue_row.id|escape:'url'}&amp;queue_status=completed#queue-detail" class="administration-activity-queue-count administration-activity-queue-count-completed">{$queue_row.completed_24h|escape}</a>
                                         {else}
@@ -108,7 +116,7 @@
                             {/foreach}
                             {if $activity_dashboard_queues.rows|@count==0}
                                 <tr>
-                                    <td colspan="8">
+                                    <td colspan="9">
                                         <div class="home-corpora-empty">
                                             <i class="fa fa-inbox" aria-hidden="true"></i>
                                             <span>No queue data is available yet.</span>
@@ -144,7 +152,7 @@
                                     <th>Status</th>
                                     <th>Progress</th>
                                     <th>Description / Message</th>
-                                    {if $activity_dashboard_queue_detail.item_kind == 'export'}<th>Action</th>{/if}
+                                    <th>Action</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -161,7 +169,22 @@
                                         <td>{if $detail_item.screename}{$detail_item.screename|escape}{elseif $detail_item.login}{$detail_item.login|escape}{else}—{/if}</td>
                                         <td>{if isset($detail_item.datetime_submit)}{$detail_item.datetime_submit|escape}{else}{$detail_item.datetime|escape}{/if}</td>
                                         <td>{if isset($detail_item.datetime_start)}{$detail_item.datetime_start|default:'—'|escape}{else}—{/if}</td>
-                                        <td>{$detail_item.status|escape}</td>
+                                        <td class="administration-activity-queue-status-cell">
+                                            {if ($activity_dashboard_queue_detail.item_kind == 'export' || $activity_dashboard_queue_detail.item_kind == 'task')
+                                                && $activity_dashboard_queue_detail.status_key != 'completed'
+                                                && !($activity_dashboard_queue_detail.queue_id == 'task_korpuskop' && $activity_dashboard_queue_detail.status_key == 'error')}
+                                                <div class="administration-activity-queue-status-view">{$detail_item.status|escape}</div>
+                                                <select class="form-control input-sm administration-activity-queue-status-select administration-activity-queue-status-select-compact" style="display:none;">
+                                                    <option value="new"{if $detail_item.status=='new'} selected{/if}>new</option>
+                                                    <option value="process"{if $detail_item.status=='process'} selected{/if}>process</option>
+                                                    <option value="done"{if $detail_item.status=='done'} selected{/if}>done</option>
+                                                    <option value="error"{if $detail_item.status=='error'} selected{/if}>error</option>
+                                                    <option value="canceled"{if $detail_item.status=='canceled'} selected{/if}>canceled</option>
+                                                </select>
+                                            {else}
+                                                {$detail_item.status|escape}
+                                            {/if}
+                                        </td>
                                         <td>
                                             {if $activity_dashboard_queue_detail.item_kind == 'task'}
                                                 {if $detail_item.max_steps > 0}{$detail_item.current_step|escape}/{$detail_item.max_steps|escape}{else}—{/if}
@@ -178,25 +201,25 @@
                                             {/if}
                                             {if !$detail_item.description && !$detail_item.message}—{/if}
                                         </td>
-                                        {if $activity_dashboard_queue_detail.item_kind == 'export'}
-                                            <td>
-                                                <div class="administration-activity-queue-action" data-export-id="{$detail_item.item_id|escape}">
-                                                    <select class="form-control input-sm administration-activity-queue-status-select">
-                                                        <option value="new"{if $detail_item.status=='new'} selected{/if}>new</option>
-                                                        <option value="process"{if $detail_item.status=='process'} selected{/if}>process</option>
-                                                        <option value="done"{if $detail_item.status=='done'} selected{/if}>done</option>
-                                                        <option value="error"{if $detail_item.status=='error'} selected{/if}>error</option>
-                                                    </select>
-                                                    <button type="button" class="btn btn-xs btn-primary administration-activity-queue-status-apply">Apply</button>
+                                        <td>
+                                            {if ($activity_dashboard_queue_detail.item_kind == 'export' || $activity_dashboard_queue_detail.item_kind == 'task')
+                                                && $activity_dashboard_queue_detail.status_key != 'completed'
+                                                && !($activity_dashboard_queue_detail.queue_id == 'task_korpuskop' && $activity_dashboard_queue_detail.status_key == 'error')}
+                                                <div class="administration-activity-queue-action" data-export-id="{if $activity_dashboard_queue_detail.item_kind == 'export'}{$detail_item.item_id|escape}{/if}" data-task-id="{if $activity_dashboard_queue_detail.item_kind == 'task'}{$detail_item.item_id|escape}{/if}" data-item-kind="{$activity_dashboard_queue_detail.item_kind|escape}">
+                                                    <button type="button" class="btn btn-xs btn-default administration-activity-queue-status-edit">Edit</button>
+                                                    <button type="button" class="btn btn-xs btn-primary administration-activity-queue-status-save" style="display:none;">Save</button>
+                                                    <button type="button" class="btn btn-xs btn-link administration-activity-queue-status-cancel" style="display:none;">Cancel</button>
                                                     <div class="administration-activity-queue-status-feedback"></div>
                                                 </div>
-                                            </td>
-                                        {/if}
+                                            {else}
+                                                —
+                                            {/if}
+                                        </td>
                                     </tr>
                                 {/foreach}
                                 {if $activity_dashboard_queue_detail.items|@count==0}
                                     <tr>
-                                        <td colspan="{if $activity_dashboard_queue_detail.item_kind == 'export'}9{else}8{/if}">
+                                        <td colspan="9">
                                             <div class="home-corpora-empty">
                                                 <i class="fa fa-check-circle-o" aria-hidden="true"></i>
                                                 <span>No items match this queue filter right now.</span>

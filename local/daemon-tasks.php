@@ -118,7 +118,7 @@ class TaskDaemon{
 		$sql = "SELECT t.*, tr.report_id" .
 				" FROM tasks t" .
 				" LEFT JOIN tasks_reports tr ON (tr.task_id=t.task_id AND tr.status = 'new')" .
-				" WHERE t.type IN ($types) AND t.status <> 'done' AND t.status <> 'error'" .
+				" WHERE t.type IN ($types) AND t.status <> 'done' AND t.status <> 'error' AND t.status <> 'canceled'" .
 				" ORDER BY datetime ASC LIMIT 1";
 		$task = $this->db->fetch($sql);
 		if ( count($task) == 0 ){
@@ -156,30 +156,46 @@ class TaskDaemon{
                             $message = $this->processLpmnPostagger($task['report_id'], $params);
                             break;
 					}
-					$this->db->update("tasks_reports",
-							array("status"=>"done", "message"=>$message),
-							array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
-					$this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
-							array($task['task_id']));
+                    $currentTaskStatus = $this->db->fetch_one("SELECT status FROM tasks WHERE task_id = ?", array($task['task_id']));
+                    if ($currentTaskStatus === 'canceled') {
+                        $this->db->update("tasks_reports",
+                            array("status"=>"canceled", "message"=>"Task canceled by administrator."),
+                            array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
+                    } else {
+					    $this->db->update("tasks_reports",
+							    array("status"=>"done", "message"=>$message),
+							    array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
+					    $this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
+							    array($task['task_id']));
+                    }
 				}
 				else if ($task['status'] == "process") {
 					/* Jeżeli nie ma dokumentów do przetworzenia w ramach tasku to ustaw status tasku na zakończony */
-					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+                    $currentTaskStatus = $this->db->fetch_one("SELECT status FROM tasks WHERE task_id = ?", array($task['task_id']));
+                    if ($currentTaskStatus !== 'canceled') {
+					    $this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+                    }
 				}
 			}
 			/* Corpus-level task */
 			else{
 				if ( $task_type == "export" ){
 					$message = $this->processExport($task, $params);
-					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+                    $currentTaskStatus = $this->db->fetch_one("SELECT status FROM tasks WHERE task_id = ?", array($task['task_id']));
+                    if ($currentTaskStatus !== 'canceled') {
+					    $this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+                    }
 				} else if ( $task_type == "upload-zip-txt" ){
                     $oTask = new TableTask($task['task_id']);
 				    $taskProcessor = new TaskProcessorUploadZipTxt($oTask);
                     $taskProcessor->run();
 
                     print_r("done");
-                    $oTask->setStatus("done");
-                    $oTask->update();
+                    $currentTaskStatus = $this->db->fetch_one("SELECT status FROM tasks WHERE task_id = ?", array($task['task_id']));
+                    if ($currentTaskStatus !== 'canceled') {
+                        $oTask->setStatus("done");
+                        $oTask->update();
+                    }
                     //$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
                 } else if ( $task_type == "korpuskop" ){
                     $this->processKorpuskop($task, $params);
@@ -188,6 +204,10 @@ class TaskDaemon{
 		}
 		catch(Exception $ex){
 			$this->info("Exception: " . $ex->getMessage());
+            $currentTaskStatus = $this->db->fetch_one("SELECT status FROM tasks WHERE task_id = ?", array($task['task_id']));
+            if ($currentTaskStatus === 'canceled') {
+                return false;
+            }
 			
 			if ( $task['report_id'] && $ex->getMessage() == "TIMEOUT" ){
 				$this->db->update("tasks_reports", 

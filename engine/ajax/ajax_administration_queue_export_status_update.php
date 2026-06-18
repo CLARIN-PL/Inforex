@@ -14,7 +14,7 @@ class Ajax_administration_queue_export_status_update extends CPageAdministration
             throw new Exception('Invalid export identifier.');
         }
 
-        if (!in_array($status, array('new', 'process', 'done', 'error'))) {
+        if (!in_array($status, array('new', 'process', 'done', 'error', 'canceled'))) {
             throw new Exception('Invalid target status.');
         }
 
