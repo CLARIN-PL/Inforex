@@ -8,6 +8,8 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath . "/include/database/CDbKorpuskopRun.php");
+require_once($enginePath . "/include/integration/KorpuskopRunner.php");
 Config::Cfg()->put_path_engine($enginePath);
 Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
