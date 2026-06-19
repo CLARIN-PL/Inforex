@@ -26,4 +26,10 @@ SELECT
     MAX(datetime) AS max_activity_datetime
 FROM activities;
 
-SELECT COUNT(*) AS tokens_backup_rows FROM tokens_backup;
+SELECT
+    CASE WHEN COUNT(*) > 0 THEN 'yes' ELSE 'no' END AS tokens_backup_exists,
+    COALESCE(MAX(table_rows), 0) AS tokens_backup_rows_estimate,
+    COALESCE(ROUND(MAX((data_length + index_length) / 1024 / 1024), 2), 0) AS tokens_backup_total_mb
+FROM information_schema.tables
+WHERE table_schema = DATABASE()
+  AND table_name = 'tokens_backup';

@@ -5,6 +5,7 @@ database tables currently identified in Inforex:
 
 * `activities`
 * `tokens_backup`
+* `tokens_tags_optimized`
 
 The goal is to reclaim space safely and predictably on a production system.
 
@@ -14,6 +15,7 @@ The goal is to reclaim space safely and predictably on a production system.
 2. Remove `tokens_backup` after making a one-time backup, because it is not referenced
    by the application code and has no foreign-key dependencies.
 3. Run `OPTIMIZE TABLE activities` after pruning to reclaim disk space.
+4. Review large composite indexes on `tokens_tags_optimized` and remove redundant ones in separate maintenance steps.
 
 ## Before you start
 
@@ -168,3 +170,133 @@ If you prefer a more conservative approach, replace direct cleanup with:
 1. export old `activities` rows to an archive database or dump,
 2. verify the archive,
 3. prune only after successful verification.
+
+
+## 6. Analyze `tokens_tags_optimized` indexes
+
+The table `tokens_tags_optimized` is currently one of the largest structures in the database,
+and most of its size is taken by indexes.
+
+Run:
+
+```bash
+mysql -uUSER -p DATABASE_NAME < database/maintenance/04-analyze-tokens-tags-optimized-indexes.sql
+```
+
+Or use:
+
+```bash
+./local/maintenance/analyze-tokens-tags-optimized-indexes.sh
+```
+
+If you want to execute the SQL from Docker instead of the host shell:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/04-analyze-tokens-tags-optimized-indexes.sql
+```
+
+This script shows:
+
+* current size of `tokens_tags_optimized`,
+* all indexes on the table,
+* row distribution by `stage` and `user_id`,
+* representative `EXPLAIN` plans for corpus statistics and agreement/final token-tag queries.
+
+## 7. Drop the first redundant composite index
+
+The first recommended candidate is:
+
+* `tokens_tags_optimized_disamb_pos_token_base_idx`
+
+Run:
+
+```bash
+mysql -uUSER -p DATABASE_NAME < database/maintenance/05-drop-tto-disamb-pos-token-base-idx.sql
+```
+
+Or use:
+
+```bash
+./local/maintenance/drop-tto-disamb-pos-token-base-idx.sh
+```
+
+Docker Compose variant:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/05-drop-tto-disamb-pos-token-base-idx.sql
+```
+
+### Verification after step 7
+
+Check these application areas before proceeding:
+
+* corpus word-frequency/statistics views,
+* report filters using token base form,
+* token/tag browsing for report preview,
+* any screen using morphological agreement summaries.
+
+Then run the index analysis again:
+
+```bash
+./local/maintenance/analyze-tokens-tags-optimized-indexes.sh
+```
+
+or:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/04-analyze-tokens-tags-optimized-indexes.sql
+```
+
+## 8. Drop the second redundant composite index
+
+If step 7 does not regress performance, the second candidate is:
+
+* `tokens_tags_optimized_stage_user_disamb_pos_token_base_idx`
+
+Run:
+
+```bash
+mysql -uUSER -p DATABASE_NAME < database/maintenance/06-drop-tto-stage-user-disamb-pos-token-base-idx.sql
+```
+
+Or use:
+
+```bash
+./local/maintenance/drop-tto-stage-user-disamb-pos-token-base-idx.sh
+```
+
+Docker Compose variant:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/06-drop-tto-stage-user-disamb-pos-token-base-idx.sql
+```
+
+### Verification after step 8
+
+Repeat the same application checks as in step 7, with extra attention to:
+
+* agreement-mode token tagging,
+* final decision views,
+* report-level token/tag loading.
+
+## 9. Final verification
+
+After all cleanup steps, run:
+
+```bash
+./local/maintenance/analyze-large-tables.sh
+./local/maintenance/analyze-tokens-tags-optimized-indexes.sh
+```
+
+Or from Docker:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/01-analyze-large-tables.sql
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/04-analyze-tokens-tags-optimized-indexes.sql
+```
+
+Then verify:
+
+* reduced total size of `tokens_tags_optimized`,
+* unchanged behavior in corpus statistics and agreement/final tagging views,
+* sufficient free disk space on the database host.

@@ -28,6 +28,9 @@ Examples:
 ./local/maintenance/analyze-large-tables.sh
 ./local/maintenance/prune-activities.sh
 ./local/maintenance/drop-tokens-backup.sh
+./local/maintenance/analyze-tokens-tags-optimized-indexes.sh
+./local/maintenance/drop-tto-disamb-pos-token-base-idx.sh
+./local/maintenance/drop-tto-stage-user-disamb-pos-token-base-idx.sh
 ```
 
 If you prefer to run the SQL from Docker instead of the host shell, use the `db`
