@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) . '/../include/database/CDbKorpuskopRun.php';
+
 class Ajax_korpuskop_task_status extends CPageCorpus {
 
     function __construct($name = null, $description = null){

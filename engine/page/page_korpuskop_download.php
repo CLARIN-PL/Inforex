@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) . '/../include/database/CDbKorpuskopRun.php';
+
 class Page_korpuskop_download extends CPageCorpus {
 
     function __construct(){

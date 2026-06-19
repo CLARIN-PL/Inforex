@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(__FILE__) . '/../database/CDbKorpuskopRun.php';
+require_once dirname(__FILE__) . '/KorpuskopRunner.php';
+
 class KorpuskopTaskManager
 {
     const TASK_TYPE = 'korpuskop';
