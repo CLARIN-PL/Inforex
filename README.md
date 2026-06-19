@@ -219,6 +219,22 @@ If you add new PHP dependencies, refresh Composer inside the project:
 composer update
 ```
 
+### 9. Database maintenance
+
+Production-oriented SQL maintenance helpers are available in:
+
+* `database/maintenance/`
+
+The current maintenance notes cover:
+
+* large-table analysis,
+* pruning old rows from `activities`,
+* removing the legacy `tokens_backup` table after backup.
+
+Detailed instructions are available in:
+
+* `documentations/maintenance/database-size-optimization.md`
+
 
 Latest updates
 ---------------------------------
