@@ -757,6 +757,21 @@ class TaskDaemon{
 		)));
 	}
 
+	private function isRecoverableKorpuskopLlmError($message){
+		if (trim((string) $message) === '') {
+			return false;
+		}
+
+		return strpos($message, 'Błąd wywołania API LLM') !== false
+			&& strpos($message, 'CLARIN OAPI') !== false
+			&& strpos($message, 'status=401') !== false
+			&& strpos($message, 'Unauthorized user') !== false;
+	}
+
+	private function hasGeneratedKorpuskopOutput($params){
+		return isset($params['output']) && is_file($params['output']) && is_readable($params['output']);
+	}
+
 	function processKorpuskop($task, $params){
 		$runner = new KorpuskopRunner();
 		$inputKind = isset($params['input_kind']) ? $params['input_kind'] : KorpuskopRunner::INPUT_KIND_AUTO;
@@ -820,6 +835,17 @@ class TaskDaemon{
 					'input_kind' => $inputKind,
 					'progress_file' => $result['progress_file'],
 					'message' => 'Raport Korpuskop został wygenerowany.'
+				));
+			}
+			else if ($this->isRecoverableKorpuskopLlmError($stderrMessage) && $this->hasGeneratedKorpuskopOutput($params)){
+				$warningMessage = 'Raport Korpuskop został wygenerowany, ale część LLM/OAPI została pominięta z powodu braku autoryzacji CLARIN OAPI.';
+				$runId = $this->storeKorpuskopRun($task, $params, $inputKind, $result, 'done', intval($result['exit_code']), $warningMessage . "\n" . $stderrMessage);
+				$this->updateKorpuskopTaskState($task['task_id'], 'done', 100, 100, array(
+					'stage' => 'done_with_llm_warning',
+					'run_id' => $runId,
+					'input_kind' => $inputKind,
+					'progress_file' => $result['progress_file'],
+					'message' => $warningMessage
 				));
 			}
 			else{
