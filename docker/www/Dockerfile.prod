@@ -1,0 +1,73 @@
+FROM php:7.4.33-apache as php-base
+
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install -y software-properties-common wget less p7zip-full libpng-dev zstd python3 python3-pip \
+    && pip3 install --no-cache-dir pyarrow \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN usermod -u 1000 www-data
+
+RUN a2enmod rewrite \
+    && a2enmod headers \
+    && a2enmod expires
+
+RUN apt-get update -y \
+    && apt-get install -y libmcrypt-dev zlib1g zlib1g-dev libzip-dev re2c \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install gd \
+    && pecl install mcrypt-1.0.3 \
+    && docker-php-ext-enable mcrypt \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.gz" \
+    && mkdir -p /usr/src/xdiff \
+    && tar -C /usr/src/xdiff -zxvf /tmp/xdiff.tar.gz --strip 1 \
+    && rm /tmp/xdiff.tar.gz \
+    && cd /usr/src/xdiff \
+    && ./configure \
+    && make \
+    && make install \
+    && pecl install xdiff-2.0.1 \
+    && docker-php-ext-enable xdiff
+
+RUN apt-get update -y \
+    && apt-get install -y supervisor git \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM php-base
+
+ENV inforex_location=/home/inforex
+WORKDIR /var/www
+
+RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_location/public_html>\n    Require all granted\n  </Directory>\n" | tee /etc/apache2/sites-available/inforex.conf
+
+RUN echo "\nLimitRequestFieldSize 65536" >> /etc/apache2/ports.conf
+
+WORKDIR /etc/apache2/sites-enabled/
+RUN ln -s ../sites-available/inforex.conf inforex.conf
+
+COPY docker/www/setup.sh /bin
+COPY docker/www/sample.config.local.php /bin
+COPY docker/www/korpuskop-runtime /opt/korpuskop
+COPY docker/www/php.ini /usr/local/etc/php/conf.d
+COPY docker/www/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN mkdir -p /var/lock/apache2 /var/run/apache2 /var/log/supervisor
+
+WORKDIR /home/inforex
+COPY public_html /home/inforex/public_html
+COPY local /home/inforex/local
+COPY engine /home/inforex/engine
+COPY vendor /home/inforex/vendor
+
+RUN mkdir -p /home/inforex/config /home/inforex/secured_data \
+    && chmod -R +x /bin/setup.sh \
+    && chmod +x /opt/korpuskop/bin/korpuskop \
+    && mkdir -p /opt/korpuskop/var/output /opt/korpuskop/var/progress \
+    && chown -R www-data:www-data /opt/korpuskop/var /home/inforex \
+    && chmod -R g+rwx /home/inforex/engine/templates /home/inforex/engine || true
+
+CMD /bin/setup.sh \
+    && /usr/bin/supervisord

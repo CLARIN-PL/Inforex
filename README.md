@@ -84,6 +84,11 @@ The recommended way to run Inforex is the Docker-based development environment.
 Application dependencies are installed inside containers, while the repository
 is mounted into the web container during development.
 
+Docker Compose variants used in this repository:
+
+* `docker-compose.yml` — development setup, including local development mounts and optional services such as Keycloak and phpMyAdmin,
+* `docker-compose.prod.yml` — production-oriented setup, without Keycloak and phpMyAdmin, with the application code baked into the web image and persistent MySQL data stored in a Docker volume.
+
 ### 1. Install prerequisites
 
 Install Docker, Docker Compose, and Composer:
