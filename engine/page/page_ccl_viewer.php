@@ -21,10 +21,13 @@ class Page_ccl_viewer extends CPage{
     	UPLOAD_ERR_EXTENSION	=> "File upload stopped by extension."
   	);
 
-	function CPage($name = null, $description = null)
+    function CPage($name = null, $description = null)
     {
         parent::__construct($name, $description);
         $this->includeJs("js/page_report_preview.js");
+        $this->includeJs("libs/d3/d3.v7.min.js");
+        $this->includeJs("js/c_widget_relation_graph_modal.js");
+        $this->includeCss("css/c_widget_relation_graph_modal.css");
     }
 
     function execute(){

@@ -33,6 +33,21 @@ Run:
 mysql -uUSER -p DATABASE_NAME < database/maintenance/01-analyze-large-tables.sql
 ```
 
+Or use the host-side helper wrapper:
+
+```bash
+./local/maintenance/analyze-large-tables.sh
+```
+
+These wrapper scripts are intended for the host system, not for the `www` container.
+If you want to execute the SQL from Docker, use the `db` container directly.
+
+Docker Compose example:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/01-analyze-large-tables.sql
+```
+
 This script shows:
 
 * the largest tables,
@@ -63,6 +78,18 @@ older rows in batches of 50,000 rows:
 
 ```bash
 mysql -uUSER -p DATABASE_NAME < database/maintenance/02-prune-activities.sql
+```
+
+Or use:
+
+```bash
+./local/maintenance/prune-activities.sh
+```
+
+If you want to execute the SQL from Docker instead of the host shell:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/02-prune-activities.sql
 ```
 
 If you want a different retention period, edit:
@@ -96,12 +123,30 @@ Run:
 mysql -uUSER -p DATABASE_NAME < database/maintenance/03-drop-tokens-backup.sql
 ```
 
+Or use:
+
+```bash
+./local/maintenance/drop-tokens-backup.sh
+```
+
+If you want to execute the SQL from Docker instead of the host shell:
+
+```bash
+docker compose exec -T db mysql -uinforex -ppassword inforex < database/maintenance/03-drop-tokens-backup.sql
+```
+
 ## 5. Verify the result
 
 Run the analysis again:
 
 ```bash
 mysql -uUSER -p DATABASE_NAME < database/maintenance/01-analyze-large-tables.sql
+```
+
+Or use:
+
+```bash
+./local/maintenance/analyze-large-tables.sh
 ```
 
 Then verify:

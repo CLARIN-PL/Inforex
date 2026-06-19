@@ -1,0 +1,389 @@
+.report-relations-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+    padding: 8px 10px 0;
+}
+
+.relation-graph-row {
+    cursor: pointer;
+}
+
+.relation-graph-row:hover td {
+    background: #eef7fb !important;
+}
+
+.report-relations-graph-trigger {
+    align-items: center;
+    background: #f7fbfd;
+    border: 1px solid #cfe0e7;
+    border-radius: 7px;
+    box-shadow: none;
+    color: #2f5666;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 10px;
+    font-weight: 600;
+    gap: 3px;
+    height: 22px;
+    line-height: 1;
+    padding: 1px 7px;
+    text-decoration: none;
+    transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+
+.report-relations-graph-trigger:hover,
+.report-relations-graph-trigger:focus {
+    background: #eef7fb;
+    border-color: #9fc6d3;
+    color: #174f69;
+}
+
+.report-relations-graph-trigger span {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    display: inline !important;
+    font-size: 10px;
+    line-height: 1;
+    margin: 0;
+    padding: 0 !important;
+    vertical-align: middle;
+}
+
+.report-relations-graph-trigger .fa {
+    font-size: 9px;
+    line-height: 1;
+}
+
+.report-relations-graph-modal .modal-dialog {
+    margin-top: 48px;
+    width: 940px;
+}
+
+.report-relations-graph-modal .modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.report-relations-graph-modal .modal-header {
+    align-items: flex-start;
+    background: linear-gradient(135deg, #ffffff 0%, #eef7f6 100%);
+    border-bottom: 1px solid #d8e4eb;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 18px 18px 14px;
+}
+
+.report-relations-graph-modal .modal-title {
+    color: #174f69;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.report-relations-graph-modal .modal-title .fa {
+    margin-right: 6px;
+}
+
+.report-relations-graph-header-main {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-width: 0;
+}
+
+.report-relations-graph-header-main .modal-title {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.report-relations-graph-summary {
+    align-items: center;
+    color: #355766;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 13px;
+    gap: 10px;
+    margin-top: 0;
+}
+
+.report-relations-graph-topbar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.report-relations-graph-close-top {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 999px;
+    color: #53707d;
+    display: inline-flex;
+    font-size: 22px;
+    font-weight: 400;
+    height: 34px;
+    justify-content: center;
+    line-height: 1;
+    margin: 0 !important;
+    opacity: 1;
+    padding: 0;
+    transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+    width: 34px;
+}
+
+.report-relations-graph-close-top:hover,
+.report-relations-graph-close-top:focus {
+    background: #eef7fb;
+    border-color: #9ec5d2;
+    color: #174f69;
+    opacity: 1;
+    transform: scale(1.03);
+}
+
+.report-relations-graph-close-bottom {
+    align-items: center;
+    border-radius: 999px;
+    box-shadow: none;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 600;
+    gap: 6px;
+    padding: 7px 14px;
+}
+
+.report-relations-graph-layout-switch {
+    flex: 0 0 auto;
+}
+
+.report-relations-graph-layout-switch .btn {
+    border-color: #d0dee5;
+    color: #41606e;
+    font-size: 12px;
+    font-weight: 600;
+    height: 28px;
+    min-width: 32px;
+    padding: 4px 8px;
+}
+
+.report-relations-graph-layout-switch .btn .fa {
+    font-size: 12px;
+}
+
+.report-relations-graph-layout-switch .btn.is-active,
+.report-relations-graph-layout-switch .btn:focus,
+.report-relations-graph-layout-switch .btn:hover {
+    background: #e9f7ff;
+    border-color: #79bedf;
+    color: #0f87b8;
+}
+
+.report-relations-graph-summary-item {
+    background: #f2f8fa;
+    border: 1px solid #d7e4ea;
+    border-radius: 999px;
+    padding: 5px 10px;
+}
+
+.report-relations-graph-summary-item:nth-child(1) {
+    background: #ecf8ff;
+    border-color: #a8d6ec;
+    color: #136b92;
+}
+
+.report-relations-graph-summary-item:nth-child(2) {
+    background: #eefaf2;
+    border-color: #b7dec2;
+    color: #267346;
+}
+
+.report-relations-graph-summary-item:nth-child(3) {
+    background: #fff3e8;
+    border-color: #efc9a2;
+    color: #b95d10;
+}
+
+.report-relations-graph-empty {
+    background: #fff9e7;
+    border: 1px solid #f0d78a;
+    border-radius: 10px;
+    color: #745b13;
+    font-size: 13px;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+}
+
+.report-relations-graph-canvas-wrap {
+    background:
+        radial-gradient(circle at top left, rgba(23, 109, 125, 0.08), transparent 35%),
+        linear-gradient(180deg, #fbfdfe 0%, #f3f8fa 100%);
+    border: 1px solid #d8e4eb;
+    border-radius: 12px;
+    min-height: 520px;
+    overflow: hidden;
+    padding: 8px;
+}
+
+.report-relations-graph-canvas {
+    display: block;
+    height: auto;
+    min-height: 500px;
+    width: 100%;
+}
+
+.report-relations-graph-edge {
+    fill: none;
+    opacity: 0.92;
+    stroke: #5a7b88;
+    stroke-width: 1.8;
+    transition: opacity .18s ease, stroke .18s ease, stroke-width .18s ease;
+}
+
+.report-relations-graph-edge-label {
+    fill: #355766;
+    font-size: 11px;
+    font-weight: 700;
+    text-anchor: middle;
+    transition: opacity .18s ease, fill .18s ease;
+}
+
+.report-relations-graph-node circle {
+    fill: #ffffff;
+    stroke: #1f6f93;
+    stroke-width: 2;
+    transition: opacity .18s ease, stroke .18s ease, stroke-width .18s ease, fill .18s ease;
+}
+
+.report-relations-graph-node-label {
+    fill: #2d4a56;
+    font-size: 11px;
+    font-weight: 600;
+    text-anchor: middle;
+}
+
+.report-relations-graph-node {
+    cursor: grab;
+}
+
+.report-relations-graph-node.is-active circle {
+    fill: #eff9ff;
+    stroke: #0f87b8;
+    stroke-width: 3;
+}
+
+.report-relations-graph-node.is-muted {
+    opacity: 0.25;
+}
+
+.report-relations-graph-edge.is-active {
+    stroke: #0f87b8;
+    stroke-width: 2.8;
+}
+
+.report-relations-graph-edge.is-focus {
+    stroke: #eb7a22;
+    stroke-width: 3.4;
+}
+
+.report-relations-graph-edge-label.is-active {
+    fill: #0f87b8;
+}
+
+.report-relations-graph-edge-label.is-focus {
+    fill: #d46a18;
+}
+
+.report-relations-graph-edge.is-muted,
+.report-relations-graph-edge-label.is-muted {
+    opacity: 0.16;
+}
+
+.report-relations-graph-legend {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    margin-bottom: 0;
+    min-width: 0;
+}
+
+.report-relations-graph-legend-item {
+    align-items: center;
+    background: #f7fafb;
+    border: 1px solid #d8e4eb;
+    border-radius: 999px;
+    display: inline-flex;
+    gap: 8px;
+    padding: 4px 10px;
+    transition: opacity .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.report-relations-graph-legend-name {
+    color: #355766;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.report-relations-graph-legend-count {
+    background: #dff0f4;
+    border-radius: 999px;
+    color: #1f6f93;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 22px;
+    padding: 2px 6px;
+    text-align: center;
+}
+
+.report-relations-graph-legend-item.is-active {
+    background: #e9f7ff;
+    border-color: #79bedf;
+}
+
+.report-relations-graph-legend-item.is-muted {
+    opacity: 0.35;
+}
+
+@media (max-width: 991px) {
+    .report-relations-graph-modal .modal-dialog {
+        margin: 18px auto;
+        width: auto;
+    }
+
+    .report-relations-toolbar {
+        justify-content: flex-start;
+    }
+
+    .report-relations-graph-topbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .report-relations-graph-modal .modal-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .report-relations-graph-header-main {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .report-relations-graph-close-top {
+        align-self: flex-end;
+    }
+
+    .report-relations-graph-legend {
+        margin-top: 0;
+    }
+}

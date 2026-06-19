@@ -8,6 +8,7 @@
 var wAnnotationDetails = null;
 var wAnnotationRelations = null;
 var wAnnotationPanel = null;
+var wRelationGraphModal = null;
 var globalSelection = null;
 
 $(function(){
@@ -25,6 +26,8 @@ $(function(){
     wAnnotationDetails.onUpdate(refreshAnnotationRelationsAfterUpdate);
 
     wAnnotationRelations = new WidgetAnnotationRelations("#annotation-relations", "#content");
+    wRelationGraphModal = new WidgetRelationGraphModal("#relationsGraphModal", ".report-relations-accordion-panel");
+    wRelationGraphModal.init();
     wAnnotationPanel = new WidgetAnnotationPanel("??");
 
     setupAnnotationTableRowHover();

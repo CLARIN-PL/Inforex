@@ -231,6 +231,10 @@ The current maintenance notes cover:
 * pruning old rows from `activities`,
 * removing the legacy `tokens_backup` table after backup.
 
+Host-side wrapper scripts are available in:
+
+* `local/maintenance/`
+
 Detailed instructions are available in:
 
 * `documentations/maintenance/database-size-optimization.md`

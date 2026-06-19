@@ -1,4 +1,16 @@
-SET @activities_cutoff := NOW() - INTERVAL 730 DAY;
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+
+source "${SCRIPT_DIR}/mysql-common.sh"
+
+if sql_file="$(resolve_sql_file "database/maintenance/02-prune-activities.sql")"; then
+  mysql_run_file "${sql_file}"
+else
+  mysql_exec <<'SQL'
+SET @activities_cutoff := NOW() - INTERVAL 365 DAY;
 SET @activities_batch_size := 50000;
 
 DROP PROCEDURE IF EXISTS prune_activities_before;
@@ -25,3 +37,5 @@ CALL prune_activities_before(@activities_cutoff, @activities_batch_size);
 DROP PROCEDURE IF EXISTS prune_activities_before;
 
 OPTIMIZE TABLE activities;
+SQL
+fi

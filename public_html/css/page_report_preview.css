@@ -714,3 +714,21 @@
         padding: 12px;
     }
 }
+
+
+#annotationList .annotation-id-mask {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px dotted #b9c8cf;
+    border-radius: 0;
+    color: #7a9099;
+    cursor: help;
+    display: inline-block;
+    font-family: monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1;
+    padding: 0 0 1px;
+    text-align: left;
+}

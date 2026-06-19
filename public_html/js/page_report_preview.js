@@ -5,6 +5,7 @@
  */
 var anaphora_target_n = 1;
 var wRelationSets = null;
+var wRelationGraphModal = null;
 
 var url = $.url(window.location.href);
 var corpus_id = url.param("corpus");
@@ -17,6 +18,8 @@ $(document).ready(function(){
     loadAnnotationTypesFromTemplates(corpus_id);
     wRelationSets = new WidgetRelationSetSelector("#relation-sets", corpus_id);
     wRelationSets.load();
+    wRelationGraphModal = new WidgetRelationGraphModal("#relationsGraphModal", ".report-relations-accordion-panel");
+    wRelationGraphModal.init();
 
     // Zapis aktualnej konfiguracji i przeładowanie strony
     $("#applyLayer").click(function(){
