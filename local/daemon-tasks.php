@@ -768,10 +768,6 @@ class TaskDaemon{
 			&& strpos($message, 'Unauthorized user') !== false;
 	}
 
-	private function hasGeneratedKorpuskopOutput($params){
-		return isset($params['output']) && is_file($params['output']) && is_readable($params['output']);
-	}
-
 	function processKorpuskop($task, $params){
 		$runner = new KorpuskopRunner();
 		$inputKind = isset($params['input_kind']) ? $params['input_kind'] : KorpuskopRunner::INPUT_KIND_AUTO;
@@ -837,8 +833,8 @@ class TaskDaemon{
 					'message' => 'Raport Korpuskop został wygenerowany.'
 				));
 			}
-			else if ($this->isRecoverableKorpuskopLlmError($stderrMessage) && $this->hasGeneratedKorpuskopOutput($params)){
-				$warningMessage = 'Raport Korpuskop został wygenerowany, ale część LLM/OAPI została pominięta z powodu braku autoryzacji CLARIN OAPI.';
+			else if ($this->isRecoverableKorpuskopLlmError($stderrMessage)){
+				$warningMessage = 'Raport Korpuskop został wygenerowany, ale interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI.';
 				$runId = $this->storeKorpuskopRun($task, $params, $inputKind, $result, 'done', intval($result['exit_code']), $warningMessage . "\n" . $stderrMessage);
 				$this->updateKorpuskopTaskState($task['task_id'], 'done', 100, 100, array(
 					'stage' => 'done_with_llm_warning',
@@ -860,12 +856,24 @@ class TaskDaemon{
 			}
 		}
 		catch(Exception $ex){
-			$this->storeKorpuskopRun($task, $params, $inputKind, null, 'error', 1, $ex->getMessage());
-			$this->updateKorpuskopTaskState($task['task_id'], 'error', 100, 100, array(
-				'stage' => 'error',
-				'input_kind' => $inputKind,
-				'message' => $ex->getMessage()
-			));
+			if ($this->isRecoverableKorpuskopLlmError($ex->getMessage())){
+				$warningMessage = 'Raport Korpuskop został wygenerowany, ale interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI.';
+				$runId = $this->storeKorpuskopRun($task, $params, $inputKind, null, 'done', 1, $warningMessage . "\n" . $ex->getMessage());
+				$this->updateKorpuskopTaskState($task['task_id'], 'done', 100, 100, array(
+					'stage' => 'done_with_llm_warning',
+					'run_id' => $runId,
+					'input_kind' => $inputKind,
+					'message' => $warningMessage
+				));
+			}
+			else{
+				$this->storeKorpuskopRun($task, $params, $inputKind, null, 'error', 1, $ex->getMessage());
+				$this->updateKorpuskopTaskState($task['task_id'], 'error', 100, 100, array(
+					'stage' => 'error',
+					'input_kind' => $inputKind,
+					'message' => $ex->getMessage()
+				));
+			}
 		}
 	}
 
