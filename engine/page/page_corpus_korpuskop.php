@@ -111,12 +111,29 @@ class Page_corpus_korpuskop extends CPageCorpus {
         foreach (array('output_path', 'progress_file') as $field) {
             if (!empty($run[$field]) && is_file($run[$field])) {
                 @unlink($run[$field]);
+            } else if (!empty($run[$field]) && is_dir($run[$field])) {
+                $this->deleteDirectory($run[$field]);
             }
         }
 
         DbKorpuskopRun::deleteRunForCorpus($runId, $this->getCorpusId());
         header('Location: index.php?page=corpus_korpuskop&corpus=' . $this->getCorpusId() . '&deleted=1');
         exit();
+    }
+
+    private function deleteDirectory($directory){
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                @rmdir($file->getPathname());
+            } else {
+                @unlink($file->getPathname());
+            }
+        }
+        @rmdir($directory);
     }
 
     private function safeGetRuns(){

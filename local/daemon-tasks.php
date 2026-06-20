@@ -730,17 +730,18 @@ class TaskDaemon{
 	}
 
 	private function storeKorpuskopRun($task, $params, $inputKind, $result, $status, $exitCode, $message){
+		$outputPath = $this->getGeneratedKorpuskopOutputPath($params);
 		$values = array(
 			'user_id' => $task['user_id'],
 			'input_path' => $params['input'],
 			'input_kind' => $inputKind,
-			'output_path' => $params['output'],
+			'output_path' => $outputPath,
 			'config_json_path' => isset($params['config_json']) ? $params['config_json'] : null,
 			'progress_file' => $result ? $result['progress_file'] : null,
 			'status' => $status,
 			'exit_code' => $exitCode,
 			'message' => $message,
-			'file_size' => is_file($params['output']) ? filesize($params['output']) : null,
+			'file_size' => $this->getKorpuskopOutputSize($outputPath),
 			'finished_at' => date('Y-m-d H:i:s'),
 		);
 
@@ -769,7 +770,56 @@ class TaskDaemon{
 	}
 
 	private function hasGeneratedKorpuskopOutput($params){
-		return isset($params['output']) && is_file($params['output']) && is_readable($params['output']) && filesize($params['output']) > 0;
+		$outputPath = $this->getGeneratedKorpuskopOutputPath($params);
+		return $this->getKorpuskopOutputSize($outputPath) > 0;
+	}
+
+	private function getGeneratedKorpuskopOutputPath($params){
+		foreach ($this->getKorpuskopOutputCandidates($params) as $candidate) {
+			if ((is_file($candidate) || is_dir($candidate)) && is_readable($candidate)) {
+				return $candidate;
+			}
+		}
+		return isset($params['output']) ? $params['output'] : '';
+	}
+
+	private function getKorpuskopOutputCandidates($params){
+		$candidates = array();
+		if (!empty($params['output'])) {
+			$output = (string) $params['output'];
+			$candidates[] = $output;
+			if (preg_match('/\.zip$/', $output)) {
+				$candidates[] = preg_replace('/\.zip$/', '', $output);
+			}
+		}
+		if (!empty($params['input']) && !empty($params['output'])) {
+			$baseName = basename((string) $params['input']);
+			if (preg_match('/\.zst$/', $baseName)) {
+				$baseName = preg_replace('/\.zst$/', '', $baseName);
+			}
+			$candidates[] = dirname((string) $params['output']) . DIRECTORY_SEPARATOR . $baseName . '_raport';
+		}
+		return array_values(array_unique($candidates));
+	}
+
+	private function getKorpuskopOutputSize($path){
+		if ($path === '' || (!is_file($path) && !is_dir($path))) {
+			return null;
+		}
+		if (is_file($path)) {
+			return filesize($path);
+		}
+
+		$size = 0;
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)
+		);
+		foreach ($iterator as $file) {
+			if ($file->isFile()) {
+				$size += $file->getSize();
+			}
+		}
+		return $size;
 	}
 
 	function processKorpuskop($task, $params){
