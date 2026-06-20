@@ -45,7 +45,7 @@ class Ajax_korpuskop_task_status extends CPageCorpus {
 
         $run = DbKorpuskopRun::getRunByTask($task_id, $this->getCorpusId());
         $downloadUrl = null;
-        if ($run && !empty($run['run_id']) && $run['status'] === 'done') {
+        if ($run && !empty($run['run_id']) && $run['status'] === 'done' && !empty($run['file_size'])) {
             $downloadUrl = 'index.php?page=korpuskop_download&corpus=' . $this->getCorpusId() . '&run_id=' . intval($run['run_id']);
         }
 

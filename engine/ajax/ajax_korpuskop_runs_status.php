@@ -24,7 +24,7 @@ class Ajax_korpuskop_runs_status extends CPageCorpus {
                 ? ('index.php?page=corpus_korpuskop&corpus=' . $this->getCorpusId() . '&task_id=' . intval($run['task_id']) . '&show_task=1')
                 : null;
 
-            if ($run['status'] === 'done' && !empty($run['real_run_id'])) {
+            if ($run['status'] === 'done' && !empty($run['real_run_id']) && !empty($run['file_size'])) {
                 $run['download_url'] = 'index.php?page=korpuskop_download&corpus=' . $this->getCorpusId() . '&run_id=' . intval($run['real_run_id']);
             }
             if ($run['status'] === 'new' || $run['status'] === 'process') {

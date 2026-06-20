@@ -768,6 +768,10 @@ class TaskDaemon{
 			&& strpos($message, 'Unauthorized user') !== false;
 	}
 
+	private function hasGeneratedKorpuskopOutput($params){
+		return isset($params['output']) && is_file($params['output']) && is_readable($params['output']) && filesize($params['output']) > 0;
+	}
+
 	function processKorpuskop($task, $params){
 		$runner = new KorpuskopRunner();
 		$inputKind = isset($params['input_kind']) ? $params['input_kind'] : KorpuskopRunner::INPUT_KIND_AUTO;
@@ -834,7 +838,9 @@ class TaskDaemon{
 				));
 			}
 			else if ($this->isRecoverableKorpuskopLlmError($stderrMessage)){
-				$warningMessage = 'Raport Korpuskop został wygenerowany, ale interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI.';
+				$warningMessage = $this->hasGeneratedKorpuskopOutput($params)
+					? 'Raport Korpuskop został wygenerowany, ale interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI.'
+					: 'Generowanie raportu Korpuskop zakończyło się ostrzeżeniem: interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI, a plik raportu nie został odnaleziony.';
 				$runId = $this->storeKorpuskopRun($task, $params, $inputKind, $result, 'done', intval($result['exit_code']), $warningMessage . "\n" . $stderrMessage);
 				$this->updateKorpuskopTaskState($task['task_id'], 'done', 100, 100, array(
 					'stage' => 'done_with_llm_warning',
@@ -857,7 +863,9 @@ class TaskDaemon{
 		}
 		catch(Exception $ex){
 			if ($this->isRecoverableKorpuskopLlmError($ex->getMessage())){
-				$warningMessage = 'Raport Korpuskop został wygenerowany, ale interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI.';
+				$warningMessage = $this->hasGeneratedKorpuskopOutput($params)
+					? 'Raport Korpuskop został wygenerowany, ale interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI.'
+					: 'Generowanie raportu Korpuskop zakończyło się ostrzeżeniem: interpretacja LLM nie została wygenerowana z powodu braku autoryzacji CLARIN OAPI, a plik raportu nie został odnaleziony.';
 				$runId = $this->storeKorpuskopRun($task, $params, $inputKind, null, 'done', 1, $warningMessage . "\n" . $ex->getMessage());
 				$this->updateKorpuskopTaskState($task['task_id'], 'done', 100, 100, array(
 					'stage' => 'done_with_llm_warning',

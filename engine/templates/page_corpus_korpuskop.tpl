@@ -332,7 +332,7 @@
                                 {if $run.task_id}
                                     <a class="btn btn-xs btn-default" href="index.php?page=corpus_korpuskop&amp;corpus={$corpus.id}&amp;task_id={$run.task_id|escape}&amp;show_task=1" title="Show task status"><i class="fa fa-eye" aria-hidden="true"></i></a>
                                 {/if}
-                                {if $run.status == 'done' && $run.real_run_id}
+                                {if $run.status == 'done' && $run.real_run_id && $run.file_size}
                                     <a class="btn btn-xs btn-default" href="index.php?page=korpuskop_download&amp;corpus={$corpus.id}&amp;run_id={$run.real_run_id}" title="Download ZIP"><i class="fa fa-download" aria-hidden="true"></i></a>
                                 {/if}
                                 {if $run.real_run_id}

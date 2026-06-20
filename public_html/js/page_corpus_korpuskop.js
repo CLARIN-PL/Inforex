@@ -319,7 +319,7 @@
         if (run.task_id) {
             actions += '<a class="btn btn-xs btn-default" href="' + escapeHtml(run.view_url) + '" title="Show task status"><i class="fa fa-eye" aria-hidden="true"></i></a>';
         }
-        if (run.status === 'done' && run.download_url) {
+        if (run.status === 'done' && run.download_url && run.file_size) {
             actions += '<a class="btn btn-xs btn-default" href="' + escapeHtml(run.download_url) + '" title="Download ZIP"><i class="fa fa-download" aria-hidden="true"></i></a>';
         }
         if (run.real_run_id) {
