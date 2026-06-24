@@ -88,8 +88,20 @@ class Config extends Singleton\Singleton{
 		"path_wcrft_model"  => "",
 		"wcrft_config"	   => "nkjp_s2.ini",
 		"wcrft2_config"	   => "nkjp_e2",
-		"log_sql"           => false,
-		"log_output"		=> "fb",
+        "log_sql"           => false,
+        "log_output"		=> "fb",
+        "adminErrorLogFiles" => array(
+            array(
+                "key" => "apache_error",
+                "title" => "Apache / PHP error log",
+                "path" => "/var/log/apache2/error.log",
+            ),
+            array(
+                "key" => "supervisor",
+                "title" => "Supervisor log",
+                "path" => "/var/log/supervisor/supervisord.log",
+            ),
+        ),
 		"path_grabber"	   => null,
 	
         "max_types_limit_threshold" => MAX_TYPES_LIMIT_THRESHOLD,
