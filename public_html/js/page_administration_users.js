@@ -118,6 +118,7 @@ function user_edit(user_id, tr){
     var success = function(data){
         var user = data;
         var authIdentity = user.auth_provider ? user.auth_provider + (user.auth_username ? ": " + user.auth_username : "") : "local only";
+        var unlinkAuthIdentity = false;
 
 
         var rolesForm = '<div class="administration-roles-list">';
@@ -137,6 +138,37 @@ function user_edit(user_id, tr){
         $("#edit_user_username").val(data.screename);
         $("#edit_user_email").val(data.email);
         $("#edit_user_auth_username").val(authIdentity);
+        $("#edit_user_unlink_auth_identity").val("0");
+
+        if (user.auth_provider) {
+            $("#edit_user_auth_unlink_group").show();
+            $("#edit_user_auth_unlink_hint").text("This user is currently linked to " + user.auth_provider + ".");
+            $("#edit_user_unlink_auth_button")
+                .removeClass("btn-default")
+                .addClass("btn-warning")
+                .html('<i class="fa fa-unlink" aria-hidden="true"></i> Unlink Keycloak account');
+        } else {
+            $("#edit_user_auth_unlink_group").hide();
+        }
+
+        $("#edit_user_unlink_auth_button").off("click").on("click", function(){
+            unlinkAuthIdentity = !unlinkAuthIdentity;
+            $("#edit_user_unlink_auth_identity").val(unlinkAuthIdentity ? "1" : "0");
+
+            if (unlinkAuthIdentity) {
+                $("#edit_user_auth_unlink_hint").text("The Keycloak link will be removed when you confirm this change.");
+                $("#edit_user_unlink_auth_button")
+                    .removeClass("btn-warning")
+                    .addClass("btn-default")
+                    .html('<i class="fa fa-link" aria-hidden="true"></i> Keep Keycloak account linked');
+            } else {
+                $("#edit_user_auth_unlink_hint").text("This user is currently linked to " + user.auth_provider + ".");
+                $("#edit_user_unlink_auth_button")
+                    .removeClass("btn-default")
+                    .addClass("btn-warning")
+                    .html('<i class="fa fa-unlink" aria-hidden="true"></i> Unlink Keycloak account');
+            }
+        });
 
         $("#edit_user_form" ).validate({
             rules: {
@@ -199,14 +231,16 @@ function user_edit(user_id, tr){
                     'login': login,
                     'name': username,
                     'email' : email,
-                    'roles': roles
+                    'roles': roles,
+                    'unlink_auth_identity': unlinkAuthIdentity ? 1 : 0
                 };
 
                 var success = function(){
+                    var authIdentityAfterSave = unlinkAuthIdentity ? "local only" : authIdentity;
                     $(tr).find(".login").html(login);
                     $(tr).find(".screename").html(username);
                     $(tr).find(".email").html(email);
-                    $(tr).find(".auth_identity").html(authIdentity);
+                    $(tr).find(".auth_identity").html(authIdentityAfterSave);
                     $(tr).find(".user_roles").html(roles_string);
 
                     $('#edit_user_modal').modal('hide');

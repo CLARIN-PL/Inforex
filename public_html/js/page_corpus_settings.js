@@ -185,9 +185,13 @@ $(function(){
 		getReportPerspectives();
 	});
 
-	$("#corpusPerspectives").on('click', '.setReportPerspective', function(){
+	$("#corpusPerspectives").on('change', '.setReportPerspective', function(){
 		setReportPerspective($(this));
 	});
+
+    $("#corpusPerspectives").on('click mousedown', '.corpus-settings-perspectives-checkbox, .corpus-settings-perspectives-checkbox > span[aria-hidden=\"true\"]', function(e){
+        e.stopPropagation();
+    });
 
     $("#corpusPerspectives").on('change', '.updateReportPerspective', function(){
 		updateReportPerspective($(this));
@@ -726,6 +730,46 @@ function corpusSettingsPerspectiveAccessBadge(access) {
 }
 
 
+
+function getCorpusPerspectivesScrollState(){
+    var $wrapper = $("#corpusPerspectivesContent .corpus-settings-perspectives-modal-table-wrapper");
+    var $modalBody = $("#corpusPerspectivesContent");
+    return {
+        wrapper: $wrapper,
+        modalBody: $modalBody,
+        top: $wrapper.length ? $wrapper.scrollTop() : 0,
+        modalTop: $modalBody.length ? $modalBody.scrollTop() : 0
+    };
+}
+
+function restoreCorpusPerspectivesScrollState(state){
+    if (!state) {
+        return;
+    }
+
+    if (document.activeElement && typeof document.activeElement.blur === "function") {
+        document.activeElement.blur();
+    }
+
+    window.requestAnimationFrame(function(){
+        if (state.modalBody && state.modalBody.length) {
+            state.modalBody.scrollTop(state.modalTop || 0);
+        }
+        if (state.wrapper && state.wrapper.length) {
+            state.wrapper.scrollTop(state.top || 0);
+        }
+
+        window.requestAnimationFrame(function(){
+            if (state.modalBody && state.modalBody.length) {
+                state.modalBody.scrollTop(state.modalTop || 0);
+            }
+            if (state.wrapper && state.wrapper.length) {
+                state.wrapper.scrollTop(state.top || 0);
+            }
+        });
+    });
+}
+
 function getReportPerspectives(){
 
 	var success = function(data){
@@ -772,6 +816,7 @@ function getReportPerspectives(){
 
 function setReportPerspective($element){
     var perspective_id =$element.attr('perspectiveid');
+    var scrollState = getCorpusPerspectivesScrollState();
     
 	var _data = {
 			url: $.url(window.location.href).attr('query'),
@@ -791,6 +836,7 @@ function setReportPerspective($element){
             $("#select_"+perspective_id).attr("disabled", true);
         }
 		updatePerspectiveTable($element,($element.prop('checked') ? "add" : "remove"));
+        restoreCorpusPerspectivesScrollState(scrollState);
 	};
 
 	var login = function(){
@@ -804,6 +850,7 @@ function setReportPerspective($element){
 
 function updateReportPerspective($element){
 	if ($element.is("select")){
+        var scrollState = getCorpusPerspectivesScrollState();
 		var params = {
 			url: $.url(window.location.href).attr('query'),
 			perspective_id : $element.attr('perspectiveid'),
@@ -813,6 +860,7 @@ function updateReportPerspective($element){
 
 		var success = function(data){
 			updatePerspectiveTable($element,"update");
+            restoreCorpusPerspectivesScrollState(scrollState);
 		};
 
 		var login = function(){

@@ -29,6 +29,10 @@ class Action_user_edit extends CAction{
 		$values['email'] = strval($_POST['email']);
 		$keys['user_id'] = intval($user_id);
 		$this->getDb()->update("users", $values, $keys);
+
+        if (!empty($_POST['unlink_auth_identity'])) {
+            DbUser::unlinkAuthIdentity($user_id);
+        }
 		
 		$roles = $_POST['roles'];
 		if ( !is_array($roles) ){

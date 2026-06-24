@@ -82,6 +82,23 @@ class DbUser{
             throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
     }
 
+    static function unlinkAuthIdentity($id){
+        global $db;
+        $sql = "UPDATE users
+                SET auth_provider = NULL,
+                    auth_subject = NULL,
+                    auth_username = NULL,
+                    auth_email = NULL,
+                    auth_email_verified = 0,
+                    auth_linked_at = NULL
+                WHERE user_id = ?";
+        $db->execute($sql, array($id));
+
+        $error = $db->errorInfo();
+        if(isset($error[0]))
+            throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
+    }
+
     static function updateLastLoginAt($id){
         global $db;
         $db->execute("UPDATE users SET last_login_at = NOW() WHERE user_id = ?", array($id));

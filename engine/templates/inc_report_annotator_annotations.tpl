@@ -33,7 +33,7 @@
                     <tbody>
                     {foreach from=$annotations item=an}
                         <tr annotation_id="{$an.id}" title="Creator: {$an.screename} ({$an.login})">
-                            <td><span class="annotation-id-mask" title="{$an.id}">an#…</span></td>
+                            <td><span class="annotation-id-placeholder" title="Annotation ID: {$an.id}">#…</span></td>
                             <td>{$an.type}</td>
                             <td>{$an.text}</td>
                             <td class="attributes">{if $an.attributes}{$an.attributes}{else}-{/if}</td>

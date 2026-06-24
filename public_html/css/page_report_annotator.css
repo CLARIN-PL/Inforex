@@ -357,7 +357,7 @@
 
 .report-annotator-config-column #annotationList th:nth-child(1),
 .report-annotator-config-column #annotationList td:nth-child(1) {
-    width: 34px;
+    width: 28px;
 }
 
 .report-annotator-config-column #annotationList th:nth-child(2),
@@ -858,16 +858,16 @@ tr.modified td {background: lightsteelblue; }
 .annotationDelete { color: red; }
 
 
-#annotationList .annotation-id-mask {
+#annotationList .annotation-id-placeholder {
     background: transparent;
     border: 0;
-    border-bottom: 1px dotted #b9c8cf;
+    border-bottom: 1px dotted #c4d2d8;
     border-radius: 0;
-    color: #7a9099;
+    color: #8097a1;
     cursor: help;
     display: inline-block;
     font-family: monospace;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 600;
     letter-spacing: 0;
     line-height: 1;

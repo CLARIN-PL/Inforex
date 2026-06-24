@@ -133,6 +133,14 @@
 						<p class="administration-form-hint">This field is informative. Linking happens during Keycloak login or by updating auth fields directly in the database.</p>
 						<input class="form-control" name="auth_username" id="edit_user_auth_username" disabled>
 					</div>
+					<div class="form-group administration-auth-unlink-group" id="edit_user_auth_unlink_group" style="display:none;">
+						<label>Federated login</label>
+						<p class="administration-form-hint" id="edit_user_auth_unlink_hint">This user is currently linked to Keycloak.</p>
+						<input type="hidden" name="unlink_auth_identity" id="edit_user_unlink_auth_identity" value="0">
+						<button type="button" class="btn btn-warning administration-user-unlink-button" id="edit_user_unlink_auth_button">
+							<i class="fa fa-unlink" aria-hidden="true"></i> Unlink Keycloak account
+						</button>
+					</div>
 					<div class = "form-group roles">
 
 					</div>
