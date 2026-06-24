@@ -13,10 +13,14 @@ class Page_administration_activity_dashboard extends CPageAdministration {
     function execute(){
         $summary = DbActivity::getAdminDashboardSummary();
         $timeline = DbActivity::getAdminDashboardTimeline(24);
+        $timelineWeek = DbActivity::getAdminDashboardTimelineDays(7);
         $users = DbActivity::getAdminDashboardActiveUsers(25);
+        $topCorpora = DbActivity::getAdminDashboardTopCorporaWeek(8);
 
         $this->set('activity_dashboard_summary', $summary);
         $this->set('activity_dashboard_timeline', $timeline);
+        $this->set('activity_dashboard_timeline_week', $timelineWeek);
         $this->set('activity_dashboard_users', $users);
+        $this->set('activity_dashboard_top_corpora', $topCorpora);
     }
 }

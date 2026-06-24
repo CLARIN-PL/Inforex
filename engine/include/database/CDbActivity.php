@@ -79,6 +79,61 @@ class DbActivity
         );
     }
 
+    static function getAdminDashboardTimelineDays($days = 7)
+    {
+        global $db;
+
+        $days = max(1, intval($days));
+        $sql = "SELECT
+                    DATE(a.datetime) AS bucket,
+                    COUNT(*) AS events_count,
+                    COUNT(DISTINCT a.user_id) AS users_count
+                FROM activities a FORCE INDEX (activities_datetime_user_idx)
+                WHERE a.user_id IS NOT NULL
+                  AND a.datetime >= NOW() - INTERVAL ? DAY
+                GROUP BY DATE(a.datetime)
+                ORDER BY bucket ASC";
+
+        $rows = $db->fetch_rows($sql, array($days));
+        $indexed = array();
+        foreach ($rows as $row) {
+            $indexed[$row['bucket']] = $row;
+        }
+
+        $timeline = array();
+        $maxEvents = 0;
+        $maxUsers = 0;
+        $start = new DateTimeImmutable('-' . ($days - 1) . ' day');
+        $start = $start->setTime(0, 0, 0);
+        for ($i = 0; $i < $days; $i++) {
+            $bucket = $start->modify('+' . $i . ' day');
+            $bucketKey = $bucket->format('Y-m-d');
+            $eventsCount = isset($indexed[$bucketKey]) ? intval($indexed[$bucketKey]['events_count']) : 0;
+            $usersCount = isset($indexed[$bucketKey]) ? intval($indexed[$bucketKey]['users_count']) : 0;
+            $maxEvents = max($maxEvents, $eventsCount);
+            $maxUsers = max($maxUsers, $usersCount);
+            $timeline[] = array(
+                'bucket' => $bucketKey,
+                'label' => $bucket->format('D'),
+                'full_label' => $bucket->format('Y-m-d'),
+                'events_count' => $eventsCount,
+                'users_count' => $usersCount,
+            );
+        }
+
+        foreach ($timeline as &$row) {
+            $row['events_percent'] = $maxEvents > 0 ? round(($row['events_count'] / $maxEvents) * 100, 2) : 0;
+            $row['users_percent'] = $maxUsers > 0 ? round(($row['users_count'] / $maxUsers) * 100, 2) : 0;
+        }
+        unset($row);
+
+        return array(
+            'points' => $timeline,
+            'max_events' => $maxEvents,
+            'max_users' => $maxUsers,
+        );
+    }
+
     static function getAdminDashboardActiveUsers($limit = 25)
     {
         global $db;
@@ -116,6 +171,94 @@ class DbActivity
         unset($row);
 
         return $rows;
+    }
+
+    static function getAdminDashboardTopCorporaWeek($limit = 8)
+    {
+        global $db;
+
+        $limit = max(1, intval($limit));
+        $sql = "SELECT
+                    c.id AS corpus_id,
+                    c.name AS corpus_name,
+                    COUNT(*) AS events_count,
+                    COUNT(DISTINCT a.user_id) AS users_count,
+                    MAX(a.datetime) AS last_activity
+                FROM activities a FORCE INDEX (activities_datetime_user_idx)
+                JOIN corpora c ON c.id = a.corpus_id
+                WHERE a.user_id IS NOT NULL
+                  AND a.corpus_id IS NOT NULL
+                  AND a.datetime >= NOW() - INTERVAL " . self::ACTIVE_WEEK_DAYS . " DAY
+                GROUP BY c.id, c.name
+                ORDER BY events_count DESC, users_count DESC, c.name ASC
+                LIMIT {$limit}";
+
+        $rows = $db->fetch_rows($sql);
+        $maxEvents = 0;
+        foreach ($rows as $row) {
+            $maxEvents = max($maxEvents, intval($row['events_count']));
+        }
+
+        foreach ($rows as &$row) {
+            $row['events_percent'] = $maxEvents > 0 ? round((intval($row['events_count']) / $maxEvents) * 100, 2) : 0;
+            $row['active_users'] = array();
+        }
+        unset($row);
+
+        if (!empty($rows)) {
+            $corpusIds = array();
+            foreach ($rows as $row) {
+                $corpusIds[] = intval($row['corpus_id']);
+            }
+
+            $placeholders = implode(',', array_fill(0, count($corpusIds), '?'));
+            $userRows = $db->fetch_rows(
+                "SELECT
+                    a.corpus_id,
+                    u.user_id,
+                    u.login,
+                    u.screename,
+                    COUNT(*) AS events_count,
+                    MAX(a.datetime) AS last_activity
+                FROM activities a FORCE INDEX (activities_datetime_user_idx)
+                JOIN users u ON u.user_id = a.user_id
+                WHERE a.user_id IS NOT NULL
+                  AND a.datetime >= NOW() - INTERVAL " . self::ACTIVE_WEEK_DAYS . " DAY
+                  AND a.corpus_id IN ($placeholders)
+                GROUP BY a.corpus_id, u.user_id, u.login, u.screename
+                ORDER BY a.corpus_id ASC, events_count DESC, last_activity DESC, u.screename ASC",
+                $corpusIds
+            );
+
+            $usersByCorpus = array();
+            foreach ($userRows as $userRow) {
+                $corpusId = intval($userRow['corpus_id']);
+                if (!isset($usersByCorpus[$corpusId])) {
+                    $usersByCorpus[$corpusId] = array();
+                }
+                if (count($usersByCorpus[$corpusId]) >= 6) {
+                    continue;
+                }
+                $usersByCorpus[$corpusId][] = array(
+                    'user_id' => $userRow['user_id'],
+                    'login' => $userRow['login'],
+                    'screename' => $userRow['screename'],
+                    'events_count' => intval($userRow['events_count']),
+                    'last_activity' => $userRow['last_activity'],
+                );
+            }
+
+            foreach ($rows as &$row) {
+                $corpusId = intval($row['corpus_id']);
+                $row['active_users'] = isset($usersByCorpus[$corpusId]) ? $usersByCorpus[$corpusId] : array();
+            }
+            unset($row);
+        }
+
+        return array(
+            'rows' => $rows,
+            'max_events' => $maxEvents,
+        );
     }
 
     static function getAdminDashboardQueues()

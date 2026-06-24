@@ -47,7 +47,7 @@
             </div>
 
             <div class="row administration-activity-dashboard-grid">
-                <div class="col-md-7 administration-activity-dashboard-column">
+                <div class="col-md-6 administration-activity-dashboard-column">
                     <div class="panel panel-default administration-activity-dashboard-subpanel">
                         <div class="panel-heading administration-activity-dashboard-subheading">
                             <span><i class="fa fa-bar-chart" aria-hidden="true"></i> Activity in the last 24 hours</span>
@@ -71,7 +71,34 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 administration-activity-dashboard-column">
+                <div class="col-md-6 administration-activity-dashboard-column">
+                    <div class="panel panel-default administration-activity-dashboard-subpanel">
+                        <div class="panel-heading administration-activity-dashboard-subheading">
+                            <span><i class="fa fa-line-chart" aria-hidden="true"></i> Activity in the last 7 days</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="administration-activity-chart-legend">
+                                <span class="administration-activity-chart-legend-item"><span class="administration-activity-chart-legend-swatch administration-activity-chart-legend-swatch-events"></span> Events</span>
+                                <span class="administration-activity-chart-legend-item"><span class="administration-activity-chart-legend-swatch administration-activity-chart-legend-swatch-users"></span> Active users</span>
+                            </div>
+                            <div class="administration-activity-chart administration-activity-chart-week">
+                                {foreach from=$activity_dashboard_timeline_week.points item=point}
+                                    <div class="administration-activity-chart-column" title="{$point.full_label|escape}: {$point.events_count} events, {$point.users_count} users">
+                                        <div class="administration-activity-chart-bars">
+                                            <span class="administration-activity-chart-bar administration-activity-chart-bar-events" style="height:{$point.events_percent}%"></span>
+                                            <span class="administration-activity-chart-bar administration-activity-chart-bar-users" style="height:{$point.users_percent}%"></span>
+                                        </div>
+                                        <span class="administration-activity-chart-label">{$point.label}</span>
+                                    </div>
+                                {/foreach}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row administration-activity-dashboard-grid">
+                <div class="col-md-12 administration-activity-dashboard-column">
                     <div class="panel panel-default administration-activity-dashboard-subpanel">
                         <div class="panel-heading administration-activity-dashboard-subheading">
                             <span><i class="fa fa-users" aria-hidden="true"></i> Active users</span>
@@ -113,6 +140,47 @@
                                     {/if}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row administration-activity-dashboard-grid">
+                <div class="col-md-12 administration-activity-dashboard-column">
+                    <div class="panel panel-default administration-activity-dashboard-subpanel">
+                        <div class="panel-heading administration-activity-dashboard-subheading">
+                            <span><i class="fa fa-database" aria-hidden="true"></i> Most used corpora in the last 7 days</span>
+                        </div>
+                        <div class="panel-body">
+                            <p class="administration-activity-dashboard-queue-intro">This ranking shows which corpora generated the most recorded activity events during the last week.</p>
+                            <div class="administration-activity-corpora-chart">
+                                {foreach from=$activity_dashboard_top_corpora.rows item=corpus}
+                                    <div class="administration-activity-corpora-row" title="{$corpus.corpus_name|escape}: {$corpus.events_count} events, {$corpus.users_count} active users">
+                                        <div class="administration-activity-corpora-meta">
+                                            <span class="administration-activity-corpora-name">{$corpus.corpus_name|escape}</span>
+                                            <span class="administration-activity-corpora-stats">{$corpus.events_count} events · {$corpus.users_count} users</span>
+                                            {if $corpus.active_users|@count > 0}
+                                                <div class="administration-activity-corpora-users">
+                                                    {foreach from=$corpus.active_users item=corpus_user}
+                                                        <span class="administration-activity-corpora-user" title="{$corpus_user.screename|escape} ({$corpus_user.login|escape}) · {$corpus_user.events_count} events">
+                                                            {$corpus_user.screename|escape}
+                                                        </span>
+                                                    {/foreach}
+                                                </div>
+                                            {/if}
+                                        </div>
+                                        <div class="administration-activity-corpora-bar-track">
+                                            <span class="administration-activity-corpora-bar" style="width:{$corpus.events_percent}%"></span>
+                                        </div>
+                                    </div>
+                                {/foreach}
+                                {if $activity_dashboard_top_corpora.rows|@count==0}
+                                    <div class="home-corpora-empty">
+                                        <i class="fa fa-database" aria-hidden="true"></i>
+                                        <span>No corpus activity was recorded during the last 7 days.</span>
+                                    </div>
+                                {/if}
                             </div>
                         </div>
                     </div>
