@@ -1261,3 +1261,5 @@ SET SESSION sql_mode = @tasks_old_sql_mode;
 --changeset tn:48
 ALTER TABLE `tasks_reports`
     MODIFY COLUMN `status` enum('new','process','done','error','canceled') CHARACTER SET utf8 NOT NULL;
+
+INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`) VALUES ('document_annotation_categories', 'Document annotation categories', 'Assign annotation categories to a whole document.', '26');

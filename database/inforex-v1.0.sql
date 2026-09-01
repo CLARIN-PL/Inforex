@@ -484,6 +484,34 @@ LOCK TABLES `corpus_and_report_perspectives` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `corpus_report_perspective_annotation_sets`
+--
+
+DROP TABLE IF EXISTS `corpus_report_perspective_annotation_sets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `corpus_report_perspective_annotation_sets` (
+  `corpus_id` int(11) NOT NULL,
+  `perspective_id` varchar(32) CHARACTER SET utf8 NOT NULL,
+  `annotation_set_id` int(11) NOT NULL,
+  UNIQUE KEY `corpus_perspective_annotation_set_unique` (`corpus_id`,`perspective_id`,`annotation_set_id`),
+  KEY `annotation_set_id` (`annotation_set_id`),
+  KEY `perspective_id` (`perspective_id`),
+  CONSTRAINT `corpus_report_perspective_annotation_sets_ibfk_1` FOREIGN KEY (`corpus_id`) REFERENCES `corpora` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `corpus_report_perspective_annotation_sets_ibfk_2` FOREIGN KEY (`perspective_id`) REFERENCES `report_perspectives` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `corpus_report_perspective_annotation_sets_ibfk_3` FOREIGN KEY (`annotation_set_id`) REFERENCES `annotation_sets` (`annotation_set_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `corpus_report_perspective_annotation_sets`
+--
+
+LOCK TABLES `corpus_report_perspective_annotation_sets` WRITE;
+/*!40000 ALTER TABLE `corpus_report_perspective_annotation_sets` DISABLE KEYS */;
+/*!40000 ALTER TABLE `corpus_report_perspective_annotation_sets` ENABLE KEYS */;
+UNLOCK TABLES;
+--
 -- Table structure for table `corpus_event_groups`
 --
 
@@ -1027,7 +1055,7 @@ CREATE TABLE `report_perspectives` (
 
 LOCK TABLES `report_perspectives` WRITE;
 /*!40000 ALTER TABLE `report_perspectives` DISABLE KEYS */;
-INSERT INTO `report_perspectives` VALUES ('agreement','Agreement','',10),('anaphora','Anaphora Viewer','Show anaphora relations.',51),('annotation_lemma','Annotation lemmas','Allows to edit lemmas for existing annotations.',100),('annotator','Annotator','Show and edit document annotations, relations and events.',40),('annotatorwsd','WSD','Show and edit WSD annotation senses.',85),('annotator_anaphora','Anaphora','Show and edit anaphora relations.',50),('autoextension','Bootstrapping','Verify automaticaly added annotations.',78),('cleanup','Content cleanup','Display document content along with it\'s sources.',22),('diffs','History','Show history of document content changes.',75),('edit','Content','Show and edit document content.',20),('edittranslation','Edit translation','Edit document translation',320),('extendedmetadata','Extended metadata','Metadata including translations, images and document content.',325),('flag_history','Flag history','Show the history of flag changes.',320),('images','Images','Manage images attached to the document.',200),('importannotations','Import annotations','Import annotations from a .CCL file.',150),('metadata','Metadata','Show and edit document metadata.',10),('morphodisamb','Morphological Disambiguation','Show and edit user morphological disamgibuations',300),('morphodisambagreement','Morph. Agreement','Show and edit final morphological disambiguations',310),('preview','Preview','Show document content as formated and raw content.',0),('relation_agreement','Relation agreement','',11),('tokenization','Tokenization','Displays current document tokenization and allows to perform new tokenization by uploading a ccl file or by a web service.',100),('topic','Topic','Edit document topic categorization.',25),('transcription','Transcription','Show images and edit document content with a toolbox.',10),('viewer','Content Viewer','Display document content with hidden sensitive information.',0);
+INSERT INTO `report_perspectives` VALUES ('agreement','Agreement','',10),('anaphora','Anaphora Viewer','Show anaphora relations.',51),('annotation_lemma','Annotation lemmas','Allows to edit lemmas for existing annotations.',100),('annotator','Annotator','Show and edit document annotations, relations and events.',40),('annotatorwsd','WSD','Show and edit WSD annotation senses.',85),('annotator_anaphora','Anaphora','Show and edit anaphora relations.',50),('autoextension','Bootstrapping','Verify automaticaly added annotations.',78),('cleanup','Content cleanup','Display document content along with it\'s sources.',22),('diffs','History','Show history of document content changes.',75),('document_annotation_categories','Document annotation categories','Assign annotation categories to a whole document.',26),('edit','Content','Show and edit document content.',20),('edittranslation','Edit translation','Edit document translation',320),('extendedmetadata','Extended metadata','Metadata including translations, images and document content.',325),('flag_history','Flag history','Show the history of flag changes.',320),('images','Images','Manage images attached to the document.',200),('importannotations','Import annotations','Import annotations from a .CCL file.',150),('metadata','Metadata','Show and edit document metadata.',10),('morphodisamb','Morphological Disambiguation','Show and edit user morphological disamgibuations',300),('morphodisambagreement','Morph. Agreement','Show and edit final morphological disambiguations',310),('preview','Preview','Show document content as formated and raw content.',0),('relation_agreement','Relation agreement','',11),('tokenization','Tokenization','Displays current document tokenization and allows to perform new tokenization by uploading a ccl file or by a web service.',100),('topic','Topic','Edit document topic categorization.',25),('transcription','Transcription','Show images and edit document content with a toolbox.',10),('viewer','Content Viewer','Display document content with hidden sensitive information.',0);
 /*!40000 ALTER TABLE `report_perspectives` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1268,6 +1296,35 @@ LOCK TABLES `reports_annotations_shared_attributes` WRITE;
 /*!40000 ALTER TABLE `reports_annotations_shared_attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Table structure for table `reports_document_annotation_types`
+--
+
+DROP TABLE IF EXISTS `reports_document_annotation_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `reports_document_annotation_types` (
+  `report_id` bigint(20) NOT NULL,
+  `annotation_type_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `creation_time` datetime NOT NULL,
+  UNIQUE KEY `reports_document_annotation_type_unique` (`report_id`,`annotation_type_id`),
+  KEY `annotation_type_id` (`annotation_type_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `reports_document_annotation_types_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `reports` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `reports_document_annotation_types_ibfk_2` FOREIGN KEY (`annotation_type_id`) REFERENCES `annotation_types` (`annotation_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `reports_document_annotation_types_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reports_document_annotation_types`
+--
+
+LOCK TABLES `reports_document_annotation_types` WRITE;
+/*!40000 ALTER TABLE `reports_document_annotation_types` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reports_document_annotation_types` ENABLE KEYS */;
+UNLOCK TABLES;
 --
 -- Table structure for table `reports_diffs`
 --

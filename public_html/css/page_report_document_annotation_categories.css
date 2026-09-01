@@ -1,0 +1,132 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.report-document-annotation-categories-panel.administration-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-document-annotation-categories-body {
+    padding: 0;
+}
+
+.report-document-annotation-categories-toolbar {
+    align-items: center;
+    border-bottom: 1px solid #dbe7ed;
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+}
+
+.report-document-annotation-categories-status {
+    font-size: 11px;
+}
+
+.report-document-annotation-categories-selected {
+    background: #fbfdfe;
+    border-bottom: 1px solid #dbe7ed;
+    padding: 10px 12px;
+}
+
+.report-document-annotation-categories-selected-title,
+.report-document-annotation-categories-set-title,
+.report-document-annotation-categories-subset-title {
+    color: #23414f;
+    font-weight: 700;
+}
+
+.report-document-annotation-categories-selected-list,
+.report-document-annotation-categories-type-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+}
+
+.report-document-annotation-categories-selected-list li + li,
+.report-document-annotation-categories-type-list li + li {
+    margin-top: 6px;
+}
+
+.report-document-annotation-categories-selected-set,
+.report-document-annotation-categories-selected-subset,
+.report-document-annotation-categories-selected-type {
+    font-size: 11px;
+}
+
+.report-document-annotation-categories-selected-separator {
+    color: #7d98a4;
+    margin: 0 4px;
+}
+
+.report-document-annotation-categories-empty-hidden {
+    display: none;
+}
+
+.report-document-annotation-categories-list-wrapper {
+    background: #fbfdfe;
+    min-height: calc(100vh - 320px);
+    padding: 10px 12px 14px;
+}
+
+.report-document-annotation-categories-set + .report-document-annotation-categories-set {
+    margin-top: 14px;
+}
+
+.report-document-annotation-categories-set {
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.report-document-annotation-categories-set-description,
+.report-document-annotation-categories-subset-description,
+.report-document-annotation-categories-type-description,
+.report-document-annotation-categories-empty {
+    color: #58707b;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.report-document-annotation-categories-subset {
+    border-top: 1px solid #e6eef2;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.report-document-annotation-categories-type-option {
+    align-items: flex-start;
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+    margin: 0;
+}
+
+.report-document-annotation-categories-type-option input {
+    margin-top: 2px;
+}
+
+.report-document-annotation-categories-type-copy {
+    display: block;
+}
+
+.report-document-annotation-categories-type-name {
+    color: #173847;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+@media (max-width: 991px) {
+    .report-document-annotation-categories-list-wrapper {
+        min-height: auto;
+    }
+
+    .report-document-annotation-categories-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

@@ -146,6 +146,10 @@ class Page_report extends CPageCorpus {
 	 	
 		// Load and execute the perspective 
 		$perspective_class_name = "Perspective".ucfirst($subpage);
+		$perspective_file = Config::Cfg()->get_path_engine() . "/page/report_perspectives/" . $perspective_class_name . ".php";
+		if (!class_exists($perspective_class_name, false) && file_exists($perspective_file)) {
+			require_once($perspective_file);
+		}
 
 		if (class_exists($perspective_class_name)){
 			$perspective = new $perspective_class_name($this, $row);
