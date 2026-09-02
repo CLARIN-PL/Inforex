@@ -26,19 +26,23 @@
             <span>Document annotation categories</span>
         </div>
         <div class="panel-body report-viewer-content-body report-topic-sidebar-body report-document-annotation-categories-body">
-            <form method="POST" class="report-document-annotation-categories-form">
+            <form method="POST" class="report-document-annotation-categories-form" onsubmit="return false;">
                 <input type="hidden" name="action" value="document_annotation_categories_save"/>
                 <input type="hidden" name="report_id" value="{$row.id}"/>
 
                 <div class="report-document-annotation-categories-toolbar">
-                    <button type="submit" class="btn btn-primary report-document-annotation-categories-save" id="documentAnnotationCategoriesSave" disabled="disabled">
-                        <i class="fa fa-save" aria-hidden="true"></i> Save
-                    </button>
-                    <span class="report-document-annotation-categories-status text-muted" id="documentAnnotationCategoriesStatus">No unsaved changes</span>
+                    <div class="report-document-annotation-categories-toolbar-copy">
+                        <div class="report-document-annotation-categories-toolbar-title">Whole-document categories</div>
+                        <div class="report-document-annotation-categories-toolbar-help">Selections are saved automatically after each checkbox change.</div>
+                    </div>
+                    <span class="report-document-annotation-categories-status text-muted is-saved" id="documentAnnotationCategoriesStatus">Saved</span>
                 </div>
 
                 <div class="report-document-annotation-categories-selected">
-                    <div class="report-document-annotation-categories-selected-title">Selected categories</div>
+                    <div class="report-document-annotation-categories-selected-header">
+                        <div class="report-document-annotation-categories-selected-title">Selected categories</div>
+                        <span class="report-document-annotation-categories-selected-count" id="documentAnnotationCategoriesSelectedCount">0</span>
+                    </div>
                     <ul class="report-document-annotation-categories-selected-list" id="documentAnnotationCategoriesSelectedList">
                         {foreach from=$document_annotation_category_selected item=selected}
                             <li>

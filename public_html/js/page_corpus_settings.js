@@ -164,7 +164,7 @@ $(function(){
     });
 
 
-    $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox, .create_metadata_null, .edit_metadata_null)").click(function(e){
+    $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox, .documentAnnotationPerspectiveSet, .create_metadata_null, .edit_metadata_null)").click(function(e){
         e.stopPropagation();
 		set($(this), $(window).scrollTop());
 	});

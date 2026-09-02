@@ -10,16 +10,35 @@ $(function(){
         return;
     }
 
+    $(window).off("beforeunload");
+    $(window).unbind("beforeunload");
+    window.onbeforeunload = null;
+
+    var url = $.url(window.location.href);
+    var corpusId = parseInt(url.param("corpus"), 10) || 0;
+    var reportId = parseInt($form.find("input[name=report_id]").val(), 10) || 0;
     var $checkboxes = $form.find(".document-annotation-category-checkbox");
-    var $saveButton = $("#documentAnnotationCategoriesSave");
     var $status = $("#documentAnnotationCategoriesStatus");
     var $selectedList = $("#documentAnnotationCategoriesSelectedList");
+    var $selectedCount = $("#documentAnnotationCategoriesSelectedCount");
     var $emptyState = $("#documentAnnotationCategoriesEmpty");
-    var isDirty = false;
+    var isSaving = false;
+    var saveQueued = false;
 
-    function updateState() {
-        $saveButton.prop("disabled", !isDirty);
-        $status.text(isDirty ? "Unsaved changes" : "No unsaved changes");
+    function getSelectedIds() {
+        var ids = [];
+        $checkboxes.filter(":checked").each(function(){
+            ids.push($(this).val());
+        });
+        return ids;
+    }
+
+    function updateStatus(text, stateClass) {
+        $status.removeClass("is-saved is-saving is-error");
+        if (stateClass) {
+            $status.addClass(stateClass);
+        }
+        $status.text(text);
     }
 
     function renderSelected() {
@@ -43,26 +62,53 @@ $(function(){
         });
 
         $selectedList.html(items.join(""));
+        $selectedCount.text(items.length);
         $emptyState.toggleClass("report-document-annotation-categories-empty-hidden", items.length > 0);
     }
 
-    $checkboxes.on("change", function(){
-        isDirty = true;
-        renderSelected();
-        updateState();
-    });
+    function setSavingState(saving) {
+        isSaving = saving;
+        $checkboxes.prop("disabled", saving);
+        updateStatus(saving ? "Saving..." : "Saved", saving ? "is-saving" : "is-saved");
+    }
 
-    $form.on("submit", function(){
-        isDirty = false;
-        updateState();
-    });
-
-    $(window).on("beforeunload", function(){
-        if (isDirty) {
-            return "You have unsaved changes.";
+    function saveSelection() {
+        if (isSaving) {
+            saveQueued = true;
+            return;
         }
+
+        setSavingState(true);
+        saveQueued = false;
+
+        doAjax(
+            "document_annotation_categories_save",
+            {
+                report_id: reportId,
+                corpus_id: corpusId,
+                annotation_type_ids: getSelectedIds()
+            },
+            function() {
+                setSavingState(false);
+                if (saveQueued) {
+                    saveSelection();
+                }
+            },
+            function() {
+                setSavingState(false);
+                updateStatus("Save failed", "is-error");
+            }
+        );
+    }
+
+    $checkboxes.off("change");
+    $form.off("submit");
+
+    $checkboxes.on("change", function(){
+        renderSelected();
+        saveSelection();
     });
 
     renderSelected();
-    updateState();
+    updateStatus("Saved", "is-saved");
 });

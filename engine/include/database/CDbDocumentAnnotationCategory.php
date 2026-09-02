@@ -6,6 +6,8 @@
  * See LICENCE
  */
 
+require_once dirname(__FILE__) . '/CDbAnnotationSet.php';
+
 class DbDocumentAnnotationCategory {
 
     const PERSPECTIVE_ID = 'document_annotation_categories';

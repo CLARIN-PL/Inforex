@@ -170,7 +170,11 @@ class Page_report extends CPageCorpus {
 		 * css/page_report_{$subpage}.css — style CSS występujące tylko w danej perspektywie.
 		 */
 		if (file_exists(Config::Cfg()->get_path_www() . "/js/page_report_{$subpage}.js")){
-			$this->includeJs("js/page_report_{$subpage}.js");
+			$jsPath = "js/page_report_{$subpage}.js";
+			if ($subpage === 'document_annotation_categories') {
+				$jsPath .= '?v=20260902-autosave-2';
+			}
+			$this->includeJs($jsPath);
 		}
 		if (file_exists(Config::Cfg()->get_path_www() . "/js/page_report_{$subpage}_resize.js")){
 			$this->includeJs("js/page_report_{$subpage}_resize.js");

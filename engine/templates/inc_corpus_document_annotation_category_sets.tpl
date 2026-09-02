@@ -8,7 +8,7 @@
 <div class="container-fluid admin_tables corpus-settings-annotation-sets">
     <div class="row corpus-settings-annotation-sets-grid">
         <div class="col-md-10 col-md-offset-1 corpus-settings-annotation-sets-column">
-            <form method="POST" class="panel administration-content-panel corpus-settings-annotation-sets-panel">
+            <form method="POST" class="panel administration-content-panel corpus-settings-annotation-sets-panel document-annotation-category-sets-form">
                 <input type="hidden" name="action" value="document_annotation_category_sets_save"/>
                 <div class="panel-heading administration-content-heading">
                     <span class="administration-content-heading-icon"><i class="fa fa-tags" aria-hidden="true"></i></span>
@@ -52,9 +52,10 @@
                     </div>
                 </div>
                 <div class="panel-footer administration-content-footer">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary document-annotation-category-sets-save" disabled="disabled">
                         <i class="fa fa-save" aria-hidden="true"></i> Save configuration
                     </button>
+                    <span class="document-annotation-category-sets-status text-muted" style="margin-left: 10px;">No unsaved changes</span>
                 </div>
             </form>
         </div>
