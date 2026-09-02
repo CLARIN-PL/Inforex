@@ -143,6 +143,8 @@ class Page_report extends CPageCorpus {
 		
 		$this->set('subpages', $subpages);
 		$this->set('report_id',$id);
+		$this->set('subpage', $subpage);
+		$this->set('subpage_file', "inc_report_".strtolower($subpage).".tpl");
 	 	
 		// Load and execute the perspective 
 		$perspective_class_name = "Perspective".ucfirst($subpage);
@@ -177,8 +179,6 @@ class Page_report extends CPageCorpus {
 			$this->includeCss("css/page_report_{$subpage}.css");
 		}
 		
-		$this->set('subpage', $subpage);
-		$this->set('subpage_file', "inc_report_".strtolower($subpage).".tpl");
 		$this->set('flags_active', isset($_COOKIE['flags_active']) ? $_COOKIE['flags_active'] : "1");
         $this->set('config_active', isset($_COOKIE['config_active']) ? $_COOKIE['config_active'] : "1");
 
