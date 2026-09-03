@@ -1259,6 +1259,7 @@ ALTER TABLE `tasks`
 SET SESSION sql_mode = @tasks_old_sql_mode;
 
 --changeset tn:48
+--validCheckSum 7:cbc0e516d3f82d506bedec1e576569dd
 ALTER TABLE `tasks_reports`
     MODIFY COLUMN `status` enum('new','process','done','error','canceled') CHARACTER SET utf8 NOT NULL;
 
