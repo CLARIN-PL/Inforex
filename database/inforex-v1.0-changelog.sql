@@ -1295,3 +1295,9 @@ CREATE TABLE `reports_document_annotation_types` (
   CONSTRAINT `reports_document_annotation_types_ibfk_2` FOREIGN KEY (`annotation_type_id`) REFERENCES `annotation_types` (`annotation_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `reports_document_annotation_types_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--changeset tn:51
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM report_perspectives WHERE id = 'document_annotation_categories'
+INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`)
+VALUES ('document_annotation_categories', 'Document annotation categories', 'Assign annotation categories to a whole document.', '26');
