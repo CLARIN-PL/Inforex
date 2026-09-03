@@ -1,0 +1,287 @@
+#main-content > .container-fluid {
+    background: linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+    padding: 5px 12px 14px;
+}
+
+.report-document-annotation-categories-panel.administration-content-panel {
+    border-radius: 0 12px 12px 12px;
+    margin: 0 0 10px;
+}
+
+.report-document-annotation-categories-body {
+    padding: 0;
+}
+
+.report-document-annotation-categories-toolbar {
+    align-items: center;
+    background: linear-gradient(180deg, #f8fbfd 0%, #f1f7fa 100%);
+    border-bottom: 1px solid #dbe7ed;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 12px;
+}
+
+.report-document-annotation-categories-toolbar-title {
+    color: #1f4050;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.report-document-annotation-categories-toolbar-help {
+    color: #66808c;
+    font-size: 11px;
+    line-height: 1.4;
+    margin-top: 3px;
+}
+
+.report-document-annotation-categories-status {
+    border: 1px solid #d1dee5;
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 84px;
+    padding: 5px 10px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.report-document-annotation-categories-status.is-saved {
+    background: #edf8f1;
+    border-color: #b9dec5;
+    color: #2d6b45;
+}
+
+.report-document-annotation-categories-status.is-saving {
+    background: #eef6fb;
+    border-color: #b8d4e3;
+    color: #215a78;
+}
+
+.report-document-annotation-categories-status.is-error {
+    background: #fff1f1;
+    border-color: #e2b8b8;
+    color: #8e3b3b;
+}
+
+.report-document-annotation-categories-selected {
+    background: #fbfdfe;
+    border-bottom: 1px solid #dbe7ed;
+    padding: 12px;
+}
+
+.report-document-annotation-categories-selected-header {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.report-document-annotation-categories-selected-title,
+.report-document-annotation-categories-set-title,
+.report-document-annotation-categories-subset-title {
+    color: #23414f;
+    font-weight: 700;
+}
+
+.report-document-annotation-categories-selected-count {
+    background: #e4f0f5;
+    border-radius: 999px;
+    color: #315364;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 24px;
+    padding: 3px 8px;
+    text-align: center;
+}
+
+.report-document-annotation-categories-selected-list,
+.report-document-annotation-categories-type-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+}
+
+.report-document-annotation-categories-selected-list li {
+    background: linear-gradient(180deg, #f5fbfe 0%, #edf7fb 100%);
+    border: 1px solid #bdd7e2;
+    border-left: 4px solid #4e93b0;
+    border-radius: 7px;
+    box-shadow: inset 0 0 0 1px rgba(58, 122, 150, 0.05);
+    color: #214555;
+    line-height: 1.35;
+    padding: 7px 9px;
+}
+
+.report-document-annotation-categories-selected-list li + li,
+.report-document-annotation-categories-type-list li + li {
+    margin-top: 6px;
+}
+
+.report-document-annotation-categories-selected-set,
+.report-document-annotation-categories-selected-subset,
+.report-document-annotation-categories-selected-type {
+    font-size: 11px;
+}
+
+.report-document-annotation-categories-selected-type {
+    font-weight: 700;
+}
+
+.report-document-annotation-categories-selected-separator {
+    color: #7d98a4;
+    margin: 0 4px;
+}
+
+.report-document-annotation-categories-empty-hidden {
+    display: none;
+}
+
+.report-document-annotation-categories-list-wrapper {
+    background: #fbfdfe;
+    min-height: calc(100vh - 320px);
+    padding: 12px;
+    scrollbar-color: #a9c9d4 #edf5f8;
+    scrollbar-width: thin;
+}
+
+.report-document-annotation-categories-list-wrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.report-document-annotation-categories-list-wrapper::-webkit-scrollbar-track {
+    background: #edf5f8;
+    border-radius: 8px;
+}
+
+.report-document-annotation-categories-list-wrapper::-webkit-scrollbar-thumb {
+    background: #a9c9d4;
+    border: 2px solid #edf5f8;
+    border-radius: 8px;
+}
+
+.report-document-annotation-categories-set + .report-document-annotation-categories-set {
+    margin-top: 14px;
+}
+
+.report-document-annotation-categories-set {
+    background: #ffffff;
+    border: 1px solid #d8e4eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 0 rgba(20, 56, 72, 0.04);
+    overflow: hidden;
+}
+
+.report-document-annotation-categories-set-title {
+    background: linear-gradient(180deg, #f8fbfd 0%, #f1f7fa 100%);
+    border-bottom: 1px solid #e0ebf0;
+    padding: 10px 12px 4px;
+}
+
+.report-document-annotation-categories-set-description {
+    padding: 0 12px 10px;
+}
+
+.report-document-annotation-categories-set-description,
+.report-document-annotation-categories-subset-description,
+.report-document-annotation-categories-type-description,
+.report-document-annotation-categories-empty {
+    color: #58707b;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.report-document-annotation-categories-subset {
+    border-top: 1px solid #e8f0f4;
+    padding: 10px 12px 12px;
+}
+
+.report-document-annotation-categories-subset:first-of-type {
+    border-top: 0;
+}
+
+.report-document-annotation-categories-subset-title {
+    font-size: 12px;
+}
+
+.report-document-annotation-categories-subset-description {
+    margin-top: 3px;
+}
+
+.report-document-annotation-categories-type-option {
+    align-items: flex-start;
+    background: #ffffff;
+    border: 1px solid #dce8ee;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    padding: 8px 9px;
+    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.report-document-annotation-categories-type-option:hover,
+.report-document-annotation-categories-type-option:focus-within {
+    background: #f4fafc;
+    border-color: #bdd7e2;
+    box-shadow: inset 0 0 0 1px rgba(39, 92, 118, 0.05);
+}
+
+.report-document-annotation-categories-type-option input {
+    accent-color: #3c88a8;
+    margin-top: 2px;
+}
+
+.report-document-annotation-categories-type-option input:checked + .report-document-annotation-categories-type-copy {
+    color: #173847;
+}
+
+.report-document-annotation-categories-type-option:has(input:checked) {
+    background: linear-gradient(180deg, #e9f5fa 0%, #def0f7 100%);
+    border-color: #8ebed0;
+    box-shadow: inset 0 0 0 1px rgba(49, 112, 141, 0.08);
+}
+
+.report-document-annotation-categories-type-option:has(input:checked) .report-document-annotation-categories-type-name {
+    color: #0f4d67;
+}
+
+.report-document-annotation-categories-type-option:has(input:checked) .report-document-annotation-categories-type-description {
+    color: #456977;
+}
+
+.report-document-annotation-categories-type-copy {
+    display: block;
+    flex: 1;
+}
+
+.report-document-annotation-categories-type-name {
+    color: #173847;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 6px;
+}
+
+.report-document-annotation-categories-empty {
+    background: #ffffff;
+    border: 1px dashed #c6d9e2;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+@media (max-width: 991px) {
+    .report-document-annotation-categories-list-wrapper {
+        min-height: auto;
+    }
+
+    .report-document-annotation-categories-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

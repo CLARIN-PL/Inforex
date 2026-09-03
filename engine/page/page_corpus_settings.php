@@ -18,6 +18,7 @@ class Page_corpus_settings extends CPageCorpus{
 			"flags" => "Flags",
 			"relation_sets" => "Relation sets",
 			"annotation_sets" => "Annotation sets",
+            "document_annotation_category_sets" => "Document annotation categories",
             "custom_annotation_sets" => "Custom annotation sets",
 			"event_groups" => "Event groups",
 			"corpus_metadata" => "Metadata");
@@ -47,6 +48,10 @@ class Page_corpus_settings extends CPageCorpus{
 		$this->set('subpages', $this->subpages);
 
         $perspective_class_name = "Perspective".ucfirst($subpage);
+        $perspective_file = Config::Cfg()->get_path_engine() . "/page/corpus_perspectives/" . $perspective_class_name . ".php";
+        if (!class_exists($perspective_class_name, false) && file_exists($perspective_file)) {
+            require_once($perspective_file);
+        }
         if (class_exists($perspective_class_name)){
             $perspective = new $perspective_class_name($this);
             $perspective->execute();
