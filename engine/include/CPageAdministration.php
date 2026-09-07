@@ -24,6 +24,7 @@ class CPageAdministration extends CPage {
         $pages[] = array("name" => "administration_users", "title"=>"Users", "icon"=>"fa-users");
         $pages[] = array("name" => "administration_annotation_schema", "title"=>"Annotation schema", "icon"=>"fa-tags");
         $pages[] = array("name" => "administration_annotation_shared_attributes", "title"=>"Annotation shared attributes", "icon"=>"fa-share-alt");
+        $pages[] = array("name" => "administration_annotation_attribute_bindings", "title"=>"Annotation attribute bindings", "icon"=>"fa-link");
         $pages[] = array("name" => "administration_relation_schema", "title"=>"Relation schema", "icon"=>"fa-random");
         $pages[] = array("name" => "administration_frame_schema", "title"=>"Frame schema", "icon"=>"fa-object-group");
         $pages[] = array("name" => "administration_wsd_schema", "title"=>"WSD schema", "icon"=>"fa-sitemap");

@@ -1301,3 +1301,21 @@ CREATE TABLE `reports_document_annotation_types` (
 --precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM report_perspectives WHERE id = 'document_annotation_categories'
 INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`)
 VALUES ('document_annotation_categories', 'Document annotation categories', 'Assign annotation categories to a whole document.', '26');
+
+--changeset tn:52
+--preconditions onFail:MARK_RAN
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'annotation_types_shared_attributes' AND INDEX_NAME = 'annotation_types_shared_attributes_unique'
+CREATE TEMPORARY TABLE annotation_types_shared_attributes_deduplicated AS
+SELECT DISTINCT annotation_type_id, shared_attribute_id
+FROM annotation_types_shared_attributes;
+
+DELETE FROM annotation_types_shared_attributes;
+
+INSERT INTO annotation_types_shared_attributes (annotation_type_id, shared_attribute_id)
+SELECT annotation_type_id, shared_attribute_id
+FROM annotation_types_shared_attributes_deduplicated;
+
+DROP TEMPORARY TABLE annotation_types_shared_attributes_deduplicated;
+
+ALTER TABLE annotation_types_shared_attributes
+    ADD UNIQUE INDEX annotation_types_shared_attributes_unique (annotation_type_id, shared_attribute_id);
