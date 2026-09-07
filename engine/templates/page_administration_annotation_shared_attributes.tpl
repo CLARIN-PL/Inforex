@@ -28,7 +28,7 @@
                         </tr>
                         </thead>
                         <tbody>
-			{if isset($sharedAttributes)}
+                        {if isset($sharedAttributes)}
                         {foreach from=$sharedAttributes item=shared_attribute}
                             <tr>
                                 <td class="num">{$shared_attribute.id}</td>
@@ -37,14 +37,13 @@
                                 <td><div class="administration-description-preview" title="{$shared_attribute.description|escape}">{$shared_attribute.description}</div></td>
                             </tr>
                         {/foreach}
-			{/if}
+                        {/if}
                         </tbody>
                     </table>
                 </div>
                 <div class="panel-footer administration-content-footer administration-shared-footer" element="annotation_subset" parent="annotationSetsContainer">
-                    <button type = "button" id="create_shared_attribute"  class = "btn btn-primary create">Create</button>
-                    <button type = "button" id="manage_annotations"  class = "btn btn-primary manage" disabled="disabled">Manage annotations</button>
-                    <button id="delete_shared_attribute" type = "button" class = "btn btn-danger delete" disabled="disabled">Delete</button>
+                    <button type="button" id="create_shared_attribute" class="btn btn-primary create">Create</button>
+                    <button id="delete_shared_attribute" type="button" class="btn btn-danger delete" disabled="disabled">Delete</button>
                 </div>
             </div>
         </div>
@@ -79,54 +78,6 @@
     </div>
 </div>
 
-        {*
-            <div class="panel panel-primary tableContainer" id="annotationTypesAttachedContainer" style="margin: 5px;">
-                <div class="panel-heading">Annotation types attached</div>
-                <div class="panel-body">
-                    <div class="tableContent scrolling">
-                        <table id="annotationTypesAttachedTable" class="table table-striped" cellspacing="1">
-                            <thead>
-                                <tr>
-                                    <th>id</th>
-                                    <th>name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <button id="move_detach" type = "button" class = "btn btn-primary move unassign"> >>> </button>
-                </div>
-            </div>
-        </div>
-*}
-
-        {*
-                    <div class="panel panel-primary tableContainer" id="annotationTypesDetachedContainer" style="margin: 5px; visibility: visible;">
-                        <div class="panel-heading">Annotation types detached</div>
-                        <div class="panel-body">
-                            <div class="tableContent scrolling">
-                                <table id="annotationTypesDetachedTable" class="table table-striped" cellspacing="1">
-                                    <thead>
-                                    <tr>
-                                        <th>id</th>
-                                        <th>name</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="panel-footer">
-                            <button id="move_attach" type = "button" class = "btn btn-primary"> <<< </button>
-                        </div>
-                    </div>
-                </div>
-        *}
-
 <div class="modal fade settingsModal administration-form-modal" id="create_shared_attribute_modal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -135,21 +86,21 @@
                 <h4 class="modal-title"><i class="fa fa-share-alt" aria-hidden="true"></i> Create shared attribute</h4>
             </div>
             <div class="modal-body">
-                <form id = "create_shared_attribute_form">
+                <form id="create_shared_attribute_form">
                     <div class="form-group">
-                        <label for="create_shared_attribute_name">Name: <span class = "required_field">*</span></label>
-                        <input class="form-control" name = "create_shared_attribute_name" id="create_shared_attribute_name">
+                        <label for="create_shared_attribute_name">Name: <span class="required_field">*</span></label>
+                        <input class="form-control" name="create_shared_attribute_name" id="create_shared_attribute_name">
                     </div>
                     <div class="form-group">
                         <label for="create_shared_attribute_type">Type: </label>
-                        <select class="form-control" name = "create_shared_attribute_type" id="create_shared_attribute_type">
-                            <option value = "string">string</option>
-                            <option value = "enum">enum</option>
+                        <select class="form-control" name="create_shared_attribute_type" id="create_shared_attribute_type">
+                            <option value="string">string</option>
+                            <option value="enum">enum</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="create_shared_attribute_description">Description: </label>
-                        <input class="form-control" name = "create_shared_attribute_description" id="create_shared_attribute_description">
+                        <input class="form-control" name="create_shared_attribute_description" id="create_shared_attribute_description">
                     </div>
                 </form>
             </div>
@@ -169,14 +120,14 @@
                 <h4 class="modal-title"><i class="fa fa-list-ul" aria-hidden="true"></i> Create shared attribute value</h4>
             </div>
             <div class="modal-body">
-                <form id = "create_shared_attribute_enum_form">
+                <form id="create_shared_attribute_enum_form">
                     <div class="form-group">
-                        <label for="create_shared_attribute_enum_value">Name: <span class = "required_field">*</span></label>
-                        <input class="form-control" name = "create_shared_attribute_enum_value" id="create_shared_attribute_enum_value">
+                        <label for="create_shared_attribute_enum_value">Name: <span class="required_field">*</span></label>
+                        <input class="form-control" name="create_shared_attribute_enum_value" id="create_shared_attribute_enum_value">
                     </div>
                     <div class="form-group">
                         <label for="create_shared_attribute_enum_description">Description: </label>
-                        <input class="form-control" name = "create_shared_attribute_enum_description" id="create_shared_attribute_enum_description">
+                        <input class="form-control" name="create_shared_attribute_enum_description" id="create_shared_attribute_enum_description">
                     </div>
                 </form>
             </div>
@@ -196,14 +147,14 @@
                 <h4 class="modal-title"><i class="fa fa-pencil" aria-hidden="true"></i> Edit shared attribute value</h4>
             </div>
             <div class="modal-body">
-                <form id = "edit_shared_attribute_enum_form">
+                <form id="edit_shared_attribute_enum_form">
                     <input type="hidden" name="edit_shared_attribute_id"/>
                     <div class="form-group">
-                        <label for="create_shared_attribute_enum_value">Old name: <span class = "required_field"></span></label>
+                        <label for="create_shared_attribute_enum_value">Old name: <span class="required_field"></span></label>
                         <input class="form-control" name="edit_shared_attribute_enum_old_value" readonly="readonly">
                     </div>
                     <div class="form-group">
-                        <label for="create_shared_attribute_enum_value">New name: <span class = "required_field"></span></label>
+                        <label for="create_shared_attribute_enum_value">New name: <span class="required_field"></span></label>
                         <input class="form-control" name="edit_shared_attribute_enum_new_value">
                     </div>
                     <div class="form-group">

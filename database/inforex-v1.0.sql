@@ -284,6 +284,7 @@ DROP TABLE IF EXISTS `annotation_types_shared_attributes`;
 CREATE TABLE `annotation_types_shared_attributes` (
   `annotation_type_id` int(11) NOT NULL,
   `shared_attribute_id` int(11) NOT NULL,
+  UNIQUE KEY `annotation_types_shared_attributes_unique` (`annotation_type_id`,`shared_attribute_id`),
   KEY `annotation_type_id` (`annotation_type_id`),
   KEY `shared_attribute_id` (`shared_attribute_id`),
   CONSTRAINT `annotation_types_shared_attributes_ibfk_1` FOREIGN KEY (`shared_attribute_id`) REFERENCES `shared_attributes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
