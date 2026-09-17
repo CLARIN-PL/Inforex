@@ -9,51 +9,62 @@ function generateErrorModal(error_heading, error_msg, error_code, errorCallback)
         $(".ajax-error-modal-details-label").hide();
     }
     $("#ajax_error_message_code").scrollTop(0);
-    $("#ajax_error_modal").modal()
+    $("#ajax_access_error_modal").modal('hide');
+    $("#ajax_error_modal").modal();
     if (errorCallback != null ){
         errorCallback();
     }
 }
 
-function copyAjaxErrorToClipboard(){
-    var heading = $("#ajax_error_heading").text() || '';
-    var details = $("#ajax_error_message_code").text() || '';
-    var text = heading;
-    if (details) {
-        text += "\n\n" + details;
-    }
+function copyAjaxErrorToClipboard(button){
+    var $button = button ? $(button) : $('.ajax_error_modal.in:visible .ajax-error-copy-button').first();
+    var $modal = $button.closest('.ajax_error_modal');
+    // Read the dialog that was clicked, including roles for an access error.
+    var text = $modal.find('.ajax-error-modal-card').text().trim();
 
     var onSuccess = function(){
-        var $button = $(".ajax_error_modal.in:visible .ajax-error-copy-button");
         $button.html('<i class="fa fa-check" aria-hidden="true"></i> Copied');
         window.setTimeout(function(){
             $button.html('<i class="fa fa-clipboard" aria-hidden="true"></i> Copy details');
         }, 1500);
     };
 
+    var fallback = function(){
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        // Bootstrap traps focus inside the modal; do not append outside it.
+        $modal[0].appendChild(textarea);
+        textarea.addEventListener('copy', function(event){ event.stopPropagation(); });
+        textarea.focus();
+        textarea.select();
+        try {
+            if (document.execCommand('copy')) {
+                onSuccess();
+            } else {
+                $button.text('Copy failed');
+            }
+        } catch (error) {
+            $button.text('Copy failed');
+        } finally {
+            textarea.parentNode.removeChild(textarea);
+            $button.trigger('focus');
+        }
+    };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(onSuccess);
-        return;
-    }
-
-    var textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'absolute';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-        document.execCommand('copy');
-        onSuccess();
-    } finally {
-        document.body.removeChild(textarea);
+        navigator.clipboard.writeText(text).then(onSuccess, fallback);
+    } else {
+        fallback();
     }
 }
 
 $(function(){
-    $(document).on('click', '.ajax-error-copy-button', function(){
-        copyAjaxErrorToClipboard();
+    $(document).on('click', '.ajax-error-copy-button', function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        copyAjaxErrorToClipboard(this);
     });
 });
 
@@ -77,5 +88,6 @@ function generateAccessErrorModal(error_data){
     $("#ajax_roles_granted").html(rolesGrantedHtml);
     $("#ajax_roles_required").html(rolesRequiredHtml);
 
-    $("#ajax_access_error_modal").modal()
+    $("#ajax_error_modal").modal('hide');
+    $("#ajax_access_error_modal").modal();
 }

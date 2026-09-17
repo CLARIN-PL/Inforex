@@ -16,6 +16,48 @@ var metadata_separators = [
 ];
 
 var pattern;
+var metadataSaveInFlight = false;
+var metadataSaveQueued = false;
+
+function saveMetadataChanges(){
+    if (metadataSaveInFlight) {
+        metadataSaveQueued = true;
+        return;
+    }
+    if (jQuery.isEmptyObject(changed_docs.docs)) {
+        return;
+    }
+    var snapshot = $.extend(true, {}, changed_docs.docs);
+    var succeeded = false;
+    metadataSaveInFlight = true;
+    metadataSaveQueued = false;
+    document.body.style.cursor = 'wait';
+    $('#save_data_button').prop('disabled', true).html("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+    doAjax('metadata_batch_edit_update', {
+        corpus_id: corpus_id,
+        url: 'corpus=' + encodeURIComponent(corpus_id),
+        docs_json: JSON.stringify(snapshot)
+    }, function(){
+        succeeded = true;
+        Object.keys(snapshot).forEach(function(key){
+            // Do not clear an edit made while the previous version was saving.
+            if (changed_docs.docs[key] && changed_docs.docs[key].value === snapshot[key].value) {
+                delete changed_docs.docs[key];
+            }
+        });
+        if (jQuery.isEmptyObject(changed_docs.docs)) {
+            removeColors();
+        }
+    }, null, function(){
+        metadataSaveInFlight = false;
+        document.body.style.cursor = 'default';
+        transformSaveButton('normal');
+        $('#save_data_button').prop('disabled', autosave);
+        if (succeeded && metadataSaveQueued && !jQuery.isEmptyObject(changed_docs.docs)) {
+            saveMetadataChanges();
+        }
+    });
+}
 
 function setupMetadataModal(){
     var data = {'corpus_id': corpus_id};
@@ -61,23 +103,9 @@ $(function() {
     setupMetadataModal();
     loadMetadataFromFilename();
 
-    $("#save_data_button").click(function(){
-        document.body.style.cursor='wait';
-        if(!jQuery.isEmptyObject(changed_docs.docs)){
-            $(this).html("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
-
-            var complete = function(){
-                document.body.style.cursor='default';
-                transformSaveButton("normal");
-            };
-
-            doAjax("metadata_batch_edit_update", changed_docs, null, null, complete);
-        } else{
-            transformSaveButton("normal");
-        }
-
-        removeColors();
-        document.body.style.cursor='default';
+    $("#save_data_button").click(function(event){
+        event.preventDefault();
+        saveMetadataChanges();
     });
 
     if(autosave){
@@ -370,26 +398,20 @@ function generateMetadataTable(data, colHeaders, columnOrder){
         search: true,
         columns: columnOrder,
         afterChange: function (change, source) {
-            if(change !== null){
+            if(change !== null && source !== 'loadData'){
                 change.forEach(function(value){
+                    if (value[2] === value[3]) {
+                        return;
+                    }
                     var row = {};
-                    var report_id = data[value[0]].Report_ID;
+                    var report_id = this.getDataAtRowProp(value[0], 'Report_ID');
                     row.value = value[3];
                     var field = value[1];
                     changed_docs.docs[report_id+"_"+field] = row;
-                });
-
-                var success = function() {
-                    document.body.style.cursor='default'
-                };
-
-                var complete = function(data){
-                    document.body.style.cursor='default'
-                };
+                }, this);
 
                 if(autosave){
-                    doAjax("metadata_batch_edit_update", changed_docs, success, null, complete);
-                    document.body.style.cursor='wait';
+                    saveMetadataChanges();
                 }
             }
         }

@@ -1,0 +1,62 @@
+<!doctype html><meta charset="utf-8"><title>Metadata batch regression</title>
+<link rel="stylesheet" href="../../public_html/libs/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="../../public_html/libs/handsontable-0.19.0/handsontable.full.min.css">
+<button id="save_data_button" type="button">Save</button><input class="autosave" type="checkbox"><div id="hot-container"></div><input id="search_field">
+<div class="modal ajax_error_modal" id="ajax_error_modal"><div class="modal-dialog"><div class="modal-content"><div class="ajax-error-modal-card"><h3 id="ajax_error_heading"></h3><div class="ajax-error-modal-details-label">Technical details</div><pre id="ajax_error_message_code"></pre></div><button type="button" class="ajax-error-copy-button">Copy details</button></div></div></div>
+<div class="modal ajax_error_modal" id="ajax_access_error_modal"><div class="modal-dialog"><div class="modal-content"><div class="ajax-error-modal-card"><h3 id="ajax_error_message"></h3><div id="ajax_roles_required"></div><div id="ajax_roles_granted"></div></div><button type="button" class="ajax-error-copy-button">Copy details</button></div></div></div>
+<pre id="result">RUNNING</pre>
+<script src="../../public_html/libs/jquery.1.11.min.js"></script>
+<script src="../../public_html/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../../public_html/libs/handsontable-0.19.0/handsontable.full.min.js"></script>
+<script>
+var requests=[], passed=[], copied='';
+$.url=function(){return {param:function(){return '157';}};}; $.cookie=function(){return null;};
+function doAjax(action,params,success,error,complete){
+ if(action==='metadata_batch_edit_get') success({documents:[{Report_ID:10,Title:'B'},{Report_ID:11,Title:'A'}],columns:[{field:'Report_ID'},{field:'Title'}]});
+ if(action==='metadata_batch_edit_update') requests.push({params:params,success:success,complete:complete});
+}
+function check(ok,name){if(!ok)throw Error(name);passed.push(name);}
+window.onerror=function(message){document.getElementById('result').textContent=JSON.stringify({error:message,passed:passed});};
+</script>
+<script src="../../public_html/js/page_corpus_metadata_batch_edit.js"></script>
+<script src="../../public_html/js/error_modal.js"></script>
+<script>
+$(function(){(async function(){try {
+ check(Object.keys(changed_docs.docs).length===0,'load does not create edits');
+ hot.getPlugin('columnSorting').sortByColumn(1,true);
+ check(hot.getDataAtRowProp(0,'Report_ID')===11,'fixture is sorted');
+ hot.setDataAtRowProp(0,'Title','Edited');
+ check(changed_docs.docs['11_Title'].value==='Edited' && !changed_docs.docs['10_Title'],'sorted edit maps to displayed document');
+ saveMetadataChanges();var first=requests[0];
+ check(first.params.corpus_id==='157' && first.params.url==='corpus=157','save carries corpus context');
+ check(JSON.parse(first.params.docs_json)['11_Title'].value==='Edited','snapshot contains edited value');
+ hot.setDataAtRowProp(0,'Title','Newer');saveMetadataChanges();
+ check(requests.length===1,'inflight save is serialized');
+ first.success();first.complete();
+ check(requests.length===2 && JSON.parse(requests[1].params.docs_json)['11_Title'].value==='Newer','edit during save is queued and retained');
+ requests[1].complete();
+ check(changed_docs.docs['11_Title'].value==='Newer','failed save retains pending edit');
+ saveMetadataChanges();requests[2].success();requests[2].complete();
+ check(Object.keys(changed_docs.docs).length===0,'successful retry clears saved edits');
+ hot.setDataAtRowProp(0,'Title',hot.getDataAtRowProp(0,'Title'));
+ check(Object.keys(changed_docs.docs).length===0,'unchanged cell creates no pending write');
+ for(var i=1;i<=6000;i++)changed_docs.docs[i+'_Title']={value:'Synthetic '+i};
+ saveMetadataChanges();var bulk=requests[3];
+ check(Object.keys(bulk.params).length===3 && Object.keys(JSON.parse(bulk.params.docs_json)).length===6000,'6000 cells use one JSON field');
+ bulk.success();bulk.complete();
+ Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:function(text){copied=text;return Promise.resolve();}}});
+ generateErrorModal('Data transmission error:','502 Bad Gateway');
+ var count=requests.length;$('#ajax_error_modal .ajax-error-copy-button').click();await Promise.resolve();
+ check(copied.indexOf('502 Bad Gateway')>=0,'generic error copied');
+ check(requests.length===count,'copy does not submit metadata');
+ generateAccessErrorModal({error_msg:{message:'Access denied to metadata save',rolesGranted:['public_user'],rolesRequired:['manager']}});
+ check(!$('#ajax_error_modal').hasClass('in') && $('#ajax_access_error_modal').hasClass('in'),'only latest error modal is open');
+ $('#ajax_access_error_modal .ajax-error-copy-button').click();await Promise.resolve();
+ check(copied.indexOf('Access denied')>=0 && copied.indexOf('manager')>=0 && copied.indexOf('502')<0,'access error copies its own details and roles');
+ navigator.clipboard.writeText=function(){return Promise.reject(Error('Clipboard denied'));};
+ document.execCommand=function(command){check(command==='copy' && document.activeElement.closest('#ajax_access_error_modal'),'clipboard fallback stays inside focused modal');copied=document.activeElement.value;return true;};
+ $('#ajax_access_error_modal .ajax-error-copy-button').click();await Promise.resolve();await Promise.resolve();
+ check(copied.indexOf('Access denied')>=0 && requests.length===count,'clipboard denial falls back without a save');
+ hot.destroy();document.getElementById('result').textContent=JSON.stringify({passed:passed.length,checks:passed});
+} catch(e){document.getElementById('result').textContent=JSON.stringify({error:String(e),passed:passed});}})();});
+</script>

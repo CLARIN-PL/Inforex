@@ -548,33 +548,52 @@ class DbCorpus{
 
     static function batchUpdateMetadata($corpus_id, $batchUpdateMetadata){
         global $db;
-
+        if (!is_array($batchUpdateMetadata)) {
+            throw new Exception('Invalid metadata changes.');
+        }
+        if (!$batchUpdateMetadata) {
+            return true;
+        }
         $ext = self::getCorpusExtTable($corpus_id);
-        try{
-            foreach($batchUpdateMetadata as $key => $metadata_update){
-                //get report_id and field from the key
-                $parts = explode("_", $key);
-                $report_id = $parts[0];
-                array_shift($parts);
-                $field = implode("_", $parts);
-
-
-                $params = array($metadata_update['value'], $report_id);
-                if(in_array($field, self::getBasicMetadataColumns())){
-                    $sql = "UPDATE reports SET " . self::convertBasicMetadataToDBNames($field ). " = ? 
-                WHERE id = ?";
-                    $db->execute($sql, $params);
-                } else{
-                    $sql = "UPDATE ".$ext." SET " . $field . " = ? 
-                WHERE id = ?";
-                    $db->execute($sql, $params);
+        $allowed = self::getCorpusAllMetadataColumns($corpus_id);
+        $updates = array();
+        $reportIds = array();
+        foreach ($batchUpdateMetadata as $key => $update) {
+            $parts = explode('_', $key, 2);
+            if (count($parts) !== 2 || !ctype_digit($parts[0]) || (int)$parts[0] <= 0
+                || !in_array($parts[1], $allowed, true) || !is_array($update)
+                || !array_key_exists('value', $update)
+                || (!is_scalar($update['value']) && $update['value'] !== null)) {
+                throw new Exception('Invalid metadata field or document.');
+            }
+            $reportIds[(int)$parts[0]] = (int)$parts[0];
+            $updates[] = array((int)$parts[0], $parts[1], $update['value']);
+        }
+        $db->execute('START TRANSACTION');
+        try {
+            $ids = array_values($reportIds);
+            $rows = $db->fetch_rows('SELECT id FROM reports WHERE corpora=? AND id IN ('
+                . implode(',', array_fill(0, count($ids), '?')) . ') FOR UPDATE', array_merge(array($corpus_id), $ids));
+            if (count($rows) !== count($ids)) {
+                throw new Exception('A document does not belong to the authorized corpus.');
+            }
+            foreach ($updates as $update) {
+                list($report_id, $field, $value) = $update;
+                if (in_array($field, self::getBasicMetadataColumns(), true)) {
+                    $column = self::convertBasicMetadataToDBNames($field);
+                    $db->execute('UPDATE reports SET `' . $column . '`=? WHERE id=? AND corpora=?',
+                        array($value, $report_id, $corpus_id));
+                } else {
+                    $table = '`' . str_replace('`', '``', $ext) . '`';
+                    $column = '`' . str_replace('`', '``', $field) . '`';
+                    $db->execute('UPDATE ' . $table . ' SET ' . $column . '=? WHERE id=?', array($value, $report_id));
                 }
             }
-            ChromePhp::log("Ok");
+            $db->execute('COMMIT');
             return true;
-        }catch(Exception $e){
-            ChromePhp::log("Error");
-            return false;
+        } catch (Exception $e) {
+            $db->execute('ROLLBACK');
+            throw $e;
         }
     }
 
