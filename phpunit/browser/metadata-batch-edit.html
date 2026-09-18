@@ -8,12 +8,14 @@
 <script src="../../public_html/libs/jquery.1.11.min.js"></script>
 <script src="../../public_html/libs/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="../../public_html/libs/handsontable-0.19.0/handsontable.full.min.js"></script>
+<script src="../../public_html/js/core_ajax.js"></script>
+<script>var realMetadataAjax=doAjax;</script>
 <script>
 var requests=[], passed=[], copied='';
 $.url=function(){return {param:function(){return '157';}};}; $.cookie=function(){return null;};
 function doAjax(action,params,success,error,complete){
  if(action==='metadata_batch_edit_get') success({documents:[{Report_ID:10,Title:'B'},{Report_ID:11,Title:'A'}],columns:[{field:'Report_ID'},{field:'Title'}]});
- if(action==='metadata_batch_edit_update') requests.push({params:params,success:success,complete:complete});
+ if(action==='metadata_batch_edit_update') requests.push({params:params,success:function(receipt){success(arguments.length ? receipt : {verified:true,saved_count:Object.keys(JSON.parse(params.docs_json)).length});},complete:complete});
 }
 function check(ok,name){if(!ok)throw Error(name);passed.push(name);}
 window.onerror=function(message){document.getElementById('result').textContent=JSON.stringify({error:message,passed:passed});};
@@ -42,7 +44,7 @@ $(function(){(async function(){try {
  check(Object.keys(changed_docs.docs).length===0,'unchanged cell creates no pending write');
  for(var i=1;i<=6000;i++)changed_docs.docs[i+'_Title']={value:'Synthetic '+i};
  saveMetadataChanges();var bulk=requests[3];
- check(Object.keys(bulk.params).length===3 && Object.keys(JSON.parse(bulk.params.docs_json)).length===6000,'6000 cells use one JSON field');
+ check(Object.keys(bulk.params).length===4 && Object.keys(JSON.parse(bulk.params.docs_json)).length===6000,'6000 cells use one JSON field');
  bulk.success();bulk.complete();
  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:function(text){copied=text;return Promise.resolve();}}});
  generateErrorModal('Data transmission error:','502 Bad Gateway');
@@ -121,6 +123,39 @@ $(function(){(async function(){try {
  await new Promise(function(r){setTimeout(r,100);});
  check(requests.length===5 && JSON.parse(requests[4].params.docs_json)['10_required_choice'].value==='A','corrected choice can be saved after rejected edit');
  requests[4].success();requests[4].complete();
+
+ // Failed responses must keep the retry button available even in autosave mode.
+ autosave=true;
+ await edit('klasyfikacja_podstawowa','Literatura stosowana');
+ var failedSave=requests[requests.length-1];failedSave.complete();
+ check(!$('#save_data_button').prop('disabled') && pendingMetadataCount()===1,'failed autosave allows manual retry and retains pending value');
+ check($('#metadata_save_status').text().indexOf('Not saved.')===0,'failed save shows an explicit pending status');
+ $('#save_data_button').click();
+ var retry=requests[requests.length-1];retry.success(true);retry.complete();
+ check(pendingMetadataCount()===1 && !$('#save_data_button').prop('disabled'),'legacy or incomplete receipt cannot discard pending changes');
+ $('#save_data_button').click();retry=requests[requests.length-1];retry.success();retry.complete();
+ check(pendingMetadataCount()===0 && $('#metadata_save_status').text()==='Saved 1 changes.','verified retry clears buffer and shows saved count');
+ autosave=false;saveMetadataChanges();
+ check($('#metadata_save_status').text()==='No pending changes to save.','empty save gives visible feedback');
+ await edit('klasyfikacja_podstawowa','Tekst literacki prozą');
+ $('.autosave').prop('checked',false).click();
+ retry=requests[requests.length-1];
+ check(autosave && metadataSaveInFlight && JSON.parse(retry.params.docs_json)['10_klasyfikacja_podstawowa'].value==='Tekst literacki prozą','enabling autosave flushes existing pending edits');
+ retry.success();retry.complete();autosave=false;
+
+ // Exercise the real AJAX response wrapper, including authorization failure.
+ var originalAjax=$.ajax,originalDoAjax=doAjax,transport=[];
+ doAjax=realMetadataAjax;$.ajax=function(options){transport.push(options);};
+ autosave=true;await edit('klasyfikacja_podstawowa','Literatura stosowana');
+ check(transport.length===1 && transport[0].url==='index.php?corpus=157','real AJAX wrapper preserves corpus context');
+ transport[0].success({error:true,error_code:'ERROR_AUTHORIZATION',error_msg:{message:'You do not have permission to access Ajax_metadata_batch_edit_update.',rolesGranted:['public_user'],rolesRequired:['manager','corpus_owner','admin']}});transport[0].complete();
+ check(pendingMetadataCount()===1 && !metadataSaveInFlight && !$('#save_data_button').prop('disabled'),'authorization failure through real wrapper retains edits and permits retry');
+ $('#ajax_access_error_modal').modal('hide');$('#ajax_error_modal').modal('hide');
+ $('#save_data_button').click();
+ check(transport.length===2 && JSON.parse(transport[1].data.docs_json)['10_klasyfikacja_podstawowa'].value==='Literatura stosowana','retry after reauthentication resends original pending choice');
+ transport[1].success({error:false,result:{verified:true,saved_count:1}});transport[1].complete();
+ check(pendingMetadataCount()===0 && $('#metadata_save_status').text()==='Saved 1 changes.','real response wrapper clears only a verified successful retry');
+ $.ajax=originalAjax;doAjax=originalDoAjax;autosave=false;
  hot.destroy();document.getElementById('result').textContent=JSON.stringify({passed:passed.length,checks:passed});
 } catch(e){document.getElementById('result').textContent=JSON.stringify({error:String(e),passed:passed});}})();});
 </script>

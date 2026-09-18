@@ -46,4 +46,17 @@ foreach(['',null,'Unknown'] as $value){
     try{DbCorpus::batchUpdateMetadata(157,['1_required_choice'=>['value'=>$value]]);}catch(UserDataException $e){$failed=true;}
     expect($failed&&state()===$before,'required_enum_rejects_'.json_encode($value));
 }
+
+// An UPDATE that matches no extension row must not be acknowledged as saved.
+$m->query("INSERT INTO reports VALUES(4,157,'Missing')");
+$before=state();$failed=false;
+try{DbCorpus::batchUpdateMetadata(157,['1_Title'=>['value'=>'Partial'],'4_klasyfikacja_podstawowa'=>['value'=>'Literatura stosowana']]);}catch(UserDataException $e){$failed=true;}
+expect($failed&&state()===$before,'missing_extension_row_rejects_and_rolls_back_whole_batch');
+$m->query("CREATE TRIGGER metadata_test_discard BEFORE UPDATE ON metadata_extra FOR EACH ROW SET NEW.custom_field = OLD.custom_field");
+$before=state();$failed=false;
+try{DbCorpus::batchUpdateMetadata(157,['1_Title'=>['value'=>'Partial'],'1_custom_field'=>['value'=>'ignored']]);}catch(UserDataException $e){$failed=true;}
+expect($failed&&state()===$before,'silently_discarded_update_is_detected_and_rolled_back');
+$m->query('DROP TRIGGER metadata_test_discard');
+DbCorpus::batchUpdateMetadata(157,['1_Title'=>['value'=>'Changed']]);
+expect($m->query('SELECT title FROM reports WHERE id=1')->fetch_row()[0]==='Changed','saving_an_unchanged_value_still_verifies');
 echo json_encode(['passed'=>count($passed),'checks'=>$passed])."\n";

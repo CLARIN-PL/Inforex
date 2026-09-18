@@ -20,6 +20,19 @@ var metadataSaveInFlight = false;
 var metadataSaveQueued = false;
 var metadataSaveWaitingForEditor = false;
 
+function metadataSaveStatus(message, failed) {
+    var status = $('#metadata_save_status');
+    if (!status.length) {
+        status = $('<span id="metadata_save_status" role="status" aria-live="polite"></span>')
+            .css('margin-left', '10px').insertAfter('#save_data_button');
+    }
+    status.toggleClass('text-danger', !!failed).text(message);
+}
+
+function pendingMetadataCount() {
+    return Object.keys(changed_docs.docs).length;
+}
+
 function saveMetadataChanges(){
     // Dropdown validation is asynchronous in Handsontable 0.19. A Save click
     // may arrive before afterChange has put the selected value in our buffer.
@@ -27,10 +40,13 @@ function saveMetadataChanges(){
     if (editor && (editor.isOpened() || editor.isWaiting())) {
         if (!metadataSaveWaitingForEditor) {
             metadataSaveWaitingForEditor = true;
+            metadataSaveStatus('Checking the edited value...');
             editor.finishEditing(false, false, function(valid) {
                 metadataSaveWaitingForEditor = false;
                 if (valid) {
                     saveMetadataChanges();
+                } else {
+                    metadataSaveStatus('Not saved: correct the value in the edited cell, then click Save.', true);
                 }
             });
         }
@@ -41,19 +57,27 @@ function saveMetadataChanges(){
         return;
     }
     if (jQuery.isEmptyObject(changed_docs.docs)) {
+        metadataSaveStatus('No pending changes to save.');
         return;
     }
     var snapshot = $.extend(true, {}, changed_docs.docs);
     var succeeded = false;
     metadataSaveInFlight = true;
     metadataSaveQueued = false;
+    metadataSaveStatus('Saving ' + Object.keys(snapshot).length + ' changes...');
     document.body.style.cursor = 'wait';
     $('#save_data_button').prop('disabled', true).html("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
     doAjax('metadata_batch_edit_update', {
         corpus_id: corpus_id,
         url: 'corpus=' + encodeURIComponent(corpus_id),
-        docs_json: JSON.stringify(snapshot)
-    }, function(){
+        docs_json: JSON.stringify(snapshot),
+        confirm_save: '1'
+    }, function(receipt){
+        if (!receipt || receipt.verified !== true || receipt.saved_count !== Object.keys(snapshot).length) {
+            generateErrorModal('Save was not confirmed. Your changes are still pending.',
+                'Reload the application only after preserving your pending changes.');
+            return;
+        }
         succeeded = true;
         Object.keys(snapshot).forEach(function(key){
             // Do not clear an edit made while the previous version was saving.
@@ -68,7 +92,14 @@ function saveMetadataChanges(){
         metadataSaveInFlight = false;
         document.body.style.cursor = 'default';
         transformSaveButton('normal');
-        $('#save_data_button').prop('disabled', autosave);
+        $('#save_data_button').prop('disabled', autosave && pendingMetadataCount() === 0);
+        if (succeeded) {
+            metadataSaveStatus('Saved ' + Object.keys(snapshot).length + ' changes.'
+                + (pendingMetadataCount() ? ' Still pending: ' + pendingMetadataCount() + '.' : ''));
+        } else {
+            metadataSaveStatus('Not saved. Pending changes: ' + pendingMetadataCount()
+                + '. Resolve the error, then click Save to retry.', true);
+        }
         if (succeeded && metadataSaveQueued && !jQuery.isEmptyObject(changed_docs.docs)) {
             saveMetadataChanges();
         }
@@ -136,14 +167,22 @@ $(function() {
         if($(this).prop('checked') === true){
             autosave = true;
             $.cookie("autosave_on", 1);
-            $("#save_data_button").prop("disabled", true);
+            $("#save_data_button").prop("disabled", metadataSaveInFlight || pendingMetadataCount() === 0);
+            saveMetadataChanges();
         } else{
             autosave = false;
             $.cookie("autosave_on", 0);
-            $("#save_data_button").prop("disabled", false);
+            $("#save_data_button").prop("disabled", metadataSaveInFlight);
         }
     });
 
+    $(window).on('beforeunload', function(event) {
+        if (pendingMetadataCount() || metadataSaveInFlight || metadataSaveWaitingForEditor) {
+            event.preventDefault();
+            event.originalEvent.returnValue = '';
+            return '';
+        }
+    });
 });
 
 
@@ -435,6 +474,10 @@ function generateMetadataTable(data, colHeaders, columnOrder){
                     changed_docs.docs[report_id+"_"+field] = row;
                 }, this);
 
+                if (pendingMetadataCount() && !metadataSaveInFlight) {
+                    metadataSaveStatus('Unsaved changes: ' + pendingMetadataCount() + '.');
+                    $('#save_data_button').prop('disabled', false);
+                }
                 if(autosave){
                     saveMetadataChanges();
                 }

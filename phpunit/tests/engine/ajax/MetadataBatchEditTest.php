@@ -6,7 +6,13 @@ class MetadataBatchDatabaseStub extends Database {
     public $ids = array(10, 11);
     public $fail = false;
     public function __construct() {}
-    public function fetch_one($sql, $args = null) { return null; }
+    public $readbackMatches = true;
+    public function fetch_one($sql, $args = null) {
+        if (strpos($sql, 'SELECT COUNT(*)') === 0) {
+            return $this->readbackMatches ? substr_count($sql, '(id=?') : 0;
+        }
+        return null;
+    }
     public function fetch_rows($sql, $args = null) {
         return array_map(function($id) { return array('id' => $id); }, $this->ids);
     }
@@ -95,5 +101,23 @@ class MetadataBatchEditTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($a->hasAccess($user,$corpus));
         $corpus['role'][181]=array(CORPUS_ROLE_READ=>1);
         $this->assertInstanceOf(AccessError::class,$a->hasAccess($user,$corpus));
+    }
+
+    public function test_receipt_is_returned_only_after_verified_commit() {
+        $GLOBALS['db']->ids = array(10);
+        $_POST['confirm_save'] = '1';
+        $_POST['docs_json'] = json_encode(array('10_Title' => array('value' => 'Test')));
+        $this->assertSame(array('verified' => true, 'saved_count' => 1), $this->action()->execute());
+        $this->assertSame(array('COMMIT', null), end($GLOBALS['db']->queries));
+    }
+
+    public function test_successful_update_with_failed_readback_rolls_back() {
+        $GLOBALS['db']->ids = array(10);
+        $GLOBALS['db']->readbackMatches = false;
+        $_POST['docs'] = array('10_Title' => array('value' => 'Test'));
+        try { $this->action()->execute(); $this->fail('Expected readback rejection'); }
+        catch (UserDataException $e) {
+            $this->assertSame(array('ROLLBACK', null), end($GLOBALS['db']->queries));
+        }
     }
 }

@@ -19,6 +19,11 @@ class Ajax_metadata_batch_edit_update extends CPageCorpus {
         }
         // Do not put document metadata in ChromePhp response headers: a large
         // header is rejected by the reverse proxy even after a successful save.
-        return DbCorpus::batchUpdateMetadata($corpus_id, $changedDocs);
+        DbCorpus::batchUpdateMetadata($corpus_id, $changedDocs);
+        // Older clients still expect a boolean. New clients require a receipt
+        // before discarding their pending edits.
+        return isset($_POST['confirm_save']) && $_POST['confirm_save'] === '1'
+            ? array('verified' => true, 'saved_count' => count($changedDocs))
+            : true;
     }
 }

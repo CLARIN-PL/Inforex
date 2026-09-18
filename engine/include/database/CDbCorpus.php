@@ -593,16 +593,42 @@ class DbCorpus{
             if (count($rows) !== count($ids)) {
                 throw new Exception('A document does not belong to the authorized corpus.');
             }
+            $checks = array();
             foreach ($updates as $update) {
                 list($report_id, $field, $value) = $update;
                 if (in_array($field, self::getBasicMetadataColumns(), true)) {
+                    $table = '`reports`';
                     $column = self::convertBasicMetadataToDBNames($field);
                     $db->execute('UPDATE reports SET `' . $column . '`=? WHERE id=? AND corpora=?',
                         array($value, $report_id, $corpus_id));
+                    $column = '`' . $column . '`';
                 } else {
                     $table = '`' . str_replace('`', '``', $ext) . '`';
                     $column = '`' . str_replace('`', '``', $field) . '`';
                     $db->execute('UPDATE ' . $table . ' SET ' . $column . '=? WHERE id=?', array($value, $report_id));
+                }
+                $checks[$table][$report_id][$column] = $value;
+            }
+            // UPDATE can succeed without finding a row. Confirm the requested
+            // values using database type conversion before committing the batch.
+            foreach ($checks as $table => $documents) {
+                foreach (array_chunk($documents, 100, true) as $chunk) {
+                    $conditions = array();
+                    $args = array();
+                    foreach ($chunk as $report_id => $fields) {
+                        $matches = array('id=?');
+                        $args[] = $report_id;
+                        foreach ($fields as $column => $value) {
+                            $matches[] = $column . ' <=> ?';
+                            $args[] = $value;
+                        }
+                        $conditions[] = '(' . implode(' AND ', $matches) . ')';
+                    }
+                    $matched = $db->fetch_one('SELECT COUNT(*) FROM ' . $table . ' WHERE '
+                        . implode(' OR ', $conditions), $args);
+                    if ((int)$matched !== count($chunk)) {
+                        throw new UserDataException('Could not confirm saved metadata. All changes were rolled back.');
+                    }
                 }
             }
             $db->execute('COMMIT');
