@@ -556,6 +556,7 @@ class DbCorpus{
         }
         $ext = self::getCorpusExtTable($corpus_id);
         $allowed = self::getCorpusAllMetadataColumns($corpus_id);
+        $extendedMetadata = array_column(self::getCorpusExtColumns($ext), null, 'field');
         $updates = array();
         $reportIds = array();
         foreach ($batchUpdateMetadata as $key => $update) {
@@ -567,7 +568,22 @@ class DbCorpus{
                 throw new Exception('Invalid metadata field or document.');
             }
             $reportIds[(int)$parts[0]] = (int)$parts[0];
-            $updates[] = array((int)$parts[0], $parts[1], $update['value']);
+            $value = $update['value'];
+            if (isset($extendedMetadata[$parts[1]]) && $extendedMetadata[$parts[1]]['type'] === 'enum') {
+                $metadata = $extendedMetadata[$parts[1]];
+                // Spreadsheet clearing produces an empty string, while nullable
+                // ENUM columns represent no selection as SQL NULL.
+                if ($value === '' && $metadata['null'] === 'Yes'
+                    && !in_array('', $metadata['field_values'], true)) {
+                    $value = null;
+                }
+                if (!(($value === null && $metadata['null'] === 'Yes')
+                    || (is_string($value) && in_array($value, $metadata['field_values'], true)))) {
+                    throw new UserDataException(sprintf(
+                        'Choose a value from the list for field "%s" (document %d).', $parts[1], (int)$parts[0]));
+                }
+            }
+            $updates[] = array((int)$parts[0], $parts[1], $value);
         }
         $db->execute('START TRANSACTION');
         try {

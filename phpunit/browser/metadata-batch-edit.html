@@ -57,6 +57,22 @@ $(function(){(async function(){try {
  document.execCommand=function(command){check(command==='copy' && document.activeElement.closest('#ajax_access_error_modal'),'clipboard fallback stays inside focused modal');copied=document.activeElement.value;return true;};
  $('#ajax_access_error_modal .ajax-error-copy-button').click();await Promise.resolve();await Promise.resolve();
  check(copied.indexOf('Access denied')>=0 && requests.length===count,'clipboard denial falls back without a save');
+ hot.destroy();changed_docs.docs={};
+ var columns=getMetadataColumnNames([{field:'Report_ID'},{field:'klasyfikacja_podstawowa',type:'enum',null:'Yes',field_values:['Tekst literacki prozą','Tekst literacki wierszowany','Literatura stosowana']},{field:'required_choice',type:'enum',null:'No',field_values:['A','B']}]);
+ generateMetadataTable([{Report_ID:10,klasyfikacja_podstawowa:'Literatura stosowana',required_choice:'A'}],columns.columnHeaders,columns.columnOrder);
+ function edit(prop,value){hot.setDataAtRowProp(0,prop,value);return new Promise(function(resolve){setTimeout(resolve,40);});}
+ await edit('klasyfikacja_podstawowa','Tekst literacki prozą');
+ check(hot.getDataAtRowProp(0,'klasyfikacja_podstawowa')==='Tekst literacki prozą' && changed_docs.docs['10_klasyfikacja_podstawowa'].value==='Tekst literacki prozą','enum selection retains Polish characters');
+ await edit('klasyfikacja_podstawowa','Unknown');
+ check(hot.getDataAtRowProp(0,'klasyfikacja_podstawowa')==='Tekst literacki prozą' && changed_docs.docs['10_klasyfikacja_podstawowa'].value==='Tekst literacki prozą','invalid dropdown value cannot enter pending saves');
+ await edit('klasyfikacja_podstawowa','');
+ check(hot.getDataAtRowProp(0,'klasyfikacja_podstawowa')==='' && changed_docs.docs['10_klasyfikacja_podstawowa'].value==='','nullable dropdown can be cleared');
+ await edit('required_choice','');
+ check(hot.getDataAtRowProp(0,'required_choice')==='A' && !changed_docs.docs['10_required_choice'],'required dropdown rejects empty choice');
+ await edit('required_choice','Unknown');
+ check(hot.getDataAtRowProp(0,'required_choice')==='A' && !changed_docs.docs['10_required_choice'],'required dropdown retains enum validator');
+ await edit('required_choice','B');
+ check(hot.getDataAtRowProp(0,'required_choice')==='B' && changed_docs.docs['10_required_choice'].value==='B','required dropdown accepts a listed choice');
  hot.destroy();document.getElementById('result').textContent=JSON.stringify({passed:passed.length,checks:passed});
 } catch(e){document.getElementById('result').textContent=JSON.stringify({error:String(e),passed:passed});}})();});
 </script>

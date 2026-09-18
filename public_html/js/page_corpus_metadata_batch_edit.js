@@ -322,6 +322,9 @@ function getMetadataColumnNames(columns){
             if(value['type'] === 'enum'){
                 data.type = 'dropdown';
                 data.source = [];
+                data.strict = true;
+                data.allowInvalid = false;
+                data.allowEmpty = value['null'] !== 'No';
                 if ( "field_ids" in value ){
                     data.renderer = customDropdownRenderer;
                     data.editor = "chosen";
@@ -335,11 +338,17 @@ function getMetadataColumnNames(columns){
                     value['field_values'].forEach(function (val) {
                         data.source.push(val);
                     });
+                    // Handsontable 0.19's autocomplete validator ignores
+                    // allowEmpty. Match the server's nullable ENUM rules.
+                    data.validator = function(value, callback) {
+                        callback(((value === '' || value === null) && this.allowEmpty)
+                            || this.source.indexOf(value) !== -1);
+                    };
                 }
             }
 
             //Prevents empty values in NOT NULL cells.
-            if(value['null'] === "No"){
+            if(value['null'] === "No" && value['type'] !== 'enum'){
                 data.validator = notEmptyValidator;
                 data.allowInvalid = false;
             }
