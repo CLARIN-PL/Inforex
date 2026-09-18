@@ -73,6 +73,54 @@ $(function(){(async function(){try {
  check(hot.getDataAtRowProp(0,'required_choice')==='A' && !changed_docs.docs['10_required_choice'],'required dropdown retains enum validator');
  await edit('required_choice','B');
  check(hot.getDataAtRowProp(0,'required_choice')==='B' && changed_docs.docs['10_required_choice'].value==='B','required dropdown accepts a listed choice');
+ $('#ajax_access_error_modal').modal('hide');
+ changed_docs.docs={};requests=[];
+ await edit('klasyfikacja_podstawowa',null);
+ changed_docs.docs={};
+ hot.selectCell(0,1);
+ var ed=hot.getActiveEditor();ed.beginEditing();
+ await new Promise(function(r){setTimeout(r,100);});
+ ed.htEditor.selectCell(1,0);
+ ed.htEditor.runHooks('afterOnCellMouseDown');
+ await new Promise(function(r){setTimeout(r,100);});
+ check(hot.getDataAtRowProp(0,'klasyfikacja_podstawowa')==='Tekst literacki wierszowany','actual dropdown commits selected option');
+ $('#save_data_button').click();
+ check(requests.length===1 && JSON.parse(requests[0].params.docs_json)['10_klasyfikacja_podstawowa'].value==='Tekst literacki wierszowany','actual dropdown selection sends chosen value');
+ requests[0].success();requests[0].complete();
+ hot.selectCell(0,1);ed=hot.getActiveEditor();ed.beginEditing();
+ await new Promise(function(r){setTimeout(r,100);});
+ ed.htEditor.selectCell(2,0);
+ // Mousedown outside the table commits asynchronously, then click invokes save.
+ document.getElementById('save_data_button').dispatchEvent(new MouseEvent('mousedown',{bubbles:true}));
+ $('#save_data_button').click();
+ await new Promise(function(r){setTimeout(r,100);});
+ check(requests.length===2 && JSON.parse(requests[1].params.docs_json)['10_klasyfikacja_podstawowa'].value==='Literatura stosowana','save during dropdown edit sends final choice');
+
+ requests[1].success();requests[1].complete();
+ autosave=true;
+ hot.selectCell(0,1);ed=hot.getActiveEditor();ed.beginEditing();
+ await new Promise(function(r){setTimeout(r,100);});
+ ed.htEditor.selectCell(0,0);ed.htEditor.runHooks('afterOnCellMouseDown');
+ await new Promise(function(r){setTimeout(r,100);});
+ check(requests.length===3 && JSON.parse(requests[2].params.docs_json)['10_klasyfikacja_podstawowa'].value==='Tekst literacki prozą','autosave waits for dropdown validation and sends once');
+ requests[2].success();requests[2].complete();autosave=false;
+ // Also flush a choice when Save is activated while the editor is still open.
+ hot.selectCell(0,1);ed=hot.getActiveEditor();ed.beginEditing();
+ await new Promise(function(r){setTimeout(r,100);});
+ ed.htEditor.selectCell(1,0);saveMetadataChanges();saveMetadataChanges();
+ await new Promise(function(r){setTimeout(r,100);});
+ check(requests.length===4 && JSON.parse(requests[3].params.docs_json)['10_klasyfikacja_podstawowa'].value==='Tekst literacki wierszowany','repeated save during open dropdown commits once');
+ requests[3].success();requests[3].complete();
+ // Invalid edits must not trigger a save of an older buffered value.
+ hot.selectCell(0,2);ed=hot.getActiveEditor();ed.beginEditing();
+ await new Promise(function(r){setTimeout(r,100);});
+ ed.htEditor.deselectCell();ed.setValue('Unknown');saveMetadataChanges();
+ await new Promise(function(r){setTimeout(r,100);});
+ check(requests.length===4 && !metadataSaveWaitingForEditor && ed.isOpened(),'invalid choice keeps editor open and does not save');
+ ed.htEditor.selectCell(0,0);saveMetadataChanges();
+ await new Promise(function(r){setTimeout(r,100);});
+ check(requests.length===5 && JSON.parse(requests[4].params.docs_json)['10_required_choice'].value==='A','corrected choice can be saved after rejected edit');
+ requests[4].success();requests[4].complete();
  hot.destroy();document.getElementById('result').textContent=JSON.stringify({passed:passed.length,checks:passed});
 } catch(e){document.getElementById('result').textContent=JSON.stringify({error:String(e),passed:passed});}})();});
 </script>

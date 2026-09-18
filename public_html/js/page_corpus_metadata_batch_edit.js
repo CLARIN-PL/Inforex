@@ -18,8 +18,24 @@ var metadata_separators = [
 var pattern;
 var metadataSaveInFlight = false;
 var metadataSaveQueued = false;
+var metadataSaveWaitingForEditor = false;
 
 function saveMetadataChanges(){
+    // Dropdown validation is asynchronous in Handsontable 0.19. A Save click
+    // may arrive before afterChange has put the selected value in our buffer.
+    var editor = hot && hot.getActiveEditor();
+    if (editor && (editor.isOpened() || editor.isWaiting())) {
+        if (!metadataSaveWaitingForEditor) {
+            metadataSaveWaitingForEditor = true;
+            editor.finishEditing(false, false, function(valid) {
+                metadataSaveWaitingForEditor = false;
+                if (valid) {
+                    saveMetadataChanges();
+                }
+            });
+        }
+        return;
+    }
     if (metadataSaveInFlight) {
         metadataSaveQueued = true;
         return;
