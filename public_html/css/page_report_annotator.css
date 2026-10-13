@@ -842,7 +842,7 @@
 
 span.annotation.new-relation-target { cursor: crosshair; border-color: red; border-style: solid; }
 
-.relation-types .dropdown-menu { height: 400px; overflow: auto; }
+.relation-types .dropdown-menu { max-height: 400px; overflow: auto; }
 
 .annotation-type-tree .popover-content { overflow: auto; height: 400px; }
 
