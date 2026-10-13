@@ -180,7 +180,11 @@ class Page_report extends CPageCorpus {
 			$this->includeJs("js/page_report_{$subpage}_resize.js");
 		}
 		if (file_exists(Config::Cfg()->get_path_www() . "/css/page_report_{$subpage}.css")){
-			$this->includeCss("css/page_report_{$subpage}.css");
+			$cssPath = "css/page_report_{$subpage}.css";
+			if ($subpage === 'annotator') {
+				$cssPath .= '?v=20261013-relation-menu-1';
+			}
+			$this->includeCss($cssPath);
 		}
 		
 		$this->set('flags_active', isset($_COOKIE['flags_active']) ? $_COOKIE['flags_active'] : "1");
