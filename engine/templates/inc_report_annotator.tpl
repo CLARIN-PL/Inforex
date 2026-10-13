@@ -105,7 +105,7 @@
 					<div class="dropup relation-types">
 						<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add relation
 							<span class="caret"></span></button>
-						<ul class="dropdown-menu"></ul>
+						<ul class="dropdown-menu" style="height: auto; max-height: 400px; overflow-y: auto;"></ul>
 					</div>
 				</div>
 			</div>
