@@ -22,7 +22,7 @@ class Ajax_report_get_annotation_relation_types extends CPageCorpus {
         $sql = "SELECT rt.id, rt.name, rt.description, rs.name AS set_name  FROM relation_types rt " .
                   " JOIN relation_sets rs USING (relation_set_id)" .
                   " JOIN corpora_relations cr ON cr.relation_set_id = rs.relation_set_id AND cr.corpus_id = ? " .
-                  " WHERE (rt.id IN (" .
+                  " WHERE rt.id IN (" .
                          "SELECT relation_type_id " .
                          "FROM relations_groups " .
                          "WHERE part='source' " .
