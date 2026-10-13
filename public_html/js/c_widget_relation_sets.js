@@ -14,10 +14,20 @@ function WidgetRelationSetSelector(cssSelector, key){
  */
 WidgetRelationSetSelector.prototype.load = function() {
 	var idsStr = $.cookie(this.key);
-	var ids = (idsStr == null ? [] : idsStr.split(","));
 	var parent = this;
+
+	// A missing cookie means that this corpus has not been configured in this
+	// browser yet. Enable the corpus relation sets by default, while preserving
+	// an existing empty cookie as an explicit "display none" preference.
+	if (idsStr == null) {
+		$(parent.box).find("input[type=checkbox]").prop("checked", true);
+		this.save();
+		return;
+	}
+
+	var ids = idsStr.split(",");
     $.each(ids, function(index,value){
-        $(parent.box).find("input[value="+value+"]").attr("checked", true);
+		$(parent.box).find("input[value="+value+"]").prop("checked", true);
 	});
 };
 
