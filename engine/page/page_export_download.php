@@ -29,12 +29,7 @@ class Page_export_download extends CPage{
 			header('Cache-Control: no-store, no-cache, must-revalidate, no-transform');
 			header('Pragma: no-cache');
 			header('X-Accel-Buffering: no');
-			$handle = fopen($file, 'rb');
-			while (!feof($handle)) {
-				echo fread($handle, 1048576);
-				flush();
-			}
-			fclose($handle);
+			readfile($file);
 	        exit();
 	    } else { // File not found
             // write to error log
