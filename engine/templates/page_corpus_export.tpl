@@ -306,7 +306,7 @@
                             </span>
                             <span id="export_download_{$export.export_id}" class="corpus-export-operation">
                             {if $export.status == "done"}
-                                <a href="index.php?page=export_download&amp;export_id={$export.export_id}" title="Download">
+                                <a class="export_download_link" href="index.php?page=export_download&amp;export_id={$export.export_id}" title="Download">
                                     <button class="btn btn-xs btn-primary"><i class="fa fa-download" aria-hidden="true"></i></button>
                                 </a>
                             {else}
