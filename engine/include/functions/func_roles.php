@@ -21,10 +21,13 @@ function hasUserSystemRole($user, $anyRole){
 }
 
 function hasUserCorpusRole($user, $corpus, $anyRole){
-    if ( in_array(CORPUS_ROLE_IS_PUBLIC, $anyRole) && $corpus['public'] ){
+    if ( in_array(CORPUS_ROLE_IS_PUBLIC, $anyRole) && !empty($corpus['public']) ){
         return true;
     } else {
-        $userRoles = $corpus['role'][$user['user_id']];
+        $userId = is_array($user) && isset($user['user_id']) ? $user['user_id'] : null;
+        $userRoles = $userId !== null && isset($corpus['role'][$userId])
+            ? $corpus['role'][$userId]
+            : null;
         $userRoles = array_keys(is_array($userRoles) ? $userRoles : array(ROLE_SYSTEM_USER_PUBLIC => ""));
         return count(array_intersect($userRoles, $anyRole)) > 0;
     }
