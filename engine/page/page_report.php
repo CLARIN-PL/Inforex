@@ -29,17 +29,19 @@ class Page_report extends CPageCorpus {
 		$this->cid = $cid;
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
-		$id 	= intval($_GET['id']);
+			$id 	= intval(isset($_GET['id']) ? $_GET['id'] : 0);
 		$this->id = $id;
-		$p 		= intval($_GET['p']);
-		$edit 	= intval($_GET['edit']);
-		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE["{$cid}_".'subpage'];
+			$p 		= intval(isset($_GET['p']) ? $_GET['p'] : 0);
+			$edit 	= intval(isset($_GET['edit']) ? $_GET['edit'] : 0);
+			$subpageCookie = "{$cid}_subpage";
+			$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : (isset($_COOKIE[$subpageCookie]) ? $_COOKIE[$subpageCookie] : '');
 		$this->subpage = $subpage;
-		$view  = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
-		$where = trim($_COOKIE["{$cid}_".'sql_where']);
-		$join  = stripslashes($_COOKIE["{$cid}_".'sql_join']);
-		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
-		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
+			$viewCookie = "{$cid}_view";
+			$view  = array_key_exists('view', $_GET) ? $_GET['view'] : (isset($_COOKIE[$viewCookie]) ? $_COOKIE[$viewCookie] : '');
+			$where = trim(isset($_COOKIE["{$cid}_sql_where"]) ? $_COOKIE["{$cid}_sql_where"] : '');
+			$join  = stripslashes(isset($_COOKIE["{$cid}_sql_join"]) ? $_COOKIE["{$cid}_sql_join"] : '');
+			$group = stripcslashes(isset($_COOKIE["{$cid}_sql_group"]) ? $_COOKIE["{$cid}_sql_group"] : '');
+			$order = stripcslashes(isset($_COOKIE["{$cid}_sql_order"]) ? $_COOKIE["{$cid}_sql_order"] : '');
 		
 		// Domyślne wartości dla wymaganych
 		$order = strlen($order)==0 ? "r.id ASC" : $order; 

@@ -13,7 +13,8 @@ class CookieManager {
      */
 
     static function getPreviewUser($report_id){
-        $user = $_COOKIE[$report_id . '_preview_user'];
+        $key = $report_id . '_preview_user';
+        $user = isset($_COOKIE[$key]) ? $_COOKIE[$key] : null;
         return $user;
     }
 

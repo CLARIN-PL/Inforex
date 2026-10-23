@@ -152,8 +152,9 @@ class CPage extends CRequest{
                     return true;
                 } else {
 
-			if(isset($corpus['role'][$user['user_id']])) {
-                    		$userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+				$userId = is_array($user) && isset($user['user_id']) ? $user['user_id'] : null;
+				if($userId !== null && isset($corpus['role'][$userId])) {
+					$userCorpusRoles = is_array($corpus['role'][$userId]) ? array_keys($corpus['role'][$userId]) : array(ROLE_SYSTEM_USER_PUBLIC);
 			} else {
 				$userCorpusRoles = array(ROLE_SYSTEM_USER_PUBLIC);
 			}

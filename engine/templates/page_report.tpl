@@ -33,13 +33,13 @@
         </div>
     </nav>
 {if $corpus.public || $user}
-    {if $invalid_report_id}
+    {if isset($invalid_report_id) && $invalid_report_id}
         <div style="background: #E03D19; padding: 1px; margin: 10px; ">
             <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;">
                <img src="gfx/image-missing.png" title="No access" style="vertical-align: middle"/> Document does not exist. Go back to <a href="index.php?page=browse&amp;corpus={$corpus.id}">list of documents</a>
            </div>
         </div>
-	{elseif $page_permission_denied}
+	{elseif isset($page_permission_denied) && $page_permission_denied}
         <div style="background: #E03D19; padding: 1px; margin: 10px; ">
             <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;">
                <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/> {$page_permission_denied}

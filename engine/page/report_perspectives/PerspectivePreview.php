@@ -41,12 +41,12 @@ class PerspectivePreview extends CPerspective {
             $user = null;
         }
 
-        $force_annotation_set_id = intval($_GET['annotation_set_id']);
-		$stage_annotations = strval($_COOKIE['stage_annotations']);
+        $force_annotation_set_id = intval(isset($_GET['annotation_set_id']) ? $_GET['annotation_set_id'] : 0);
+			$stage_annotations = strval(isset($_COOKIE['stage_annotations']) ? $_COOKIE['stage_annotations'] : '');
 		if ( !in_array($stage_annotations, $stages_annotations) ){
 		    $stage_annotations = "final";
         }
-        $stage_relations = strval($_COOKIE['stage_relations']);
+        $stage_relations = strval(isset($_COOKIE['stage_relations']) ? $_COOKIE['stage_relations'] : '');
         if ( !in_array($stage_relations, $stages_relations) ){
             $stage_relations = "final";
         }
@@ -105,7 +105,7 @@ class PerspectivePreview extends CPerspective {
 
         /* Setup active accordion panel */
         $accordions = array("collapseConfiguration", "collapseAnnotations", "collapseRelations");
-        $activeAccordion = $_COOKIE['accordion_active'];
+        $activeAccordion = isset($_COOKIE['accordion_active']) ? $_COOKIE['accordion_active'] : '';
         if ( !in_array($activeAccordion, $accordions) ){
             $activeAccordion = $accordions[0];
         }

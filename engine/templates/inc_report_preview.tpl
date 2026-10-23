@@ -20,7 +20,7 @@
             <span>Document content</span>
         </div>
         <div class="panel-body report-preview-content-body">
-            <div id="leftContent" style="width: {if $showRight}50%{else}100%{/if};" class="annotations scrolling content report-preview-document-content">
+            <div id="leftContent" style="width: {if isset($showRight) && $showRight}50%{else}100%{/if};" class="annotations scrolling content report-preview-document-content">
                   <div class="contentBox {$report.format} report-preview-content-box">{$content|format_annotations}</div>
             </div>
         </div>
