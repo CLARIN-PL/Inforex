@@ -166,7 +166,7 @@ class ReportContent
         $format = isset($report['format']) ? $report['format'] :'';
         // Escape html special characters for plain format
         if ( $format == 'plain'){
-            $content = htmlspecialchars($content);
+            $content = htmlspecialchars($content, ENT_COMPAT | ENT_HTML401, 'UTF-8');
         }
         return new HtmlStr2($content, true);
     }
@@ -175,7 +175,7 @@ class ReportContent
         $content = $report->getContent();
         // Escape html special characters for plain format
         if ( $report->getFormatId() == DB_REPORT_FORMATS_PLAIN){
-            $content = htmlspecialchars($content);
+            $content = htmlspecialchars($content, ENT_COMPAT | ENT_HTML401, 'UTF-8');
         }
         return new HtmlStr2($content, true);
     }

@@ -126,7 +126,7 @@ class HtmlStr{
 					/* Jeżeli są tagi wewnątrzne */
 					if ( count($tag_stack) > 0 ){
 						$pop = array_pop($tag_stack);
-						if ($pop != mb_trim($tag, "/")){
+						if ($pop != inforex_mb_trim($tag)){
 							throw new Exception("Tag missmatch in insertTag()" .
 								" pop='$pop', " .
 								" tag='$tag'," .
@@ -141,7 +141,7 @@ class HtmlStr{
 					else{
 						$pop = array_pop($stack);
 						$pop = $pop[0];
-						if ( $pop != mb_trim($tag, "/") )
+						if ( $pop != inforex_mb_trim($tag) )
 							throw new Exception("Tag missmatch in insertTag()" .
 								" pop='$pop', " .
 								" tag='$tag'," .
@@ -332,7 +332,7 @@ class HtmlStr{
 	 */	
 	function skipWhitespaces(){
 		$len = mb_strlen($this->content);
-		while ($this->n < $len && mb_trim(mb_substr($this->content, $this->n, 1))=='')
+		while ($this->n < $len && inforex_mb_trim(mb_substr($this->content, $this->n, 1))=='')
 			$this->n++;		
 	}
 
@@ -340,7 +340,7 @@ class HtmlStr{
 	 * Pomiń białe znaki od tyłu
 	 */	
 	function skipWhitespacesBackward(){
-		while ($this->n >= 0 && mb_trim(mb_substr($this->content, $this->n-1, 1))=='')
+		while ($this->n >= 0 && inforex_mb_trim(mb_substr($this->content, $this->n-1, 1))=='')
 			$this->n--;		
 	}
 	
@@ -363,7 +363,7 @@ class HtmlStr{
 				$text .= $this->consumeCharacter();
 			}
 		}
-		return mb_trim($text);
+		return inforex_mb_trim($text);
 	}
 	
 	/**
@@ -400,7 +400,7 @@ class HtmlStr{
 		}
 		
 		$zn = mb_substr($this->content, $n, 1); 
-		if (!$this->ignore_whitespaces || mb_trim($zn)!=''){
+		if (!$this->ignore_whitespaces || inforex_mb_trim($zn)!=''){
 			$this->m++;
 		}
 		$this->n++;
@@ -445,7 +445,7 @@ class HtmlStr{
 		}
 		
 		/* Jak jesteśmy w tym miejscu, to mamy do czynienia ze znakiem */
-		if (!$this->ignore_whitespaces || mb_trim($c)!=''){
+		if (!$this->ignore_whitespaces || inforex_mb_trim($c)!=''){
 			$this->m--;
 		}
 		$this->n--;
@@ -455,14 +455,14 @@ class HtmlStr{
 	function isNoSpace(){
 		$left_content = mb_substr($this->content, $this->n);
 		$left_content = strip_tags($left_content);
-		return mb_trim($left_content[0]) == "";
+		return inforex_mb_trim($left_content[0]) == "";
 	}
 }
 
-function mb_trim( $string )
+function inforex_mb_trim($string)
 {
-    //$string = preg_replace( "/(^\s+)|(\s+$)/us", "", $string );   
-    return trim($string);
-} 
+	//$string = preg_replace( "/(^\s+)|(\s+$)/us", "", $string );
+	return trim($string);
+}
 
 ?>

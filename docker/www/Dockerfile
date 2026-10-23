@@ -1,11 +1,13 @@
-#FROM php:8.4.19-apache as php-base
-FROM php:7.4.33-apache as php-base
+FROM php:8.4.27-apache AS php-base
 
 RUN apt-get update -y \
     && apt-get upgrade -y \
-    && apt-get install -y software-properties-common wget less p7zip-full libpng-dev zstd python3 python3-pip \
-    && pip3 install --no-cache-dir pyarrow \
+    && apt-get install -y wget less p7zip-full libpng-dev zstd python3 python3-venv \
+    && python3 -m venv /opt/inforex-python \
+    && /opt/inforex-python/bin/pip install --no-cache-dir pyarrow \
     && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/opt/inforex-python/bin:${PATH}"
 
 # Workaround for write permission on write to MacOS X volumes
 # See https://github.com/boot2docker/boot2docker/pull/534
@@ -26,7 +28,7 @@ RUN apt-get update -y \
 	&& docker-php-ext-install mysqli \
 	&& docker-php-ext-install zip \
 	&& docker-php-ext-install gd \
-    	&& pecl install mcrypt-1.0.3 \
+	&& pecl install mcrypt-1.0.9 \
     	&& docker-php-ext-enable mcrypt \
         && rm -rf /var/lib/apt/lists/*
 
@@ -37,7 +39,7 @@ RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.g
     && rm /tmp/xdiff.tar.gz \
     && cd /usr/src/xdiff \
     && ./configure  && make && make install \
-    &&  pecl install xdiff-2.0.1 && docker-php-ext-enable xdiff
+    &&  pecl install xdiff-2.2.0 && docker-php-ext-enable xdiff
 
 # Supervisor
 RUN apt-get update -y && apt-get install -y supervisor && rm -rf /var/lib/apt/lists/*

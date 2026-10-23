@@ -167,13 +167,15 @@ function psa($both, $only1, $only2){
 	}
 }
 
-function array_find($heystack, $f) {
-    foreach ($heystack as $key=>$item) {
-        if (call_user_func($f, $key) === true) {
-            return $key;
+if (!function_exists('array_find')) {
+	function array_find($heystack, $f) {
+		foreach ($heystack as $key=>$item) {
+			if (call_user_func($f, $key) === true) {
+				return $key;
+			}
 		}
-    }
-    return null;
+		return null;
+	}
 }
 
 function mergeArraysOnKeys($arr1, $arr2, $key1, $key2){

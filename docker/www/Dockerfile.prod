@@ -1,10 +1,13 @@
-FROM php:7.4.33-apache as php-base
+FROM php:8.4.27-apache AS php-base
 
 RUN apt-get update -y \
     && apt-get upgrade -y \
-    && apt-get install -y software-properties-common wget less p7zip-full libpng-dev zstd python3 python3-pip \
-    && pip3 install --no-cache-dir pyarrow \
+    && apt-get install -y wget less p7zip-full libpng-dev zstd python3 python3-venv \
+    && python3 -m venv /opt/inforex-python \
+    && /opt/inforex-python/bin/pip install --no-cache-dir pyarrow \
     && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/opt/inforex-python/bin:${PATH}"
 
 RUN usermod -u 1000 www-data
 
@@ -17,7 +20,7 @@ RUN apt-get update -y \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install zip \
     && docker-php-ext-install gd \
-    && pecl install mcrypt-1.0.3 \
+    && pecl install mcrypt-1.0.9 \
     && docker-php-ext-enable mcrypt \
     && rm -rf /var/lib/apt/lists/*
 
@@ -29,7 +32,7 @@ RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.g
     && ./configure \
     && make \
     && make install \
-    && pecl install xdiff-2.0.1 \
+    && pecl install xdiff-2.2.0 \
     && docker-php-ext-enable xdiff
 
 RUN apt-get update -y \
