@@ -8,7 +8,11 @@ class PageAjaxDiagnostic{
         $ajax_list = array();
 
         foreach($files as $file) {
-            $handle = fopen($js_folder . "/" . $file, "r");
+            $path = $js_folder . "/" . $file;
+            if (!is_file($path)) {
+                continue;
+            }
+            $handle = fopen($path, "r");
             if ($handle) {
                 $line_number = 1;
                 while (($line = fgets($handle)) !== false) {
@@ -51,7 +55,7 @@ class PageAjaxDiagnostic{
         }
     }
 
-    private function getAjaxAccessInfo($ajax_list){
+    private static function getAjaxAccessInfo($ajax_list){
         $validatorAjax = new PageAccessValidator(Config::Cfg()->get_path_engine(), "ajax");
         $validatorAjax->process();
         $ajax_access = $validatorAjax->items;
@@ -59,52 +63,77 @@ class PageAjaxDiagnostic{
         $pages = self::getPageAccessInfoByFilename();
 
         foreach ($ajax_access as $ajax) {
-            $ajax_list[$ajax->className]['anyAjaxCorpusRole'] = $ajax->anyCorpusRole;
-            $ajax_list[$ajax->className]['anyAjaxSystemRole'] = $ajax->anySystemRole;
-            $ajax_list[$ajax->className]['parentClassName'] = $ajax->parentClassName;
-            $ajax_list[$ajax->className]['description'] = $ajax->description;
+            $className = $ajax->className;
+            if (!isset($ajax_list[$className])) {
+                $ajax_list[$className] = array();
+            }
+            $item =& $ajax_list[$className];
+            $item['files'] = isset($item['files']) ? $item['files'] : array();
+            $item['file_names'] = isset($item['file_names']) ? $item['file_names'] : array();
+            $item['keywords'] = isset($item['keywords']) ? $item['keywords'] : array();
+            $item['anyAjaxCorpusRole'] = $ajax->anyCorpusRole;
+            $item['anyAjaxSystemRole'] = $ajax->anySystemRole;
+            $item['parentClassName'] = $ajax->parentClassName;
+            $item['description'] = $ajax->description;
 
             $usedOnPages = self::getAjaxUsedOnPages($ajax->className);
 
             //Save the roles of a CPage class
-            if ($ajax_list[$ajax->className]['file_names'] !== null || count($usedOnPages)>0 ) {
-                $ajax_list[$ajax->className]['anyPageCorpusRole'] = array();
-                $ajax_list[$ajax->className]['anyPageSystemRole'] = array();
+            if (!empty($item['file_names']) || count($usedOnPages)>0 ) {
+                $item['anyPageCorpusRole'] = array();
+                $item['anyPageSystemRole'] = array();
 
-                if ($ajax_list[$ajax->className]['file_names'] !== null) {
-                    foreach ($ajax_list[$ajax->className]['file_names'] as $file => $value) {
+                if (!empty($item['file_names'])) {
+                    foreach ($item['file_names'] as $file => $value) {
                         if (isset($pages[$file])) {
-                            $ajax_list[$ajax->className]['CPages'][] = $pages[$file];
-                            $ajax_list[$ajax->className]['anyPageCorpusRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
-                            $ajax_list[$ajax->className]['anyPageSystemRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageSystemRole'], $pages[$file]->anySystemRole));
+                            $item['CPages'][] = $pages[$file];
+                            $item['anyPageCorpusRole'] = array_unique(array_merge($item['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
+                            $item['anyPageSystemRole'] = array_unique(array_merge($item['anyPageSystemRole'], $pages[$file]->anySystemRole));
                         }
                     }
                 }
 
                 foreach ($usedOnPages as $file){
                     if (isset($pages[$file])) {
-                        $ajax_list[$ajax->className]['CPages'][] = $pages[$file];
-                        $ajax_list[$ajax->className]['anyPageCorpusRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
-                        $ajax_list[$ajax->className]['anyPageSystemRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageSystemRole'], $pages[$file]->anySystemRole));
+                        $item['CPages'][] = $pages[$file];
+                        $item['anyPageCorpusRole'] = array_unique(array_merge($item['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
+                        $item['anyPageSystemRole'] = array_unique(array_merge($item['anyPageSystemRole'], $pages[$file]->anySystemRole));
                     }
                 }
 
                 //If the intersection of the page roles & ajax roles is not empty - no access problem
-                if (self::hasAccessConflict($ajax_list[$ajax->className])) {
-                    $ajax_list[$ajax->className]['access_problem'] = true;
-                }
+                $item['access_problem'] = self::hasAccessConflict($item);
             } else {
-                $ajax_list[$ajax->className]['CPages'] = null;
-                $ajax_list[$ajax->className]['access_problem'] = true;
+                $item['CPages'] = null;
+                $item['anyPageCorpusRole'] = array();
+                $item['anyPageSystemRole'] = array();
+                $item['access_problem'] = true;
             }
 
             if (in_array(ROLE_SYSTEM_USER_PUBLIC, $ajax->anySystemRole)){
-                $ajax_list[$ajax->className]['access_problem'] = false;
-            } else if ($ajax_list[$ajax->className]['keywords'] != null
+                $item['access_problem'] = false;
+            } else if (!empty($item['keywords'])
                     && empty($ajax->anyCorpusRole)
                     && !(in_array(ROLE_SYSTEM_USER_PUBLIC, $ajax->anySystemRole))) {
-                $ajax_list[$ajax->className]['access_problem'] = true;
+                $item['access_problem'] = true;
             }
+            unset($item);
+        }
+        $defaults = array(
+            'files' => array(),
+            'file_names' => array(),
+            'keywords' => array(),
+            'anyAjaxCorpusRole' => array(),
+            'anyAjaxSystemRole' => array(),
+            'parentClassName' => '',
+            'description' => '',
+            'CPages' => array(),
+            'anyPageCorpusRole' => array(),
+            'anyPageSystemRole' => array(),
+            'access_problem' => true,
+        );
+        foreach ($ajax_list as $className => $item) {
+            $ajax_list[$className] = array_merge($defaults, $item);
         }
         ksort($ajax_list);
         return $ajax_list;
@@ -118,7 +147,7 @@ class PageAjaxDiagnostic{
      * @return bool
      */
 
-    private function hasAccessConflict($ajax){
+    private static function hasAccessConflict($ajax){
         //Check if there are any corpus roles.
 
         //$anyAjaxRole = array_unique(array_merge($ajax['anyAjaxCorpusRole'], $ajax['anyAjaxSystemRole']));
@@ -164,7 +193,7 @@ class PageAjaxDiagnostic{
      * the page filename without the extension is the key of the array.
      * @return array
      */
-    private function getPageAccessInfoByFilename(){
+    private static function getPageAccessInfoByFilename(){
 
         $validatorPage = new PageAccessValidator(Config::Cfg()->get_path_engine(), "page");
         $validatorPage->process();
