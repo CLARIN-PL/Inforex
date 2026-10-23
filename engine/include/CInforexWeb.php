@@ -251,7 +251,7 @@ class InforexWeb
         /* Gather the data about an activity */
         $activity_page = array();
         $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "CLI local" ));
-        $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
+        $activity_page['user_id'] = isset($user['user_id']) ? $user['user_id'] : null;
         $activity_page['corpus_id'] = isset($corpus['id']) ? $corpus['id'] : null;
         $activity_page['report_id'] = RequestLoader::getDocumentId();
         $activity_page['datetime'] = date("Y-m-d H:i:s");
