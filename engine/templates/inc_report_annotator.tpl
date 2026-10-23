@@ -21,7 +21,7 @@
 		</div>
 		<div id="widget_text" class="panel-body column report-annotator-content-body">
 			<div id="content">
-				<div id="leftContent" style="width: {if $showRight}50%{else}100%{/if};" class="annotations scrolling content report-preview-document-content report-annotator-document-content">
+				<div id="leftContent" style="width: {if isset($showRight) && $showRight}50%{else}100%{/if};" class="annotations scrolling content report-preview-document-content report-annotator-document-content">
 				  <div class="contentBox {$report.format} report-preview-content-box report-annotator-content-box">{$content|format_annotations}</div>
 				</div>{*
 				<div id="rightContent" style="{if !$showRight}display: none{/if};" class="annotations scrolling content rightPanel">

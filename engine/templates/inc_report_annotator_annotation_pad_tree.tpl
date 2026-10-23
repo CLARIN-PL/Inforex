@@ -28,7 +28,7 @@
                                     </a>
                                 </span>
                                 <div class="icons" style="float: right;">
-                                    <i {if !$type.not_default} style="display: none;" {/if} id="default{$type.annotation_type_id}" class="refresh_default fa fa-refresh" aria-hidden="true">  </i>
+                                    <i {if !isset($type.not_default) || !$type.not_default} style="display: none;" {/if} id="default{$type.annotation_type_id}" class="refresh_default fa fa-refresh" aria-hidden="true">  </i>
                                     <i id="eye{$type.annotation_type_id}" {if $type.common == 0}class="eye_hide fa fa-eye-slash"{else}class="eye_hide fa fa-eye"{/if} aria-hidden="true"></i>
                                 </div>
                             </div>

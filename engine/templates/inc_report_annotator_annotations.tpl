@@ -15,7 +15,7 @@
     <div id="collapseAnnotations" class="panel-collapse collapse {if $active_accordion=="collapseAnnotations"}in{/if}">
         <div class="scrollingAccordion">
             <div id="annotationList" class="annotations scrolling">
-                {if $annotation_list_disabled}
+                {if isset($annotation_list_disabled) && $annotation_list_disabled}
                     <div class="alert alert-warning" style="margin: 10px;">
                         Annotation list was disabled for this preview because the document contains {$annotation_count} annotations.
                         The text preview is still available.
@@ -36,7 +36,7 @@
                             <td><span class="annotation-id-placeholder" title="Annotation ID: {$an.id}">#…</span></td>
                             <td>{$an.type}</td>
                             <td>{$an.text}</td>
-                            <td class="attributes">{if $an.attributes}{$an.attributes}{else}-{/if}</td>
+                            <td class="attributes">{if isset($an.attributes) && $an.attributes}{$an.attributes}{else}-{/if}</td>
                             <td class="range">{$an.from}:{$an.to}</td>
                             <td class="icons">
                                 <div class="hoverIcons">

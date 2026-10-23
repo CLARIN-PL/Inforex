@@ -30,7 +30,7 @@
                                             <li>Empty</li>
                                         {/if}
                                         {foreach from=$corpus.user_owned_corpora item=element}
-                                            <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
+                                            <li><a href="index.php?page={if isset($row.title) && $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
                                         {/foreach}
                                     </ul>
                                 </li>
@@ -40,7 +40,7 @@
                                     <a tabindex="-1" href="#"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Public corpora</a>
                                     <ul class="dropdown-menu corpus_dropdown_menu">
                                         {foreach from=$corpus.public_corpora item=element}
-                                            <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name} <strong>({if isset($element.screename)}{$element.screename}{/if})</strong></a></li>
+                                            <li><a href="index.php?page={if isset($row.title) && $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name} <strong>({if isset($element.screename)}{$element.screename}{/if})</strong></a></li>
                                         {/foreach}
                                     </ul>
                                 </li>
@@ -51,7 +51,7 @@
                                     <a tabindex="-1" href="#"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Private corpora</a>
                                     <ul class="dropdown-menu corpus_dropdown_menu">
                                         {foreach from=$corpus.private_corpora item=element}
-                                            <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name} <strong>({if isset($element.screename)}{$element.screename}{/if})</strong></a></li>
+                                            <li><a href="index.php?page={if isset($row.title) && $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name} <strong>({if isset($element.screename)}{$element.screename}{/if})</strong></a></li>
                                         {/foreach}
                                     </ul>
                                 </li>
@@ -94,7 +94,7 @@
 							</li>
 							{/if}
 							<li{if $page=="corpus_documents" || $page=="report"} class="active"{/if}>
-								<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">
+									<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}{if isset($report_id) && $report_id>0}&amp;r={$report_id}{/if}">
 									<span class="glyphicon glyphicon-file" aria-hidden="true"></span> Browse documents</a></li>
                             {if "browse_annotations"|has_corpus_role_or_owner}
 							<li class="dropdown-submenu corpora_collapse">
@@ -277,8 +277,8 @@
 		<li class="report-pager-current">
 			<span>
 				<b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b>
-				{if $row.subcorpus_name}<span class="report-pager-subcorpus">{$row.subcorpus_name}</span>{/if}
-				{if $row.title}<span class="document_title" title="{$row.title|escape}">{$row.title}</span>{/if}
+				{if isset($row.subcorpus_name) && $row.subcorpus_name}<span class="report-pager-subcorpus">{$row.subcorpus_name}</span>{/if}
+				{if isset($row.title) && $row.title}<span class="document_title" title="{$row.title|escape}">{$row.title}</span>{/if}
 			</span>
 		</li>
 		<li class="next report-pager-count"><span title="Liczba raportów znajdujących się po aktualnym raporcie">{$row_next_c}</span></li>

@@ -55,6 +55,7 @@ COPY docker/www/setup.sh /bin
 COPY docker/www/sample.config.local.php /bin
 COPY docker/www/korpuskop-runtime /opt/korpuskop
 COPY docker/www/php.ini /usr/local/etc/php/conf.d
+COPY docker/www/php-production.ini /usr/local/etc/php/conf.d/zz-production.ini
 COPY docker/www/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN mkdir -p /var/lock/apache2 /var/run/apache2 /var/log/supervisor

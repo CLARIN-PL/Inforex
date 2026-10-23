@@ -99,7 +99,7 @@
 					<table class="table table-striped">
 						<tr>
 							<td>Display every sentence separately</td>
-							<td style="text-align: center; width: 100px"><input id="splitSentences" type="checkbox" {if $smarty.cookies.splitSentences=="true"}checked="checked"{/if} style="vertical-align: middle"/></td>
+								<td style="text-align: center; width: 100px"><input id="splitSentences" type="checkbox" {if isset($smarty.cookies.splitSentences) && $smarty.cookies.splitSentences=="true"}checked="checked"{/if} style="vertical-align: middle"/></td>
 						</tr>
 					</table>
 				</div>

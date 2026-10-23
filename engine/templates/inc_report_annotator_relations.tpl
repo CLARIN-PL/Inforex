@@ -21,13 +21,13 @@
 					class="btn btn-xs btn-primary report-relations-graph-trigger"
 					data-toggle="modal"
 					data-target="#relationsGraphModal"
-					data-relation-list-disabled="{if $relation_list_disabled}1{else}0{/if}"
+						data-relation-list-disabled="{if isset($relation_list_disabled) && $relation_list_disabled}1{else}0{/if}"
 				>
 					<i class="fa fa-sitemap" aria-hidden="true"></i>
 					<span>View graph</span>
 				</button>
 			</div>
-			{if $relation_list_disabled}
+				{if isset($relation_list_disabled) && $relation_list_disabled}
 				<div class="alert alert-warning" style="margin: 10px;">
 					Relation list was disabled for this preview because the document contains {$relation_count} relations.
 					The text preview is still available.

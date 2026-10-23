@@ -89,7 +89,8 @@ function parseIds($idsString)
 
 $css = array();
 $css[] = getAnnotationStyles(
-    parseIds($_GET['annotation_set_ids']), boolval($_GET['ignore_annotation_set_ids']));
-$css[] = getCorpusStyles(parseIds($_GET['corpora_ids']));
+    parseIds(isset($_GET['annotation_set_ids']) ? $_GET['annotation_set_ids'] : ''),
+    boolval(isset($_GET['ignore_annotation_set_ids']) ? $_GET['ignore_annotation_set_ids'] : false));
+$css[] = getCorpusStyles(parseIds(isset($_GET['corpora_ids']) ? $_GET['corpora_ids'] : ''));
 
 echo implode("\n", $css);
