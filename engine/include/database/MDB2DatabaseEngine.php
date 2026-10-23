@@ -19,6 +19,12 @@ class MDB2DatabaseEngine implements IDatabaseEngine {
 	private $mdb2	= null;
 
 	public function __construct($dsn) {
+		// PHP 8.1+ enables MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT by
+		// default. MDB2 predates that behaviour and expects mysqli calls to
+		// return false so it can convert errors to MDB2_Error objects itself.
+		if (function_exists('mysqli_report')) {
+			mysqli_report(MYSQLI_REPORT_OFF);
+		}
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
         $options['debug']=2;
 		$options['result_buffering']=false;
