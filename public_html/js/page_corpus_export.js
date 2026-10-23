@@ -17,6 +17,14 @@ $(document).ready(function(){
         setupRelationTree();
     }
 
+    $(document).on('click', '.export_download_link', function(event){
+        if (!window.fetch || !window.Blob) {
+            return;
+        }
+        event.preventDefault();
+        downloadExportInChunks(this.href, this);
+    });
+
     $("#export_message_body").on('click', '.error_details_btn', function(){
         var parent_tr = $(this).closest('tr');
 
@@ -475,7 +483,7 @@ function fetchExportStatus(){
                 $("#export_status_"+export_id).html(formatExportStatus("done"));
 		var finish_time_html = formatExportTimeToWidget(value.datetime_finish);
 		$("#export_finish_"+export_id).html(finish_time_html);
-                var download_button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
+                var download_button_html = '<a class="export_download_link" href="index.php?page=export_download&amp;export_id='+export_id+'">'+
                                      '<button class="btn btn-xs btn-primary" title="Download"><i class="fa fa-download" aria-hidden="true"></i></button>'+
                                   '</a>';
                 $("#export_download_"+export_id).html(download_button_html);
@@ -521,6 +529,59 @@ function fetchExportStatus(){
         'current_exports': ongoing_exports.current_exports
     };
     doAjax("export_get_export_status", data, success);
+}
+
+async function downloadExportInChunks(url, link) {
+    var chunkSize = 512 * 1024;
+    var start = 0;
+    var total = null;
+    var parts = [];
+    var button = $(link).find('button');
+    button.prop('disabled', true);
+
+    try {
+        do {
+            var response = await fetch(url, {
+                credentials: 'same-origin',
+                headers: { 'Range': 'bytes=' + start + '-' + (start + chunkSize - 1) }
+            });
+            if (response.status !== 206) {
+                throw new Error('Server did not return a partial response.');
+            }
+
+            var contentRange = response.headers.get('Content-Range');
+            var match = contentRange && contentRange.match(/^bytes (\d+)-(\d+)\/(\d+)$/);
+            if (!match || parseInt(match[1], 10) !== start) {
+                throw new Error('Invalid partial response range.');
+            }
+
+            var part = await response.arrayBuffer();
+            var expectedLength = parseInt(match[2], 10) - start + 1;
+            if (part.byteLength !== expectedLength) {
+                throw new Error('Partial response was truncated.');
+            }
+
+            parts.push(part);
+            start = parseInt(match[2], 10) + 1;
+            total = parseInt(match[3], 10);
+        } while (start < total);
+
+        var disposition = response.headers.get('Content-Disposition') || '';
+        var filenameMatch = disposition.match(/filename="([^"]+)"/);
+        var filename = filenameMatch ? filenameMatch[1] : 'inforex_export.zip';
+        var objectUrl = URL.createObjectURL(new Blob(parts, { type: 'application/octet-stream' }));
+        var downloadLink = document.createElement('a');
+        downloadLink.href = objectUrl;
+        downloadLink.download = filename;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        setTimeout(function(){ URL.revokeObjectURL(objectUrl); }, 1000);
+    } catch (error) {
+        alert('Export download failed: ' + error.message);
+    } finally {
+        button.prop('disabled', false);
+    }
 }
 
 function getCurrentExports(){
