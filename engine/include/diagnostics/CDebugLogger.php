@@ -37,13 +37,13 @@ class DebugLogger {
 
     } // logVariableAsJSON()
 
-    private function logPrefix() {
+    private static function logPrefix() {
 
         return "DEBUG_".self::$logId.":";
 
     } // logPrefix()
 
-    private function sendMsgLine($msg) {
+    private static function sendMsgLine($msg) {
 
         // send message to default error log
         error_log($msg);
