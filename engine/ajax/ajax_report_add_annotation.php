@@ -40,13 +40,9 @@ class Ajax_report_add_annotation extends CPageCorpus {
 				" JOIN reports_formats f ON (r.format_id=f.id)" .
 				" WHERE r.id=?", array($report_id));
 
-		$content = $row['content'];
-		$content = normalize_content($content);
-		if ( $row['format'] == 'plain' ){
-			$content = htmlspecialchars($content);
-		}
-		
-		$html = new HtmlStr2($content, true);
+		// Use the annotator's escaping rules; PHP 8.1+ defaults also encode apostrophes.
+		$row['content'] = normalize_content($row['content']);
+		$html = ReportContent::getHtmlStr($row);
 		$text_revalidate = $html->getText($from, $to);
 		$html_revalidate = custom_html_entity_decode($text_revalidate);
 		

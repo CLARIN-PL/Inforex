@@ -65,13 +65,9 @@ class Ajax_report_update_annotation extends CPageCorpus {
      * @throws GeneralAjaxException
      */
 	function validateText($row, $text, $from, $to, $type_id){
-        $content = $row['content'];
-        $content = normalize_content($content);
-        if ( $row['format'] == 'plain' ){
-            $content = htmlspecialchars($content);
-        }
-
-        $html = new HtmlStr2($content, true);
+        // Keep text validation consistent with the annotator on PHP 8.1+.
+        $row['content'] = normalize_content($row['content']);
+        $html = ReportContent::getHtmlStr($row);
         $text_revalidate = $html->getText($from, $to);
         $html_revalidate = custom_html_entity_decode($text_revalidate);
 
