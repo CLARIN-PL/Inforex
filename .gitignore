@@ -23,3 +23,6 @@ database/init/
 docker/korpuskop-worker/__pycache__/
 local/__pycache__/
 test-files/
+
+# Local database backups; keep data dumps out of the public repository.
+/*-backup.sql
