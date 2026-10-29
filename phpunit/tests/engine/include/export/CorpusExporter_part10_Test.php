@@ -119,7 +119,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
         $protectedMethod->setAccessible(True);
 
         // tested call
-        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
+        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method,ConllAndJsonFactory::FORMAT_TEXT));
 
     } // testExport_documentCallsAllProcessingMethods
   
@@ -305,7 +305,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 
         //check Ini File
         $expectedIniContent = 
-"[document]
+"[metadata]
 id = 1
 date = $reportDate
 title = $reportTitle
@@ -313,8 +313,6 @@ source = $reportSource
 author = $reportAuthor
 tokenization = $reportTokenization
 subcorpus = $subcorpusName
-
-[metadata]
 $reportNonLNKey_converted = $reportNonLNValue
 $reportNonidExtKey = $reportNonidExtValue";
         $resultIniFile = file_get_contents($file_path_without_ext.'.ini');

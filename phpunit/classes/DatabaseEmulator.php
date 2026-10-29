@@ -37,20 +37,20 @@ class DatabaseEmulator extends Database {
         } else {
             $stdMissMsg = "you shoud set response to method '$method' in DatabaseEmulator for query '$query'";
             $this->writeLogMsg($stdMissMsg."\n"); // log missed
-            return is_null($this->defaultResponse) ? $stdMissMsg : $this->$defaultResponse;  
+            return is_null($this->defaultResponse) ? $stdMissMsg : $this->defaultResponse;
         }
 
     } // getResponse
 
     public function setDefaultResponse($defaultResponse) {
 
-        $this->defaultresponse = $defaultResponse;
+        $this->defaultResponse = $defaultResponse;
 
     } // setDefaultResponse()
 
     public function clearAllResponses() {
 
-        $this->servingRequests = array();
+        $this->servingResponses = array();
 
     } // clearAllResponses()
 

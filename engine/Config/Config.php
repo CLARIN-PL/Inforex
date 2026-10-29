@@ -5,7 +5,7 @@ define('MAX_TYPES_LIMIT_THRESHOLD',300);
 define('MAX_TYPES_LABEL_INDEX',999999999999); // over autoincrement id
 define('MAX_TYPES_NAME_LABEL','...');
 
-class Phantom {
+class Phantom extends stdClass {
 
     public function __call($name, $arguments)
     {

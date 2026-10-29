@@ -1,0 +1,257 @@
+{
+  "date": "2026-10-29",
+  "repository": "CLARIN-PL/Inforex",
+  "branch": "cleanup/unused-code-20261029",
+  "baseline_commit": "1f783484bc6a8da49df4bbf00bc670c2d9520d58",
+  "summary_pl": "Usunięto przyczyny 43 nieudanych testów i 3 ostrzeżeń. Pełny zestaw rozszerzono z 207 do 270 przypadków; wszystkie przechodzą na PHP 8.3 i 8.4 przy pełnym raportowaniu błędów i deprecacji.",
+  "baseline": {
+    "tests": 207,
+    "assertions": 443,
+    "errors": 39,
+    "failures": 4,
+    "warnings": 3,
+    "skipped": 0,
+    "report": "cleanup-verification-2026-10-29.json"
+  },
+  "causes": [
+    {
+      "tests": 28,
+      "cause_pl": "Testy wywoływały export_document bez wymaganego dziewiątego argumentu formatu.",
+      "repair_pl": "Jawny wybór formatu; weryfikacja treści i zestawu plików dla CCL XML, tekstu z metadanymi, CoNLL-U CLARIN oraz CLARIN JSON."
+    },
+    {
+      "tests": 6,
+      "cause_pl": "Testy CCL oczekiwały starego korzenia XML chunkList zamiast document/chunkList.",
+      "repair_pl": "Aktualizacja kontraktu XML, zachowanie kontroli tokenów, anotacji, lematów i relacji."
+    },
+    {
+      "tests": 6,
+      "cause_pl": "Ostrzeżenia i deprecacje PHP w Singleton, HtmlParser2, PerspectiveAnnotator i Smarty trafiały na stderr procesów izolowanych PHPUnit.",
+      "repair_pl": "Usunięcie final z prywatnej metody; deklaracje właściwości; zgodność bibliotek z PHP 8.3/8.4, bez wyłączania deprecacji w testach."
+    },
+    {
+      "tests": 1,
+      "cause_pl": "Test fabryki zakładał jednoczesny eksport .conll i .json, choć obecny kontrakt wybiera jeden format.",
+      "repair_pl": "Osobne przypadki dla CoNLL-U CLARIN, standardowego CoNLL-U i CLARIN JSON; kontrola braku plików innych formatów."
+    },
+    {
+      "tests": 1,
+      "cause_pl": "Test INI oczekiwał dawnych oddzielnych sekcji document i metadata.",
+      "repair_pl": "Weryfikacja aktualnej sekcji metadata i wszystkich oczekiwanych wartości."
+    },
+    {
+      "tests": 1,
+      "cause_pl": "Nieprawidłowy typ opisu ekstraktora powodował TypeError zamiast kontrolowanego wyjątku.",
+      "repair_pl": "Walidacja typu string i InvalidArgumentException; sześć nieprawidłowych typów objętych testami."
+    }
+  ],
+  "additional_repairs": [
+    {
+      "file": "engine/include/export/ConllAndJsonFactory.php",
+      "change_pl": "CLARIN JSON dołącza lematy pobrane osobnym ekstraktorem do właściwych anotacji. Rozszerzone testy wykazały utratę tych danych przed poprawką."
+    },
+    {
+      "file": "engine/external/Smarty-3.1.39/libs",
+      "change_pl": "Ograniczona poprawka zgodności istniejącej biblioteki: jawnie nullable argumenty, deklaracja celowych właściwości dynamicznych i date zamiast strftime w nagłówkach kompilowanych szablonów. Bez zmiany głównej wersji Smarty."
+    },
+    {
+      "file": "phpunit/classes/DatabaseEmulator.php",
+      "change_pl": "Naprawione literówki w resecie odpowiedzi oraz odczycie odpowiedzi domyślnej; jawne dane testowe eliminują zależność testów eksportu od kolejności."
+    },
+    {
+      "file": "phpunit/tests/engine/include/export/XmlFactoryTest.php",
+      "change_pl": "Pliki testowego eksportu trafiają do wirtualnego systemu plików zamiast katalogu projektu."
+    }
+  ],
+  "test_suite": {
+    "command": "vendor/bin/phpunit --do-not-cache-result -c phpunit/phpunit_full.warnings.xml --log-junit RESULT.xml phpunit/tests",
+    "phpunit": "9.6.34",
+    "error_reporting": -1,
+    "convert_deprecations_to_exceptions": true,
+    "fail_on_warning": true,
+    "fail_on_risky": true,
+    "removed_deprecated_phpunit_apis": [
+      "at() matcher",
+      "assertRegExp()"
+    ],
+    "additional_cases": {
+      "export_format_matrix": 48,
+      "annotation_lemma_formats": 8,
+      "factory_output_formats": 2,
+      "invalid_extractor_description_types": 5
+    },
+    "results": {
+      "php83": {
+        "php": "8.3.6",
+        "tests": 270,
+        "assertions": 4046,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "php84": {
+        "php": "8.4.27",
+        "tests": 270,
+        "assertions": 4046,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "validation": {
+    "docker": {
+      "dockerfile": "docker/www/Dockerfile.prod",
+      "build": "passed",
+      "tag": "inforex-www:test-fixes-20261029",
+      "image_id": "sha256:9d7da729b5456c174cca8949668fa949277bfc23fcaa8d231a06a1ce80727e9e",
+      "php": "8.4.27",
+      "runtime_source": "baked image; tests mounted read-only"
+    },
+    "browser": {
+      "pages": [
+        {
+          "name": "home",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "documents",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "browse",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "preview",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotator",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotation_table",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotation_attributes",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotation_lemma",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "transcription",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "images",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "tokenization",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "metadata",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "metadata_batch",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "contexts",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "schema",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "settings",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "ner",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "profile",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        }
+      ],
+      "filter": {
+        "pass": true,
+        "visible": 1
+      },
+      "failedPages": []
+    },
+    "annotation_api": {
+      "added": true,
+      "mismatchRejected": true,
+      "csv": true,
+      "deleted": true
+    },
+    "csv": {
+      "passed": true,
+      "header_columns": 8,
+      "annotation_rows": 7,
+      "all_rows_have_eight_columns": true,
+      "apostrophes_preserved": true
+    },
+    "php_syntax": {
+      "php": "8.3.6",
+      "checked": 57,
+      "failures": []
+    },
+    "git_diff_check": "passed",
+    "test_files_left_in_project_root": false
+  },
+  "remaining_limitations": [
+    "Testy przeglądarkowe używały jednorazowej bazy syntetycznej i lokalnej sesji. Nie sprawdzano pełnego logowania przez Keycloak, zewnętrznych usług NLP ani zadań w tle.",
+    "Wcześniej wykryta niezgodność pełnego łańcucha migracji z bazowym zrzutem (czuk:8) jest osobnym problemem i nie została tu naprawiona. Bazę testową uzupełniono danymi oraz tabelami wymaganymi przez sprawdzane widoki, w tym repozytoryjną migracją tokenizacji czuk:7.",
+    "Te poprawki i wcześniejsze porządki nie zostały wdrożone na produkcję."
+  ],
+  "local_evidence_directory": "/tmp/inforex-tests-fix"
+}

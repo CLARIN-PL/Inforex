@@ -3,7 +3,7 @@
 mb_internal_encoding("UTF-8");
 //use org\bovigo\vfs\vfsStream; // for vfsStream
 
-class CclWriterTest extends PHPUnit_Framework_TestCase {
+class CCclWriterTest extends PHPUnit_Framework_TestCase {
 
     private $virtualDir = null;
     private $fileName = null;
@@ -29,7 +29,11 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 
     private function getXmlElement($xmlStr,$elementName){
         // return xml export DOM element
-        return $this->xml2Dom($xmlStr)->{$elementName};
+        $root = $this->xml2Dom($xmlStr);
+        if ($root->getName() === 'document') {
+            $root = $root->chunkList;
+        }
+        return $root->{$elementName};
     } // getXmlElement()
     
     private function getXmlAttribute($xmlElement,$attributeName){
@@ -48,20 +52,20 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 
 		return 
         '<?xml version="1.0" encoding="UTF-8"?>'."\n".
-        '<!DOCTYPE chunkList SYSTEM "ccl.dtd">'."\n";
+        '<!DOCTYPE document SYSTEM "ccl-document.dtd">'."\n";
 
 	} // getExpectedXmlProlog()
 
     private function getExpectedEmptyChunkList() {
 
         return $this->getExpectedXmlProlog()
-                .'<chunkList>'."\n".'</chunkList>'."\n";
+                .'<document>'."\n".'<chunkList>'."\n".'</chunkList>'."\n".'</document>'."\n";
 
     } // getExpectedEmptyChunkList()
 
     private function getExpectedEmptyRelationList() {
 
-        return $this->getExpectedXmlProlog()
+        return '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<!DOCTYPE relations SYSTEM "ccl-rel.dtd">'."\n"
                 .'<relations>'."\n".'</relations>'."\n";
 
     } // getExpectedEmptyRelationList()
@@ -190,7 +194,7 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
     private function generateExpectedXMLForFullCclData() {
 
         $expectedXml = $this->getExpectedXmlProlog()
-            .'<chunkList>'."\n"
+            .'<document>'."\n".'<chunkList>'."\n"
             .' <chunk id="1" type="TYP">'."\n"
             .'  <sentence id="1">'."\n"
             .'   <tok>'."\n"
@@ -229,7 +233,7 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 			.'    <to sent="toSentence" chan="toType">toChannel</to>'."\n"
 			.'   </rel>'."\n"
 			.' </relations>'."\n"
-            .'</chunkList>'."\n";
+            .'</chunkList>'."\n".'</document>'."\n";
         ;
         return $expectedXml;
 
@@ -291,12 +295,12 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
         $mode = CclWriter::$CCL;
         /*
         $expectedXml = $this->getExpectedXmlProlog()
-            .'<chunkList>'."\n"
+            .'<document>'."\n".'<chunkList>'."\n"
             .' <chunk id="'.$chunkId.'" type="'.$chunkType.'">'."\n"
             .' </chunk>'."\n"
-            .'</chunkList>'."\n";
+            .'</chunkList>'."\n".'</document>'."\n";
         */
-        $expectedXml = $this->getExpectedXmlProlog().'<chunkList><chunk id="'.$chunkId.'" type="'.$chunkType.'"></chunk></chunkList>';
+        $expectedXml = $this->getExpectedXmlProlog().'<document><chunkList><chunk id="'.$chunkId.'" type="'.$chunkType.'"></chunk></chunkList></document>';
         $result = $privateMethod->invoke(new CclWriter(),$ccl,$mode);
         $this->assertXmls($expectedXml,$result);
         $this->assertEquals($this->getXmlElement('<chunkList><chunk id="'.$chunkId.'" type="'.$chunkType.'"></chunk></chunkList>','chunk'),$this->getXmlElement($result,'chunk'));
@@ -598,7 +602,7 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 
         $result = $privateMethod->invoke(new CclWriter(),$ccl,$mode);
 		// test if is above line in result
-        $this->assertRegexp($expectedXmlLine,$result);
+        $this->assertMatchesRegularExpression($expectedXmlLine,$result);
 
 	} // testLemmaDataGeneratesPropXml()
 

@@ -71,7 +71,7 @@ class CclWriter{
 					$tokens = $sentence->getTokens(); 
 					foreach ($tokens as &$token){
 						$xml .= "   <tok>\n";
-						$xml .= "    <orth>" . htmlspecialchars($token->getOrth()) . "</orth>\n";
+						$xml .= "    <orth>" . htmlspecialchars((string)$token->getOrth()) . "</orth>\n";
 						$lexemes =  $token->getLexemes();
 						$channels = $token->getChannels();
 						foreach ($lexemes as &$lexeme){

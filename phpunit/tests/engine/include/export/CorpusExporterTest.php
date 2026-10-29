@@ -46,14 +46,15 @@ class CorpusExporterTest extends PHPUnit_Framework_TestCase
         $mockCorpusExporter -> expects($this->never())
             -> method('export_document');
         // write console msgs
-        $mockCorpusExporter -> expects($this->at(1))
-            -> method('writeConsoleMessage')
-            -> with("Liczba dokumentów do eksportu: 0\n");
-        $mockCorpusExporter -> expects($this->at(2))
-            -> method('writeConsoleMessage')
-            -> with("\n");
+        $messages = array();
+        $mockCorpusExporter->expects($this->exactly(2))
+            ->method('writeConsoleMessage')
+            ->willReturnCallback(function ($message) use (&$messages) {
+                $messages[] = $message;
+            });
 
         $mockCorpusExporter->exportToCcl($output_folder,$selectors_description,$extractors_description,$lists_description);
+        $this->assertSame(array("Liczba dokumentów do eksportu: 0\n", "\n"), $messages);
 
     }
 

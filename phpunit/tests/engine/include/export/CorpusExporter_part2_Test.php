@@ -5,29 +5,33 @@ mb_internal_encoding("UTF-8");
 
 class CorpusExporter_part2_Test extends PHPUnit_Framework_TestCase
 {
+    use CorpusExportAssertions;
+
     private $virtualDir = null;
 
     protected function setUp(): void {
                                                                                         $this->virtualDir = vfsStream::setup('root',null,[]);                                                                                                       } // setUp()                                                                
 
-    public function test_export_document_withDisambNotReturnsTags() {
+    /** @dataProvider documentFormats */
+    public function test_export_document_withDisambNotReturnsTags($format) {
 
         foreach(['tagger', 'final', 'final_or_tagger', 'user:1'] as $tagging_method) {
-            $this->export_document(True,$tagging_method);
+            $this->export_document(True,$tagging_method,$format);
         }
 
     } // test_export_document_withDisambNotReturnsTags()
 
-    public function test_export_document_withoutDisambReturnsTags() {
+    /** @dataProvider documentFormats */
+    public function test_export_document_withoutDisambReturnsTags($format) {
 
         foreach(['tagger', 'final', 'final_or_tagger', 'user:1'] as $tagging_method) {
-            $this->export_document(False,$tagging_method);
+            $this->export_document(False,$tagging_method,$format);
         }
 
     } // test_export_document_withoutDisambReturnsTags()
 
 // function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
-    private function export_document($disamb_only,$tagging_method)
+    private function export_document($disamb_only,$tagging_method,$format)
     {
         // dokument do eksportu - z parametru
         $report_id = 1;
@@ -100,7 +104,7 @@ class CorpusExporter_part2_Test extends PHPUnit_Framework_TestCase
         $expectedExtractors = $extractors;
 
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'export_document');
-        $protectedMethod->invokeArgs($ce,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$this->virtualDir->url(),$subcorpora,$tagging_method));
+        $protectedMethod->invokeArgs($ce,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$this->virtualDir->url(),$subcorpora,$tagging_method,$format));
             
         // check results in variables and files
         $this->assertEquals($expectedExtractors,$extractors);
@@ -116,45 +120,17 @@ class CorpusExporter_part2_Test extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expectedStats,$extractor_stats);
 
-        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$extractorData); 
+        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$extractorData,$format);
 
     }
 
-    private function checkFiles($report_id,$disambOnly,$tagging_method,$reportData,$extractorData) {
+    private function checkFiles($report_id,$disambOnly,$tagging_method,$reportData,$extractorData,$format) {
 
         $expectedBaseFileName = $this->virtualDir->url().'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $scl=new SimpleCcl($reportData,$tagging_method,$disambOnly);
         $scl->addAnnotations($extractorData);
 
-        //checkConllFile
-        $expectedContent = $scl->toCONLL();
-        $resultConllFile = file_get_contents($expectedBaseFileName.'.conll');
-        $this->assertEquals($expectedContent,$resultConllFile);
-
-        //checkIniFile
-        $expectedIniContent = "[document]\nid = ".$report_id."\ndate = ".$reportData["date"]."\ntitle = ".$reportData["title"]."\nsource = ".$reportData["source"]."\nauthor = ".$reportData["author"]."\ntokenization = ".$reportData["tokenization"]."\nsubcorpus = ";
-        $resultIniFile = file_get_contents($expectedBaseFileName.'.ini');
-        $this->assertEquals($expectedIniContent,$resultIniFile);
-
-        //checkJSONFile
-        $expectedContent = $scl->toJSON($extractorData);
-        $resultJsonFile = file_get_contents($expectedBaseFileName.'.json');
-        $this->assertEquals($expectedContent,$resultJsonFile);
-
-        //checkTxtFile
-        $expectedTxtContent = $reportData["content"];
-        $resultTxtFile = file_get_contents($expectedBaseFileName.'.txt');
-        $this->assertEquals($expectedTxtContent,$resultTxtFile);
-
-        //checkRelXMLFile
-        $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
-        $resultRelxmlFile = file_get_contents($expectedBaseFileName.'.rel.xml');
-        $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
-
-        //checkXMLFile
-        $expectedContent = $scl->toXML();
-        $resultXmlFile = file_get_contents($expectedBaseFileName.'.xml');
-        $this->assertEquals($expectedContent,$resultXmlFile);
+        $this->assertDocumentExport($format, $expectedBaseFileName, $report_id, $reportData, $scl, $extractorData, array());
 
     } // checkFiles()
 

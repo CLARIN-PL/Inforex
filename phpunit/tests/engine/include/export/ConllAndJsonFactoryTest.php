@@ -701,45 +701,37 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
     function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas)
 */
 
-	public function testDeliveredDataAreWrittenToFiles() {
-
+    /** @dataProvider fileFormats */
+    public function testDeliveredDataAreWrittenToFiles($format, $extension)
+    {
         $conll = "jakiś text";
-        $json_builder = array("a"=>1);
+        $json = array('a' => 1);
+        $factory = $this->getMockBuilder(ConllAndJsonFactory::class)
+            ->onlyMethods(array('makeConllAndJsonExportData', 'buildClarinJsonDocument', 'buildStandardConllu'))
+            ->getMock();
+        $factory->method('makeConllAndJsonExportData')->willReturn(array($conll, $json));
+        $factory->method('buildClarinJsonDocument')->willReturn($json);
+        $factory->method('buildStandardConllu')->willReturn($conll);
+        $factory->exportToConllAndJson($this->file_path_without_ext, $this->ccl, array(), array(), array(), array(), array(), array(), array(), array('format' => $format));
+        $path = $this->file_path_without_ext . $extension;
+        $this->assertFileExists($path);
+        if ($extension === '.json') {
+            $this->assertSame($json, json_decode(file_get_contents($path), true, 512, JSON_THROW_ON_ERROR));
+            $this->assertFileDoesNotExist($this->file_path_without_ext . '.conllu');
+        } else {
+            $this->assertSame($conll, file_get_contents($path));
+            $this->assertFileDoesNotExist($this->file_path_without_ext . '.json');
+        }
+    }
 
-        // this values doesn't matter
-        $tokens = array();
-        $relations = array();
-        $annotations = array();
-        $tokens_ids = array();
-        $annotations_by_id = array();
-        $lemmas = array();
-
-        // self-mocking another method
-        $mockedMethodNamesList = array('makeConllAndJsonExportData');
-        $mockedResult = array($conll,$json_builder);
-        $mock = $this->getMockBuilder(ConllAndJsonFactory::class)
-            -> setMethods($mockedMethodNamesList) // ustawia je na null
-            -> getMock();
-        $mock    // i mockuje na zwracanie określonego rezultatu
-            -> method('makeConllAndJsonExportData')
-            -> will($this->returnValue($mockedResult));
-        
-		// metoda exportToConllAndJson() powinna zachować obsługę oryginalną
-        $mock->exportToConllAndJson($this->file_path_without_ext,$this->ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id,$lemmas);
-
-        $expectedConll = $conll;
-        $conllFileName = $this->file_path_without_ext.".conll";
-        $resultConll = file_get_contents($conllFileName);
-        $this->assertEquals($expectedConll,$resultConll);
-        $expectedJson = 
-'{
-    "a": 1
-}';
-        $jsonFileName = $this->file_path_without_ext.".json";
-        $resultJson = file_get_contents($jsonFileName);
-        $this->assertEquals($expectedJson,$resultJson);
-
-	} // testDeliveredDataAreWrittenToFiles
+    public static function fileFormats(): array
+    {
+        return array(
+            array(ConllAndJsonFactory::FORMAT_CONLLU_CLARIN, '.conllu'),
+            array(ConllAndJsonFactory::FORMAT_CONLLU_STANDARD, '.conllu'),
+            array(ConllAndJsonFactory::FORMAT_CLARIN_JSON, '.json'),
+        );
+    }
 
 // protected function makeLemmaCache(array $lemma) 
 

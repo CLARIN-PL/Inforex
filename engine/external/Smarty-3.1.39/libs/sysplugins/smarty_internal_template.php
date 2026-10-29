@@ -24,6 +24,8 @@
  *
  * @method bool mustCompile()
  */
+// __get() lazily creates compiled, cached and compiler resource properties.
+#[\AllowDynamicProperties]
 class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
 {
     /**
@@ -148,7 +150,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     public function __construct(
         $template_resource,
         Smarty $smarty,
-        Smarty_Internal_Data $_parent = null,
+        ?Smarty_Internal_Data $_parent = null,
         $_cache_id = null,
         $_compile_id = null,
         $_caching = null,

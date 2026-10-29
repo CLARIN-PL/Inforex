@@ -13,16 +13,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
 
     } // test_instanceOf()
 
-	public function test_reinstance() {
-
-		$this->obj = Config::Cfg();
-		$magicToken = "ghghdsah";
-		$this->obj->property=$magicToken;
-		$localobj = Config::Cfg();
-		$msg = "Config class doesn't preserve static property. May be is not the same instance...";
-		$this->assertSame($localobj->property,$magicToken,$msg);
-
-	} // test_reinstance()
+    public function test_reinstance() {
+        $this->assertSame(Config::Cfg(), Config::Cfg());
+    }
 
 	public function test_get() {
 

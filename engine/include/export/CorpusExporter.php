@@ -78,12 +78,11 @@ class CorpusExporter{
 	 * @return Ekstraktor w postaci listy parametrów i funkcji wybierającej dane dla dokumentu.
 	 */
 	protected function parse_extractor($description){
+		if (!is_string($description)) {
+			throw new InvalidArgumentException("Niepoprawny opis ekstraktora ");
+		}
 		$extractors = array();
-        try {
-		    $parts = explode(":", $description);
-        } catch(Exception $ex){
-            throw new Exception("Niepoprawny opis ekstraktora ");
-        } // catch()
+		$parts = explode(":", $description);
 		if ( count($parts) !== 2 ){
 			throw new Exception("Niepoprawny opis ekstraktora " . $description);
 		}

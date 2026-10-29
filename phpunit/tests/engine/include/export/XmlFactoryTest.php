@@ -17,7 +17,7 @@ class XmlFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testExporttoxmlandrelxmlCallSetdatatoexportMethod() {
 
-        $filePathWithoutExt = '';
+        $filePathWithoutExt = vfsStream::setup('root')->url() . '/document';
         $annotations = array('anotacje');
         $relations = array('relacje');
         $lemmas = array('lematy');

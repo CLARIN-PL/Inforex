@@ -8,6 +8,8 @@
  
 class PerspectiveAnnotator extends CPerspective {
 
+    public $annotationsClear = array();
+
 	function __construct(CPage $page, $document){
         parent::__construct($page, $document);
 		$this->page->includeJs("libs/select2/js/select2.js");

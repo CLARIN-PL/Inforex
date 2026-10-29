@@ -7,6 +7,8 @@
  * @package    Smarty
  * @subpackage Template
  */
+// Compiled foreach templates attach iteration state to their variables.
+#[\AllowDynamicProperties]
 class Smarty_Variable
 {
     /**

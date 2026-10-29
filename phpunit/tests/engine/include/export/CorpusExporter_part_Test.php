@@ -104,7 +104,7 @@ class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase {
         // $extractors is var parameter, but shouldn't change
         $expectedExtractors = $extractors;
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'export_document');
-        $protectedMethod->invokeArgs($ce,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$this->virtualDir->url(),$subcorpora,$tagging_method));
+        $protectedMethod->invokeArgs($ce,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$this->virtualDir->url(),$subcorpora,$tagging_method,ConllAndJsonFactory::FORMAT_CONLLU_CLARIN));
         // check results in variables and files
         $this->assertEquals($expectedExtractors,$extractors);
         $expectedLists = array();
@@ -113,23 +113,11 @@ class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedStats,$extractor_stats);
         $expectedBaseFileName = $this->virtualDir->url().'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n0\t0\te\t\t1\t1\tO\t_\t_\t_\n\n";
-        $resultConllFile = file_get_contents($expectedBaseFileName.'.conll');
+        $resultConllFile = file_get_contents($expectedBaseFileName.'.conllu');
         $this->assertEquals($expectedConllContent,$resultConllFile);
-        $expectedIniContent = "[document]\nid = 1\ndate = 2022-12-16\ntitle = tytuł\nsource = source\nauthor = author\ntokenization = tokenization\nsubcorpus = ";
-        $resultIniFile = file_get_contents($expectedBaseFileName.'.ini');
-        $this->assertEquals($expectedIniContent,$resultIniFile);
-        $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            [\n                {\n                    \"order_id\": 0,\n                    \"token_id\": 0,\n                    \"orth\": \"e\",\n                    \"ctag\": \"\",\n                    \"from\": 1,\n                    \"to\": 1,\n                    \"annotations\": [],\n                    \"relations\": []\n                }\n            ]\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": []\n}";
-        $resultJsonFile = file_get_contents($expectedBaseFileName.'.json');
-        $this->assertEquals($expectedJsonContent,$resultJsonFile);
-        $expectedTxtContent = $content;
-        $resultTxtFile = file_get_contents($expectedBaseFileName.'.txt');
-        $this->assertEquals($expectedTxtContent,$resultTxtFile);
-        $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
-        $resultRelxmlFile = file_get_contents($expectedBaseFileName.'.rel.xml');
-        $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
-        $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"p\">\n  <sentence id=\"sent1\">\n   <tok>\n    <orth>e</orth>\n   </tok>\n   <ns/>\n  </sentence>\n </chunk>\n</chunkList>\n";
-        $resultXmlFile = file_get_contents($expectedBaseFileName.'.xml');
-        $this->assertEquals($expectedXmlContent,$resultXmlFile);
+        foreach (array('.xml', '.rel.xml', '.txt', '.ini', '.json') as $extension) {
+            $this->assertFileDoesNotExist($expectedBaseFileName . $extension);
+        }
 
     } 
 

@@ -27,14 +27,19 @@ class ConllAndJsonFactory {
 
     } // makeLemmaCache()
 
-    protected function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas) {
-
+    protected function mergeAnnotationLemmas(array $annotations, array $lemmas) {
         $lemmas_by_annotation_id = $this->makeLemmaCache($lemmas);
         foreach($annotations as &$ann) {
             if(array_key_exists($ann['id'],$lemmas_by_annotation_id)) {
                 $ann['lemma']=$lemmas_by_annotation_id[$ann['id']]['lemma'];
             }
         }
+        return $annotations;
+    }
+
+    protected function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas) {
+
+        $annotations = $this->mergeAnnotationLemmas($annotations, $lemmas);
 
         $cache_tokens_from = [];
         foreach ($tokens as $token) {
@@ -1608,6 +1613,7 @@ class ConllAndJsonFactory {
         $exportFormat = isset($options['format']) ? $options['format'] : self::FORMAT_LEGACY;
 
         if ($exportFormat === self::FORMAT_CLARIN_JSON) {
+            $annotations = $this->mergeAnnotationLemmas($annotations, $lemmas);
             $clarinJson = $this->buildClarinJsonDocument(
                 $ccl,
                 $relations,

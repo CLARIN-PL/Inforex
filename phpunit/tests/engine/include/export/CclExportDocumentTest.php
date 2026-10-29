@@ -213,9 +213,11 @@ class CclExportDocumentTest extends PHPUnit_Framework_TestCase
                             'addError','setRelation'])
             -> getMock();
         // call setAnnotation() 2 times for noncontinuous annotations
-        $mockCcl->expects($this->exactly(2))->method('setAnnotation'); 
-        $mockCcl->expects($this->at(0))->method('setAnnotation')->with($annotations[2]);
-        $mockCcl->expects($this->at(1))->method('setAnnotation')->with($annotations[3]);
+        $receivedAnnotations = array();
+        $mockCcl->expects($this->exactly(2))->method('setAnnotation')
+            ->willReturnCallback(function ($annotation) use (&$receivedAnnotations) {
+                $receivedAnnotations[] = $annotation;
+            });
         // call setContinuousAnnotation2() once for continuous annotations pair
         $mockCcl->expects($this->once())->method('setContinuousAnnotation2')->with($annotations[0],$annotations[1]);
 		// call setRelation() once for noncontinuous relation only
@@ -230,6 +232,7 @@ class CclExportDocumentTest extends PHPUnit_Framework_TestCase
 
         // returns true
         $this->assertTrue($result); 
+        $this->assertSame(array($annotations[2], $annotations[3]), $receivedAnnotations);
         // no errors in $ccl
         $this->assertEquals(0,count($this->ccl->errors));
 

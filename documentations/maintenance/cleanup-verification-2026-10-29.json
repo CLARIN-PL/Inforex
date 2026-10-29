@@ -3,7 +3,7 @@
   "repository": "CLARIN-PL/Inforex",
   "baseline_commit": "f08d6e1b4e79097443f24d09e5de516ba5f563a0",
   "branch": "cleanup/unused-code-20261029",
-  "summary_pl": "Usunięto 149 plików wskazanych w zaakceptowanym audycie. W sprawdzonych funkcjach nie wykryto regresji. Historyczny pełny zestaw testów nadal ma 39 błędów, 4 nieudane asercje i 3 ostrzeżenia, identyczne jak przed usuwaniem.",
+  "summary_pl": "Usunięto 149 plików wskazanych w zaakceptowanym audycie. W sprawdzonych funkcjach nie wykryto regresji. Podczas pomiaru porządków pełny zestaw miał 39 błędów, 4 nieudane asercje i 3 ostrzeżenia, identyczne jak przed usuwaniem. Naprawiono je w osobnym etapie opisanym w follow_up; poniżej zachowano historyczne wyniki.",
   "cleanup": {
     "removed_files": 149,
     "removed_bytes": 2816220,
@@ -589,10 +589,25 @@
     "git_diff_check": "passed"
   },
   "remaining_limitations": [
-    "Pełny historyczny zestaw PHPUnit nie jest zielony: lista istniejących problemów jest powyżej. Nie zmieniano jego asercji, aby dopasować je do bieżącego wyniku.",
+    "Historyczne 43 nieudane testy i 3 ostrzeżenia opisane powyżej zostały naprawione w kolejnym etapie; aktualne wyniki zawiera raport follow_up.",
     "Migracja od zera zatrzymuje się na czuk:8: brak reports_annotations_shared_attributes_ibfk_4 w nowszym zrzucie bazowym. Nie zmieniano historii migracji. Do testów widoków uzupełniono wyłącznie jednorazową bazę syntetyczną (css, annotation_attributes i identyfikatory perspektyw). Nie potwierdzono pełnego łańcucha migracji.",
     "Testy przeglądarkowe używały syntetycznych korpusów i lokalnej sesji testowej. Nie sprawdzano pełnego logowania przez zewnętrzny Keycloak ani wykonywania zewnętrznych usług NLP i zadań w tle.",
     "Zmiany porządkowe nie zostały wdrożone na produkcję."
   ],
-  "local_evidence_directory": "/tmp/inforex-cleanup"
+  "local_evidence_directory": "/tmp/inforex-cleanup",
+  "follow_up": {
+    "report": "regression-repair-verification-2026-10-29.json",
+    "status": "resolved",
+    "tests": 270,
+    "assertions": 4046,
+    "errors": 0,
+    "failures": 0,
+    "warnings": 0,
+    "skipped": 0,
+    "php": [
+      "8.3.6",
+      "8.4.27"
+    ],
+    "error_reporting": -1
+  }
 }

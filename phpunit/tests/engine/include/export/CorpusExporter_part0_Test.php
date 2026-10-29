@@ -44,26 +44,18 @@ class CorpusExporter_part0_Test extends PHPUnit_Framework_TestCase
 
     } // test_parse_extractor_throwsException_on_ambigousText
 
-    public function test_parse_extractor_throwsException_on_nonText(){
+    /** @dataProvider invalidExtractorDescriptions */
+    public function test_parse_extractor_throwsException_on_nonText($description) {
+        $exporter = new CorpusExporter();
+        $method = TestAccessTools::createAccessToProtectedMethodOfClassObject($exporter, 'parse_extractor');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Niepoprawny opis ekstraktora ');
+        $method->invoke($exporter, $description);
+    }
 
-        $nonTextData = array();
-        $ce = new CorpusExporter();
-        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
-        //$result = $protectedMethod->invokeArgs($ce,array($nonTextData));
-
-        try {
-            $result = $protectedMethod->invokeArgs($ce,array($nonTextData));
-        } catch(Exception $e) {
-            // expected Exception "Niepoprawny opis ekstraktora "
-            $this->assertInstanceOf(\Exception::class,$e);
-            $this->assertEquals("Niepoprawny opis ekstraktora ",
-                                $e->getMessage());
-            return;
-        }
-        // no exception throwed on empty data
-        $this->fail("Exception expected on non text data");
-
-    } // test_parse_extractor_throwsException_on_nonText
+    public static function invalidExtractorDescriptions(): array {
+        return array('array'=>array(array()), 'null'=>array(null), 'boolean'=>array(false), 'integer'=>array(42), 'float'=>array(1.5), 'object'=>array(new stdClass()));
+    }
 
     public function test_parse_extractor()
     {
@@ -246,7 +238,7 @@ class CorpusExporter_part0_Test extends PHPUnit_Framework_TestCase
             $this->assertTrue(is_array($result[$i]['flag_ids']));
             $this->assertEquals(array(3),$result[$i]["flag_ids"]);
             $this->assertTrue(is_callable($result[$i]['extractor']));
-            $extractorFunc = $result[0]["extractor"];
+            $extractorFunc = $result[$i]["extractor"];
             // function($report_id, $params, &$elements)
             // empty params -> no filters -> all data for document returned
             $oneRowOptimizedAnnotationData = array(
@@ -268,14 +260,15 @@ class CorpusExporter_part0_Test extends PHPUnit_Framework_TestCase
  "screename"                =>'anna.j.koch'
             );
             $dbEmu->clearAllResponses();
-            $dbEmu->setResponse("fetch_rows",
-'SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ?',
-                            array($oneRowOptimizedAnnotationData)
-        );
+            $dbEmu->setResponse('fetch_rows',
+                "SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN (1))   GROUP BY ra.id ORDER BY `from`",
+                array($oneRowOptimizedAnnotationData));
         $params = array(); // empty
         $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
         $extractorFunc($report_id,$params,$funcResult);
-        $expectedResult = array('annotations'=>array($oneRowOptimizedAnnotationData),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); 
+        unset($oneRowOptimizedAnnotationData['lemma']); // NULL fields are removed by this extractor.
+        $expectedResult = array('annotations'=>array($oneRowOptimizedAnnotationData),"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
+        $this->assertSame($expectedResult, $funcResult);
  
         } // for $i
 

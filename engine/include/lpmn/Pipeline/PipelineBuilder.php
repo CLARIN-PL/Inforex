@@ -14,7 +14,7 @@ class PipelineBuilder
         return $this;
     }
 
-    public function postagger(PosTaggerProperties $properties = null)
+    public function postagger(?PosTaggerProperties $properties = null)
     {
         if ($properties === null) {
             $this->json[] = 'postagger';

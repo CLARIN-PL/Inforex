@@ -7,11 +7,16 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 {
     // tests with lemma fields sets    
 
+    use CorpusExportAssertions;
+
     private $virtualDir = null;
 
     protected function setUp(): void {
 
         $this->virtualDir = vfsStream::setup('root',null,[]);
+        $GLOBALS['db'] = new DatabaseEmulator();
+        $GLOBALS['db']->setResponse('fetch_one', 'SELECT name FROM tagsets WHERE tagset_id = ?', 'nkjp');
+        $GLOBALS['db']->setResponse('fetch_one', 'SELECT name FROM annotation_sets WHERE annotation_set_id = ?', 'Named entities');
 
     } // setUp()
 
@@ -98,7 +103,7 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 		$protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'export_document');
 
         // tested call
-        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
+        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method,ConllAndJsonFactory::FORMAT_TEXT));
 
 		// returned results in $extractor_stats, $lists and export files
 
@@ -158,31 +163,25 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
             -> with($report,array(),null) 
             -> will($this->returnValue($ccl));
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'export_document');
-        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
+        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method,ConllAndJsonFactory::FORMAT_TEXT));
         
         // possible outputs 
         $this->assertEquals(array(),$lists);    // lists array
         $this->assertEquals(array(),$extractor_stats); // extractor_stats array
-        // 6 files should be created
+        // Text export produces content and metadata only.
         $file_path_without_ext = $output_folder."/".$fileName;
         //  INI file
         $this->assertTrue(file_exists($file_path_without_ext.'.ini'));
         //  TXT file 
         $this->assertTrue(file_exists($file_path_without_ext.'.txt'));
-        //  XML file 
-        $this->assertTrue(file_exists($file_path_without_ext.'.xml'));
-        //  REL.XML file 
-        $this->assertTrue(file_exists($file_path_without_ext.'.rel.xml'));
-        //  JSON file 
-        $this->assertTrue(file_exists($file_path_without_ext.'.json'));
-        //  CONLL file 
-        $this->assertTrue(file_exists($file_path_without_ext.'.conll'));
- 
-        //$resultFileContent = file_get_contents($file_path_without_ext.'.xml');
+        foreach (array('.xml', '.rel.xml', '.json', '.conllu') as $extension) {
+            $this->assertFileDoesNotExist($file_path_without_ext . $extension);
+        }
 
     } // testMinimalParameterForExampleExecution() 
 
-    public function testMainFlowForXMLLemmaExport() {
+    /** @dataProvider annotationFormats */
+    public function testMainFlowForXMLLemmaExport($format) {
 
         $report_id = 1;
         $flag_name = 'flag_short_name';
@@ -280,52 +279,39 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'export_document');
 
         // tested call
-        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
+        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method,$format));
 
-		// check results in XML file
-		$fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
-		$resultFileName = $output_folder.'/'.$fileName.".xml";
-        $this->assertTrue(file_exists($resultFileName));
-		$resultFileContent = file_get_contents($resultFileName);
-		//var_dump($resultFileContent);
-		// prefix for proper XML
-		$expectedXmlContentPrefix = '<?xml version="1.0" encoding="UTF-8"?';
-		$this->assertRegexp('@'.$expectedXmlContentPrefix."@",$resultFileContent);
-		// annotacja bez lematu ( lemma=NULL )
-		$expectedAnnWithoutLemmaLine = '<ann chan="nam_adj">1</ann>';
-		$this->assertRegexp('@'.$expectedAnnWithoutLemmaLine.'@m',$resultFileContent);
-		// annotacja towarzysząca lematowi
-		$expectedAnnWithLemmaLine = '<ann chan="nam_oth">2</ann>';
-        $this->assertRegexp('@'.$expectedAnnWithLemmaLine.'@m',$resultFileContent);
-		// lemat - z pozycji w $lemmas
-		$expectedLemmaLine = '<prop key="nam_oth:lemma">lemat dodany do okno</prop>';
-		$this->assertRegexp('@'.$expectedLemmaLine.'@m',$resultFileContent);
-		// lemma line after anno line in export XML 
-        $expectedAnnWithLemmaLines = 
-'<ann chan="nam_oth">2</ann>'.'\s*'.'<prop key="nam_oth:lemma">lemat dodany do okno</prop>';
-        $this->assertRegexp('@'.$expectedAnnWithLemmaLines.'@m',$resultFileContent);
+        if ($format === ConllAndJsonFactory::FORMAT_LEGACY) {
+            // check results in XML file
+            $fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
+            $resultFileName = $output_folder.'/'.$fileName.".xml";
+            $this->assertTrue(file_exists($resultFileName));
+            $resultFileContent = file_get_contents($resultFileName);
+            //var_dump($resultFileContent);
+            // prefix for proper XML
+            $expectedXmlContentPrefix = '<?xml version="1.0" encoding="UTF-8"?';
+            $this->assertMatchesRegularExpression('@'.$expectedXmlContentPrefix."@",$resultFileContent);
+            // annotacja bez lematu ( lemma=NULL )
+            $expectedAnnWithoutLemmaLine = '<ann chan="nam_adj">1</ann>';
+            $this->assertMatchesRegularExpression('@'.$expectedAnnWithoutLemmaLine.'@m',$resultFileContent);
+            // annotacja towarzysząca lematowi
+            $expectedAnnWithLemmaLine = '<ann chan="nam_oth">2</ann>';
+            $this->assertMatchesRegularExpression('@'.$expectedAnnWithLemmaLine.'@m',$resultFileContent);
+            // lemat - z pozycji w $lemmas
+            $expectedLemmaLine = '<prop key="nam_oth:lemma">lemat dodany do okno</prop>';
+            $this->assertMatchesRegularExpression('@'.$expectedLemmaLine.'@m',$resultFileContent);
+            // lemma line after anno line in export XML
+            $expectedAnnWithLemmaLines =
+            '<ann chan="nam_oth">2</ann>'.'\s*'.'<prop key="nam_oth:lemma">lemat dodany do okno</prop>';
+            $this->assertMatchesRegularExpression('@'.$expectedAnnWithLemmaLines.'@m',$resultFileContent);
+            return;
+        }
+        $this->assertAnnotationLemmas($output_folder.'/'.str_pad($report_id,8,'0',STR_PAD_LEFT).'.json', array(
+            1 => array('start'=>8, 'stop'=>12, 'type'=>'nam_adj', 'lemma'=>null),
+            2 => array('start'=>13, 'stop'=>17, 'type'=>'nam_oth', 'lemma'=>'lemat dodany do okno'),
+        ));
 
-        // check results in JSON file
-        $resultFileName = $output_folder.'/'.$fileName.".json";
-        $resultFileContent = file_get_contents($resultFileName);
-        //var_dump($resultFileContent);
-        // annotacja bez lematu ( lemma=NULL )
-        $expectedAnnWithoutLemmaPattern = '@'
-            .'"annotations": '.'.+'        // w sekcji po słowie 'annotations'
-            .'\{.+"from": "6",.+"to": "9",[^\}]*' // w tokenie na poz. 6-9
-                .'"lemma": null,'   // jest wpis o lemacie
-            .'.*\}'.'@s';
-        $this->assertRegexp($expectedAnnWithoutLemmaPattern,$resultFileContent);
-        // annotacja z lematem ( "lemat dodany do okno" )
-        $expectedAnnWithLemmaPattern = '@'
-            .'"annotations": '.'.+'        // w sekcji po słowie 'annotations'
-            .'\{.+"from": "10",.+"to": "13",[^\}]*' // w tokenie na poz. 10-13
-                .'"lemma": "lemat dodany do okno",'   // jest wpis o lemacie
-            .'.*\}'.'@s';
-        $this->assertRegexp($expectedAnnWithLemmaPattern,$resultFileContent);
-       
-
-	 }// testMainFlowForXMLLemmaExport()
+    }// testMainFlowForXMLLemmaExport()
 
 } // CorpusExporter_part12_Test class
 

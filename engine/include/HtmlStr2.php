@@ -366,6 +366,7 @@ class HtmlParser2{
 
 	var $chars = array();
 	var $n = 0;
+	var $len = 0;
 		
 	function __construct(&$content){
 /*// For older version of PHP < 5.3

@@ -3,6 +3,12 @@
 
 class DocumentExportDatabaseEmulator extends DatabaseEmulator {
 
+    public function __construct() {
+        parent::__construct();
+        $this->setResponse('fetch_one', 'SELECT name FROM tagsets WHERE tagset_id = ?', 'nkjp');
+    }
+
+
     private function addReportCorporaExtDB($report_id, $corpora_ext=null){
 
         //  DbReport::getReportExtById($report_id)
