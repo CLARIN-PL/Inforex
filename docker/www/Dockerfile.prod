@@ -16,12 +16,10 @@ RUN a2enmod rewrite \
     && a2enmod expires
 
 RUN apt-get update -y \
-    && apt-get install -y libmcrypt-dev zlib1g zlib1g-dev libzip-dev re2c \
+    && apt-get install -y zlib1g zlib1g-dev libzip-dev re2c \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install zip \
     && docker-php-ext-install gd \
-    && pecl install mcrypt-1.0.9 \
-    && docker-php-ext-enable mcrypt \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.gz" \

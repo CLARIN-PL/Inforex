@@ -1,0 +1,16 @@
+.git
+.agents
+.codex
+.idea
+*-backup.sql
+config/config.local.php
+docker/www/config/config.local.php
+engine/templates_c
+secured_data
+docker/korpuskop-data
+test-files
+export
+**/__pycache__
+**/*.log
+**/*.backup
+**/*~

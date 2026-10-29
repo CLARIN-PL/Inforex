@@ -1,0 +1,598 @@
+{
+  "date": "2026-10-29",
+  "repository": "CLARIN-PL/Inforex",
+  "baseline_commit": "f08d6e1b4e79097443f24d09e5de516ba5f563a0",
+  "branch": "cleanup/unused-code-20261029",
+  "summary_pl": "Usunięto 149 plików wskazanych w zaakceptowanym audycie. W sprawdzonych funkcjach nie wykryto regresji. Historyczny pełny zestaw testów nadal ma 39 błędów, 4 nieudane asercje i 3 ostrzeżenia, identyczne jak przed usuwaniem.",
+  "cleanup": {
+    "removed_files": 149,
+    "removed_bytes": 2816220,
+    "groups": {
+      "A01": {
+        "name": "Kopia LobiPanel",
+        "removed_files": 36,
+        "partial_edits": 0
+      },
+      "A02": {
+        "name": "Przykłady Smarty",
+        "removed_files": 13,
+        "partial_edits": 0
+      },
+      "A03": {
+        "name": "Przykłady iViewer",
+        "removed_files": 9,
+        "partial_edits": 0
+      },
+      "A04": {
+        "name": "Chosen: demonstracje i wariant Prototype",
+        "removed_files": 15,
+        "partial_edits": 0
+      },
+      "A05": {
+        "name": "Przykład jQuery UI i jego osobne jQuery",
+        "removed_files": 2,
+        "partial_edits": 0
+      },
+      "A06": {
+        "name": "Osierocone JS/CSS",
+        "removed_files": 3,
+        "partial_edits": 0
+      },
+      "A07": {
+        "name": "Osierocone szablony",
+        "removed_files": 10,
+        "partial_edits": 0
+      },
+      "A08": {
+        "name": "Klasy pomocnicze bez wywołań",
+        "removed_files": 10,
+        "partial_edits": 0
+      },
+      "A09": {
+        "name": "Stare eksportery i ich nieużywane struktury",
+        "removed_files": 8,
+        "partial_edits": 0
+      },
+      "A10": {
+        "name": "Test biblioteki i plik źródłowy grafiki",
+        "removed_files": 2,
+        "partial_edits": 0
+      },
+      "A11": {
+        "name": "Nieużywane rozszerzenie mcrypt",
+        "removed_files": 0,
+        "partial_edits": 2
+      },
+      "A12": {
+        "name": "Pozostałość formularza zmiany hasła w JS",
+        "removed_files": 0,
+        "partial_edits": 1
+      },
+      "A13": {
+        "name": "Nieistniejące ścieżki w autoload",
+        "removed_files": 0,
+        "partial_edits": 1
+      },
+      "B01": {
+        "name": "AJAX bez wywołań z obecnego interfejsu",
+        "removed_files": 14,
+        "partial_edits": 0
+      },
+      "B02": {
+        "name": "Akcja formularza bez wywołań",
+        "removed_files": 3,
+        "partial_edits": 0
+      },
+      "B03": {
+        "name": "Stara strona bez linków",
+        "removed_files": 9,
+        "partial_edits": 0
+      },
+      "B04": {
+        "name": "Dawna akcja zmiany hasła",
+        "removed_files": 1,
+        "partial_edits": 0
+      },
+      "B05": {
+        "name": "Niezarejestrowana perspektywa edit_raw",
+        "removed_files": 14,
+        "partial_edits": 0
+      }
+    },
+    "license_move": {
+      "from": "public_html/libs/lobipanel-master/LICENSE",
+      "to": "public_html/libs/lobipanel/LICENSE"
+    },
+    "audit_file": "unused-code-audit-2026-10-29.csv",
+    "mcrypt_removed_from_both_dockerfiles": true,
+    "composer_autoload_classes": 1409,
+    "docker_build_context_excludes_local_data": true
+  },
+  "additional_repairs": [
+    {
+      "file": "database/inforex-v1.0.sql",
+      "change_pl": "Jawne kolumny INSERT użytkownika startowego; schemat ma już dodatkowe kolumny OIDC."
+    },
+    {
+      "file": "local/import-ccl.php",
+      "change_pl": "Naprawiona błędna deklaracja argumentu parseArgs, która uniemożliwiała parsowanie skryptu. Sprawdzono składnię, nie wykonano importu CLI."
+    },
+    {
+      "file": "engine/page/report_perspectives/PerspectiveTranscription.php",
+      "change_pl": "Usunięto odwołanie do nieistniejącego styles_lps.css i poprawiono splitter.jss na istniejący splitter.js."
+    },
+    {
+      "file": "engine/page/page_ner.php",
+      "change_pl": "LobiPanel rejestruje obsługę DOM ready przed inicjalizacją paneli przez page_ner.js."
+    }
+  ],
+  "validation": {
+    "full_suite": {
+      "php": "8.3.6",
+      "command": "vendor/bin/phpunit -c phpunit/phpunit_full.warnings.xml --log-junit RESULT.xml phpunit/tests",
+      "harness_change_pl": "Przed pomiarem bazowym dodano : void do setUp() w 18 plikach testów, zgodnie z PHPUnit 9. Asercje pozostawiono bez zmian. Ten sam zestaw uruchomiono przed i po usuwaniu plików.",
+      "before": {
+        "tests": 207,
+        "assertions": 443,
+        "errors": 39,
+        "warnings": 3,
+        "failures": 4,
+        "skipped": 0
+      },
+      "after": {
+        "tests": 207,
+        "assertions": 443,
+        "errors": 39,
+        "warnings": 3,
+        "failures": 4,
+        "skipped": 0
+      },
+      "changed_test_results": {},
+      "existing_nonpassing_tests": {
+        "CclExportDocumentTest::testCorrectDataForSetAnnotationAndRelationCallsCclMethods": {
+          "status": "warning",
+          "type": "PHPUnit\\Framework\\Warning",
+          "message": "CclExportDocumentTest::testCorrectDataForSetAnnotationAndRelationCallsCclMethods"
+        },
+        "ConllAndJsonFactoryTest::testDeliveredDataAreWrittenToFiles": {
+          "status": "error",
+          "type": "PHPUnit\\Framework\\Error\\Warning",
+          "message": "ConllAndJsonFactoryTest::testDeliveredDataAreWrittenToFiles"
+        },
+        "CorpusExporterTest::test_exportToCcl_createOutput": {
+          "status": "warning",
+          "type": "PHPUnit\\Framework\\Warning",
+          "message": "CorpusExporterTest::test_exportToCcl_createOutput"
+        },
+        "CorpusExporter_part0_Test::test_parse_extractor_throwsException_on_nonText": {
+          "status": "error",
+          "type": "TypeError",
+          "message": "CorpusExporter_part0_Test::test_parse_extractor_throwsException_on_nonText"
+        },
+        "CorpusExporter_part10_Test::testExport_documentCallsAllProcessingMethods": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part10_Test::testExport_documentCallsAllProcessingMethods"
+        },
+        "CorpusExporter_part10_Test::testCreateinifileExportsReportMetadataToIniFile": {
+          "status": "failure",
+          "type": "PHPUnit\\Framework\\ExpectationFailedException",
+          "message": "CorpusExporter_part10_Test::testCreateinifileExportsReportMetadataToIniFile"
+        },
+        "CorpusExporter_part12_Test::test_LemmaInAnnotationsTable": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part12_Test::test_LemmaInAnnotationsTable"
+        },
+        "CorpusExporter_part12_Test::testMinimalParameterForExampleExecution": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part12_Test::testMinimalParameterForExampleExecution"
+        },
+        "CorpusExporter_part12_Test::testMainFlowForXMLLemmaExport": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part12_Test::testMainFlowForXMLLemmaExport"
+        },
+        "CorpusExporter_part13_Test::testStandardLemmaExtractorOnlyWritesNoLemmaInExportOutputs": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part13_Test::testStandardLemmaExtractorOnlyWritesNoLemmaInExportOutputs"
+        },
+        "CorpusExporter_part13_Test::testStandardAnnotationAndLemmaExtractorWritesLemmaInExportOutputs": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part13_Test::testStandardAnnotationAndLemmaExtractorWritesLemmaInExportOutputs"
+        },
+        "CorpusExporter_part13_Test::testStandardAnnotationExtractorWritesNoLemmaInExportOutputs": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part13_Test::testStandardAnnotationExtractorWritesNoLemmaInExportOutputs"
+        },
+        "CorpusExporter_part13_Test::testCustomLemmaExtractorOnlyWritesNoLemmaInExportOutputs": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part13_Test::testCustomLemmaExtractorOnlyWritesNoLemmaInExportOutputs"
+        },
+        "CorpusExporter_part13_Test::testCustomAnnotationAndLemmaExtractorWritesLemmaInExportOutputs": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part13_Test::testCustomAnnotationAndLemmaExtractorWritesLemmaInExportOutputs"
+        },
+        "CorpusExporter_part13_Test::testCustomAnnotationExtractorWritesNoLemmaInExportOutputs": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part13_Test::testCustomAnnotationExtractorWritesNoLemmaInExportOutputs"
+        },
+        "CorpusExporter_part13_Test::testCustomExportManuallyModifiedWorksAsOldVersion": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part13_Test::testCustomExportManuallyModifiedWorksAsOldVersion"
+        },
+        "CorpusExporter_part1_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part1_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part1_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part1_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part2_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part2_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part2_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part2_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part3_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part3_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part3_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part3_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part4_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part4_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part4_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part4_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part5_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part5_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part5_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part5_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part6_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part6_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part6_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part6_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part7_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part7_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part7_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part7_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part8_Test::test_export_document_withDisambNotReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part8_Test::test_export_document_withDisambNotReturnsTags"
+        },
+        "CorpusExporter_part8_Test::test_export_document_withoutDisambReturnsTags": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part8_Test::test_export_document_withoutDisambReturnsTags"
+        },
+        "CorpusExporter_part_Test::test_export_document": {
+          "status": "error",
+          "type": "ArgumentCountError",
+          "message": "CorpusExporter_part_Test::test_export_document"
+        },
+        "CclWriterTest::testCleanCclMakesOnlyXmlSkeleton": {
+          "status": "failure",
+          "type": "PHPUnit\\Framework\\ExpectationFailedException",
+          "message": "CclWriterTest::testCleanCclMakesOnlyXmlSkeleton"
+        },
+        "CclWriterTest::testCclWithEmptyChunkMakesOnlyXmlSkeletonWithAttributes": {
+          "status": "failure",
+          "type": "PHPUnit\\Framework\\ExpectationFailedException",
+          "message": "CclWriterTest::testCclWithEmptyChunkMakesOnlyXmlSkeletonWithAttributes"
+        },
+        "CclWriterTest::testCclWithEmptySentenceMakesSentenceSkeletonWithId": {
+          "status": "error",
+          "type": "TypeError",
+          "message": "CclWriterTest::testCclWithEmptySentenceMakesSentenceSkeletonWithId"
+        },
+        "CclWriterTest::testCclInCclModeExportsAllTokensFields": {
+          "status": "error",
+          "type": "Error",
+          "message": "CclWriterTest::testCclInCclModeExportsAllTokensFields"
+        },
+        "CclWriterTest::testCclInCclrelModeExportsAllTokensAndRelationsFields": {
+          "status": "error",
+          "type": "Error",
+          "message": "CclWriterTest::testCclInCclrelModeExportsAllTokensAndRelationsFields"
+        },
+        "CclWriterTest::testFullCclDataProperlyFormatsAsXml": {
+          "status": "failure",
+          "type": "PHPUnit\\Framework\\ExpectationFailedException",
+          "message": "CclWriterTest::testFullCclDataProperlyFormatsAsXml"
+        },
+        "CclWriterTest::testLemmaDataGeneratesPropXml": {
+          "status": "warning",
+          "type": "PHPUnit\\Framework\\Warning",
+          "message": "CclWriterTest::testLemmaDataGeneratesPropXml"
+        },
+        "AnnotationContextsExportTest::test_export_all_handles_boundaries_and_caches_each_report": {
+          "status": "error",
+          "type": "PHPUnit\\Framework\\Exception",
+          "message": "AnnotationContextsExportTest::test_export_all_handles_boundaries_and_caches_each_report"
+        },
+        "AnnotationContextsExportTest::test_plain_text_angle_brackets_and_entities_keep_their_offsets": {
+          "status": "error",
+          "type": "PHPUnit\\Framework\\Exception",
+          "message": "AnnotationContextsExportTest::test_plain_text_angle_brackets_and_entities_keep_their_offsets"
+        },
+        "AnnotationContextsExportTest::test_xml_context_is_exported_as_decoded_text": {
+          "status": "error",
+          "type": "PHPUnit\\Framework\\Exception",
+          "message": "AnnotationContextsExportTest::test_xml_context_is_exported_as_decoded_text"
+        },
+        "AnnotationContextsExportTest::test_stale_offsets_and_empty_documents_do_not_abort_the_csv": {
+          "status": "error",
+          "type": "PHPUnit\\Framework\\Exception",
+          "message": "AnnotationContextsExportTest::test_stale_offsets_and_empty_documents_do_not_abort_the_csv"
+        },
+        "AnnotationContextsExportTest::test_empty_result_still_has_a_csv_header": {
+          "status": "error",
+          "type": "PHPUnit\\Framework\\Exception",
+          "message": "AnnotationContextsExportTest::test_empty_result_still_has_a_csv_header"
+        },
+        "PerspectiveAnnotatorTest::test_execute": {
+          "status": "error",
+          "type": "PHPUnit\\Framework\\Exception",
+          "message": "PerspectiveAnnotatorTest::test_execute"
+        }
+      }
+    },
+    "focused_regressions": {
+      "php83": {
+        "tests": 58,
+        "assertions": 166,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "php84": {
+        "tests": 58,
+        "assertions": 166,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "php84_error_reporting": 22527,
+      "php84_error_reporting_note_pl": "E_ALL bez E_DEPRECATED i E_STRICT. Komunikaty deprecacji starych bibliotek blokowały izolowane procesy PHPUnit przy pierwszym podejściu. Błędy i ostrzeżenia pozostają włączone. Ostrzeżenie final private w Config/Singleton.php nadal występuje.",
+      "files": [
+        "phpunit/tests/HtmlStrTest.php",
+        "phpunit/tests/HtmlStrContextTest.php",
+        "phpunit/tests/engine/include/utils/CReportContentTest.php",
+        "phpunit/tests/engine/ajax/ReportAnnotationTextTest.php",
+        "phpunit/tests/engine/ajax/AdministrationAnnotationAttributeBindingsTest.php",
+        "phpunit/tests/engine/ajax/MetadataBatchEditTest.php",
+        "phpunit/tests/engine/include/diagnostics/DebugLoggerTest.php",
+        "phpunit/tests/engine/include/lpmn/JsonlMergerTest.php",
+        "phpunit/tests/engine/include/lpmn/PipelineBuilderTest.php",
+        "phpunit/tests/engine/page/AnnotationContextsExportTest.php",
+        "phpunit/tests/engine/page/report_perspectives/PerspectiveDocumentAnnotationCategoriesTest.php",
+        "phpunit/tests/engine/page/report_perspectives/PerspectiveDocumentAnnotationCategorySetsTest.php"
+      ]
+    },
+    "docker": {
+      "dockerfile": "docker/www/Dockerfile.prod",
+      "build": "passed",
+      "tag": "inforex-www:cleanup-20261029",
+      "image_id": "sha256:e4d01c40ce07a07179f5f8fc0a8baa8cf9ad41368c26455d9b7cb18f67bfb430",
+      "php": "8.4.27",
+      "extensions": {
+        "mysqli": true,
+        "zip": true,
+        "gd": true,
+        "xdiff": true,
+        "openssl": true,
+        "mcrypt": false
+      }
+    },
+    "browser": {
+      "pages": [
+        {
+          "name": "home",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "documents",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "browse",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "preview",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotator",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotation_table",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotation_attributes",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "annotation_lemma",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "transcription",
+          "pass": true,
+          "errors": [],
+          "badResponses": [],
+          "pluginLoaded": true
+        },
+        {
+          "name": "images",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "tokenization",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "metadata",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "metadata_batch",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "contexts",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "schema",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "settings",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        },
+        {
+          "name": "ner",
+          "pass": true,
+          "errors": [],
+          "badResponses": [],
+          "pluginLoaded": true
+        },
+        {
+          "name": "profile",
+          "pass": true,
+          "errors": [],
+          "badResponses": []
+        }
+      ],
+      "filter": {
+        "pass": true,
+        "visible": 1
+      },
+      "failedPages": []
+    },
+    "annotation_api": {
+      "added": true,
+      "mismatchRejected": true,
+      "csv": true,
+      "deleted": true
+    },
+    "csv": {
+      "passed": true,
+      "header_columns": 8,
+      "annotation_rows": 8,
+      "all_rows_have_eight_columns": true,
+      "apostrophes_preserved": true
+    },
+    "metadata_database_integration": {
+      "passed": 19,
+      "script": "phpunit/integration/metadata-batch-edit.php",
+      "php": "8.4.27",
+      "database": "disposable inforex_metadata_regression",
+      "coverage": [
+        "commit basic and extended fields",
+        "rollback on DB failure",
+        "reject other corpus and unknown fields",
+        "enum round trips and validation",
+        "reject missing extension rows",
+        "detect discarded writes",
+        "verify unchanged writes"
+      ]
+    },
+    "php_syntax": {
+      "php": "8.4.27",
+      "checked": 542,
+      "failures": []
+    },
+    "javascript_syntax": {
+      "file": "public_html/js/page_user_roles.js",
+      "passed": true
+    },
+    "git_diff_check": "passed"
+  },
+  "remaining_limitations": [
+    "Pełny historyczny zestaw PHPUnit nie jest zielony: lista istniejących problemów jest powyżej. Nie zmieniano jego asercji, aby dopasować je do bieżącego wyniku.",
+    "Migracja od zera zatrzymuje się na czuk:8: brak reports_annotations_shared_attributes_ibfk_4 w nowszym zrzucie bazowym. Nie zmieniano historii migracji. Do testów widoków uzupełniono wyłącznie jednorazową bazę syntetyczną (css, annotation_attributes i identyfikatory perspektyw). Nie potwierdzono pełnego łańcucha migracji.",
+    "Testy przeglądarkowe używały syntetycznych korpusów i lokalnej sesji testowej. Nie sprawdzano pełnego logowania przez zewnętrzny Keycloak ani wykonywania zewnętrznych usług NLP i zadań w tle.",
+    "Zmiany porządkowe nie zostały wdrożone na produkcję."
+  ],
+  "local_evidence_directory": "/tmp/inforex-cleanup"
+}

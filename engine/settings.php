@@ -18,8 +18,4 @@ setlocale(LC_CTYPE, "en_US.UTF-8");
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'include.php');
 
 set_error_handler("ErrorService::errorHandler");
-/*if(! PHPUnitTools::isPHPUnitRunning()) {
-	// under PHPUnit this one not works
-	register_shutdown_function("ErrorService::shutdownFunction");
-}*/
 ?>

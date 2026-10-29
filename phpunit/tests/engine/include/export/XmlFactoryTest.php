@@ -7,7 +7,7 @@ class XmlFactoryTest extends PHPUnit_Framework_TestCase
 {
     private $xmlFactory = null;
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->xmlFactory = new XmlFactory();
 

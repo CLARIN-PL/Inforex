@@ -7,7 +7,7 @@ class CorpusExporter_part2_Test extends PHPUnit_Framework_TestCase
 {
     private $virtualDir = null;
 
-    protected function setUp() {
+    protected function setUp(): void {
                                                                                         $this->virtualDir = vfsStream::setup('root',null,[]);                                                                                                       } // setUp()                                                                
 
     public function test_export_document_withDisambNotReturnsTags() {

@@ -235,7 +235,7 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 
     } // generateExpectedXMLForFullCclData() 
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->virtualDir = org\bovigo\vfs\vfsStream::setup('root',null,[]);
         $this->fileName = $this->virtualDir->url()."/test.txt";

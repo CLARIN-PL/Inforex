@@ -6,7 +6,7 @@ class CclExportDocumentTest extends PHPUnit_Framework_TestCase
 {
     private $ccl = null;
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $report = null; $tokens = array(); $tags_by_tokens = null;
         $this->ccl = new CclExportDocument($report, $tokens, $tags_by_tokens);

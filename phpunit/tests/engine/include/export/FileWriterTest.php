@@ -6,7 +6,7 @@ class FileWriterTest extends PHPUnit_Framework_TestCase {
 
     private $virtualDir = null;
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->virtualDir = org\bovigo\vfs\vfsStream::setup('root',null,[]);
 

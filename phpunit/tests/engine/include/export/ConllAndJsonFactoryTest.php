@@ -16,7 +16,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 	// reflection to protected method in tested class
 	private $protectedMethod = null;
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->virtualDir = org\bovigo\vfs\vfsStream::setup('root',null,[]);
         $this->generateFullTestData();

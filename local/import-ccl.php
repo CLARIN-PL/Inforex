@@ -616,7 +616,7 @@ class ImportCCL{
 		$this->opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 	}
 
-	function parseArgs(isset($argv) ? $argv : null){
+	function parseArgs($argv){
 		try {
 			$this->opt->parseCli(isset($argv) ? $argv : null);
 			

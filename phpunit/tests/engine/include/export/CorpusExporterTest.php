@@ -8,7 +8,7 @@ class CorpusExporterTest extends PHPUnit_Framework_TestCase
 
     private $virtualDir = null;
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->virtualDir = vfsStream::setup('root',null,[]);
 

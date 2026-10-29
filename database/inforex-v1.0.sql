@@ -1945,7 +1945,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','Inforex Admin','unknown','21232f297a57a5a743894a0e4a801fc3',NULL);
+INSERT INTO `users` (`user_id`,`login`,`screename`,`email`,`password`,`clarin_login`) VALUES (1,'admin','Inforex Admin','unknown','21232f297a57a5a743894a0e4a801fc3',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -24,12 +24,10 @@ RUN a2enmod expires
 
 #Installing some PHP libraries
 RUN apt-get update -y \
-    && apt-get install -y libmcrypt-dev zlib1g zlib1g-dev libzip-dev re2c \
+    && apt-get install -y zlib1g zlib1g-dev libzip-dev re2c \
 	&& docker-php-ext-install mysqli \
 	&& docker-php-ext-install zip \
 	&& docker-php-ext-install gd \
-	&& pecl install mcrypt-1.0.9 \
-    	&& docker-php-ext-enable mcrypt \
         && rm -rf /var/lib/apt/lists/*
 
 # Xdiff install

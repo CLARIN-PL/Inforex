@@ -7,13 +7,11 @@
             "Inforex\\Lpmn\\": "engine/include/lpmn/"
         },
 		"exclude-from-classmap": [
-			"engine/include/structs/CclStruct2.php",
 			"engine/include/anntakipi/ixtTextAligner.php",
 			"engine/include/HtmlStr2.php",
             "engine/external/pear/Auth.php",
             "engine/external/pear/MDB2.php",
-            "engine/external/pear/MDB2/Extended.php",
-			"engine/pages/tei.php"
+            "engine/external/pear/MDB2/Extended.php"
 		],
 		"classmap": [
             "engine/external/pear/",

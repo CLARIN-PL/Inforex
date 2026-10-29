@@ -116,8 +116,6 @@
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 	{elseif $subpage == 'preview' }
 	<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
-	{elseif $subpage == 'relation_statistic' }
-	<script type="text/javascript" src="js/page_relations.js?20130903"></script>
     {elseif $subpage == 'unassigned' }
 	<script type="text/javascript" src="js/page_report_unassigned.js?20130903"></script>
     {elseif $subpage=="transcription"}
