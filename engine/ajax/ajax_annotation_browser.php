@@ -63,11 +63,7 @@ class Ajax_annotation_browser extends CPageCorpus {
 			$to = $row['to'];
 			
 			try{
-				$content = $row['content']; 
-                		if ( $row['format'] == 'plain'){
-                        		$content = htmlspecialchars($content);
-                		}
-				$html = new HtmlStr2($content);
+				$html = ReportContent::getHtmlStr($row);
 				$left = $html->getTextAlign($from-50, $from-1, true, false);
 				$right = $html->getTextAlign($to+1, $to+50, false, true);				
 			}

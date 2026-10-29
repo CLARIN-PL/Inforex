@@ -246,13 +246,22 @@ class HtmlStr2{
 	 * @param $align_left Align from left to a continous sequence of characters.
 	 * @param $align_right Align from right to a continous sequence of characters.
 	 * @param $keep_tags Include xml tags.
+	 * Ranges are clipped to the document; disjoint or empty ranges return an empty string.
 	 */
 	function getTextAlign($from, $to, $align_left, $align_right, $keep_tags=false){
+		$length = count($this->chars);
+		// Context windows can extend beyond either end, including stale annotation offsets.
+		// Check overlap before word alignment so an empty range cannot pick up another word.
+		if ($length == 0 || $from > $to || $to < 0 || $from >= $length) {
+			return "";
+		}
+		$from = max(0, $from);
+		$to = min($length - 1, $to);
 		$text = "";
 		while ( $align_left && $from > 0 && count($this->tags[$from]) == 0){
 			$from--;
 		}
-		while ( $align_right && $to+1 < count($this->tags) && count($this->tags[$to+1]) == 0){
+		while ( $align_right && $to+1 < $length && count($this->tags[$to+1]) == 0){
 			$to++;
 		}
 		for ($i=$from; $i<=$to; $i++){

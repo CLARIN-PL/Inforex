@@ -18,10 +18,11 @@ class Page_corpus_annotation_contexts_export extends CPageCorpus{
 		
 		$time_start 		= microtime(true); 
 		$corpus_id 			= $corpus['id'];
-		$annotation_type_id = $_GET['annotation_type_id'];
-		$annotation_orth    = strval($_GET['annotation_orth']);
-		$annotation_lemma   = strval($_GET['annotation_lemma']);
-		$annotation_stage = strval($_GET['annotation_stage']);
+		$annotation_type_id = isset($_GET['annotation_type_id']) ? intval($_GET['annotation_type_id']) : 0;
+		$annotation_orth    = isset($_GET['annotation_orth']) ? strval($_GET['annotation_orth']) : '';
+		$annotation_lemma   = isset($_GET['annotation_lemma']) ? strval($_GET['annotation_lemma']) : '';
+		$annotation_stage = isset($_GET['annotation_stage']) ? strval($_GET['annotation_stage']) : '';
+		$this->set("interupted", 0);
 
 		$sql = "SELECT an.*, t.name AS type" .
 				" FROM reports_annotations_optimized an" .
@@ -60,9 +61,10 @@ class Page_corpus_annotation_contexts_export extends CPageCorpus{
 			$to = $row['to'];
 			
 			if ( $last_report_id != $row['report_id']){
-				$content = $db->fetch_one("SELECT content FROM reports WHERE id = ?", array($row['report_id']));
+				$report = $db->fetch("SELECT r.content, f.format FROM reports r" .
+					" JOIN reports_formats f ON (r.format_id = f.id) WHERE r.id = ?", array($row['report_id']));
 				$last_report_id = $row['report_id'];
-				$html = new HtmlStr2($content);
+				$html = ReportContent::getHtmlStr($report);
 			}
 			
 			$left = $html->getTextAlign($from-50, $from-1, true, false);
@@ -75,8 +77,8 @@ class Page_corpus_annotation_contexts_export extends CPageCorpus{
 				"report_id" => $row['report_id'], 
 				"annotation" => $this->cleanText($row['text']),
 				"source" => $row['source'],
-				"left" => $this->cleanText($left),
-				"right" => $this->cleanText($right),
+				"left" => $this->cleanText(html_entity_decode($left, ENT_QUOTES | ENT_HTML5, 'UTF-8')),
+				"right" => $this->cleanText(html_entity_decode($right, ENT_QUOTES | ENT_HTML5, 'UTF-8')),
 				"stage" => $stage,
 				"type" => $row['type']);
 				
