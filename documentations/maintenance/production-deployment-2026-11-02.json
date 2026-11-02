@@ -90,8 +90,26 @@
     },
     "temporary_public_probe_removed": true,
     "live_csv_probe": {
-      "status": "not_run",
-      "reason": "SSH connections to the administration address timed out after successful activation. CSV regression tests passed in the candidate full suite."
+      "status": "passed",
+      "checks": 46,
+      "php": "8.4.27",
+      "database_connections": 0,
+      "csv_template_rendered": true,
+      "error_reporting": 30719,
+      "checked_utc": "2026-11-02T08:43:40+00:00",
+      "data": "synthetic",
+      "production_autoload": true,
+      "fresh_smarty_compilation": true,
+      "probe_sha256": "8fba0aab779e414c8509d9f860883377d984035c2ad119557f51947fe8af4464",
+      "remote_evidence": "context-production.json in the release directory"
+    },
+    "ssh_follow_up": {
+      "status": "restored",
+      "checked_utc": "2026-11-02T09:16:19.239739+00:00",
+      "host_files_checksum_verified": 225,
+      "runtime_files_checksum_verified": 192,
+      "supervisor_processes_running": 4,
+      "public_https": 200
     }
   },
   "rollback": {
@@ -103,8 +121,7 @@
   "remaining_limitations": [
     "Kontener nie był odtwarzany, aby zachować sesje i adres sieciowy. Jego identyfikator obrazu pozostaje wcześniejszy; działające pliki sprawdzono według manifestu, a tag latest wskazuje nowy obraz na potrzeby kolejnego odtworzenia.",
     "Nie wykonywano migracji ani operacji modyfikujących dane w bazie. Wcześniej opisany problem migracji czuk:8 pozostaje osobnym zadaniem.",
-    "Nie wykonano pełnego logowania Keycloak ani zewnętrznych zadań NLP na danych produkcyjnych.",
-    "Po pomyślnej aktywacji utracono dostęp SSH. Ponowne niezależne sprawdzenie publicznej aplikacji zwróciło HTTP 200; dodatkowa próba CSV na działającym kontenerze nie mogła zostać uruchomiona."
+    "Nie wykonano pełnego logowania Keycloak ani zewnętrznych zadań NLP na danych produkcyjnych."
   ],
   "local_evidence_directory": "/tmp/inforex-prod-cleanup-b978865f"
 }
