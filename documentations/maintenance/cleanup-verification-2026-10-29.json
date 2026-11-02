@@ -591,8 +591,7 @@
   "remaining_limitations": [
     "Historyczne 43 nieudane testy i 3 ostrzeżenia opisane powyżej zostały naprawione w kolejnym etapie; aktualne wyniki zawiera raport follow_up.",
     "Migracja od zera zatrzymuje się na czuk:8: brak reports_annotations_shared_attributes_ibfk_4 w nowszym zrzucie bazowym. Nie zmieniano historii migracji. Do testów widoków uzupełniono wyłącznie jednorazową bazę syntetyczną (css, annotation_attributes i identyfikatory perspektyw). Nie potwierdzono pełnego łańcucha migracji.",
-    "Testy przeglądarkowe używały syntetycznych korpusów i lokalnej sesji testowej. Nie sprawdzano pełnego logowania przez zewnętrzny Keycloak ani wykonywania zewnętrznych usług NLP i zadań w tle.",
-    "Zmiany porządkowe nie zostały wdrożone na produkcję."
+    "Testy przeglądarkowe używały syntetycznych korpusów i lokalnej sesji testowej. Nie sprawdzano pełnego logowania przez zewnętrzny Keycloak ani wykonywania zewnętrznych usług NLP i zadań w tle."
   ],
   "local_evidence_directory": "/tmp/inforex-cleanup",
   "follow_up": {
@@ -609,5 +608,11 @@
       "8.4.27"
     ],
     "error_reporting": -1
+  },
+  "production_deployment": {
+    "date": "2026-11-02",
+    "status": "deployed",
+    "report": "production-deployment-2026-11-02.json",
+    "source_commit": "b978865fd785a9da9d890c4b5b4edc658a6f56b3"
   }
 }

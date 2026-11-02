@@ -1,0 +1,110 @@
+{
+  "date": "2026-11-02",
+  "target": "vm-inforex",
+  "public_url": "https://inforex.clarin-pl.eu/",
+  "status": "deployed",
+  "source_branch": "cleanup/unused-code-20261029",
+  "source_commits": [
+    "1f783484bc6a8da49df4bbf00bc670c2d9520d58",
+    "b978865fd785a9da9d890c4b5b4edc658a6f56b3"
+  ],
+  "summary_pl": "Wdrożono zaakceptowane porządki i poprawki regresji. Zaktualizowano pliki na hoście i w działającym kontenerze, zachowano wcześniejsze poprawki i sesje, ustawiono przygotowany obraz jako inforex-www:latest oraz przeładowano Apache.",
+  "activation": {
+    "started_utc": "2026-11-02T08:03:50.889590+00:00",
+    "completed_utc": "2026-11-02T08:03:56.037835+00:00",
+    "commit": "b978865fd785a9da9d890c4b5b4edc658a6f56b3",
+    "previous_image": "sha256:e43008ec1b8a884017b227549aae7e0f2e7ebb7e23eda423abdb900c49156e54",
+    "candidate_image": "sha256:5aad640ef9e697740719bc26ee894c558e0c2d5a140817f69e597c10bef137de",
+    "running_container_image_reference": "sha256:50e0c125a7812fdb966fad2d904b5222acdb10da2f58021fb617d1a9d79d46a9",
+    "deployment_method": "verified files applied to host and running container; latest image updated; Apache graceful reload",
+    "host_files": 225,
+    "runtime_files": 192,
+    "preserved_hotfix_files": 8,
+    "http_status": 200,
+    "apache_runtime": {
+      "php": "8.4.27",
+      "mcrypt_loaded": false,
+      "exporter": true,
+      "factory": true,
+      "html_parser": true,
+      "config": true,
+      "smarty": true,
+      "passed": true
+    },
+    "database_mutations": false,
+    "database_migrations": false,
+    "existing_container_and_sessions_retained": true,
+    "supervisor": [
+      "apache2                          RUNNING   pid 11, uptime 6 days, 0:31:04",
+      "inforex-cleanup                  RUNNING   pid 12, uptime 6 days, 0:31:04",
+      "inforex-export                   RUNNING   pid 13, uptime 6 days, 0:31:04",
+      "inforex-tasks                    RUNNING   pid 14, uptime 6 days, 0:31:04"
+    ]
+  },
+  "changes": {
+    "removed_unused_files": 149,
+    "license_moved": true,
+    "stale_classmap_entries_removed_per_map": 36,
+    "autoload_maps_updated": [
+      "vendor/composer/autoload_classmap.php",
+      "vendor/composer/autoload_static.php"
+    ],
+    "autoload_note_pl": "Usunięto wyłącznie wpisy dotyczące skasowanych plików; pozostałe zależności i autoloader produkcji zachowano.",
+    "mcrypt_enabled_in_apache": false
+  },
+  "verification": {
+    "preconditions": "All 223 source paths matched the expected pre-deployment content; 2 production autoload maps were backed up and updated separately.",
+    "candidate_full_suite": {
+      "php": "8.4.27",
+      "phpunit": "9.6.34",
+      "tests": 270,
+      "assertions": 4046,
+      "errors": 0,
+      "warnings": 0,
+      "failures": 0,
+      "skipped": 0,
+      "error_reporting": -1,
+      "test_dependencies": "Current test suite and PHPUnit vendor directory mounted read-only into the candidate; application code came from the production candidate image."
+    },
+    "candidate_production_autoload_probe": {
+      "passed": true,
+      "mcrypt_loaded": false,
+      "classes": [
+        "CorpusExporter",
+        "ConllAndJsonFactory",
+        "HtmlParser2",
+        "Config",
+        "Smarty"
+      ]
+    },
+    "rollback_test": {
+      "passed": true,
+      "method": "Restored 192 runtime paths from the actual backup in an isolated disposable container and checked every original checksum."
+    },
+    "production_http": 200,
+    "public_https": 200,
+    "public_page_user_roles_js": {
+      "http": 200,
+      "matches_commit": true,
+      "sha256": "ebdb1cac694b20a83e300d7598bfdc6879ea98f4418166c1c90d9617b3cff4cf"
+    },
+    "temporary_public_probe_removed": true,
+    "live_csv_probe": {
+      "status": "not_run",
+      "reason": "SSH connections to the administration address timed out after successful activation. CSV regression tests passed in the candidate full suite."
+    }
+  },
+  "rollback": {
+    "release_directory": "/home/tnaskret/inforex-deployments/cleanup-20261029-b978865f",
+    "previous_image_tag": "inforex-www:before-cleanup-b978865f",
+    "files_backup": "backup/host and backup/container in the release directory; a second container backup is retained under /tmp/inforex-cleanup-backup-b978865f.",
+    "note_pl": "Przed wycofaniem należy sprawdzić zgodność aktualnych plików z manifestem, aby nie nadpisać późniejszych zmian. Skrypt activate.py zawiera procedurę przywracania plików, konfiguracji mcrypt i tagu obrazu oraz kontrolę HTTP."
+  },
+  "remaining_limitations": [
+    "Kontener nie był odtwarzany, aby zachować sesje i adres sieciowy. Jego identyfikator obrazu pozostaje wcześniejszy; działające pliki sprawdzono według manifestu, a tag latest wskazuje nowy obraz na potrzeby kolejnego odtworzenia.",
+    "Nie wykonywano migracji ani operacji modyfikujących dane w bazie. Wcześniej opisany problem migracji czuk:8 pozostaje osobnym zadaniem.",
+    "Nie wykonano pełnego logowania Keycloak ani zewnętrznych zadań NLP na danych produkcyjnych.",
+    "Po pomyślnej aktywacji utracono dostęp SSH. Ponowne niezależne sprawdzenie publicznej aplikacji zwróciło HTTP 200; dodatkowa próba CSV na działającym kontenerze nie mogła zostać uruchomiona."
+  ],
+  "local_evidence_directory": "/tmp/inforex-prod-cleanup-b978865f"
+}

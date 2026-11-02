@@ -250,8 +250,13 @@
   },
   "remaining_limitations": [
     "Testy przeglądarkowe używały jednorazowej bazy syntetycznej i lokalnej sesji. Nie sprawdzano pełnego logowania przez Keycloak, zewnętrznych usług NLP ani zadań w tle.",
-    "Wcześniej wykryta niezgodność pełnego łańcucha migracji z bazowym zrzutem (czuk:8) jest osobnym problemem i nie została tu naprawiona. Bazę testową uzupełniono danymi oraz tabelami wymaganymi przez sprawdzane widoki, w tym repozytoryjną migracją tokenizacji czuk:7.",
-    "Te poprawki i wcześniejsze porządki nie zostały wdrożone na produkcję."
+    "Wcześniej wykryta niezgodność pełnego łańcucha migracji z bazowym zrzutem (czuk:8) jest osobnym problemem i nie została tu naprawiona. Bazę testową uzupełniono danymi oraz tabelami wymaganymi przez sprawdzane widoki, w tym repozytoryjną migracją tokenizacji czuk:7."
   ],
-  "local_evidence_directory": "/tmp/inforex-tests-fix"
+  "local_evidence_directory": "/tmp/inforex-tests-fix",
+  "production_deployment": {
+    "date": "2026-11-02",
+    "status": "deployed",
+    "report": "production-deployment-2026-11-02.json",
+    "source_commit": "b978865fd785a9da9d890c4b5b4edc658a6f56b3"
+  }
 }
