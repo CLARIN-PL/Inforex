@@ -57,7 +57,7 @@ class DbReportFlag{
 
         $sql = "DELETE FROM reports_flags WHERE corpora_flag_id= ? AND report_id= ?";
 
-        $db->execute($sql, $cflag_id, $report_id);
+        $db->execute($sql, array($cflag_id, $report_id));
     }
 
     static function changeFlagStatus($flag_id, $flag_status, $report_id, $user_id){

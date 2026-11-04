@@ -14,25 +14,17 @@ class Ajax_report_set_report_flags extends CPageCorpus {
     }
 
 	function execute(){
-		global $db, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
-		$report_id = intval($_POST['report_id']);
-		$cflag_id = intval($_POST['cflag_id']);
-        $flag_id = intval($_POST['flag_id']);
-        $user_id = $_SESSION['_authsession']['data']['user_id'];
-        $subcorpus_id = $_POST['subcorpus_id'];
-
-        $params = array('report_id' => $report_id);
-
-
-        if(!empty($cflag_id) && !empty($flag_id)){
-            $params['corpora_flag_id'] = $cflag_id;
-            $params['flag_id'] = $flag_id;
-        }
+		$report_id = intval($_POST['report_id'] ?? 0);
+		$cflag_id = intval($_POST['cflag_id'] ?? 0);
+        $flag_id = intval($_POST['flag_id'] ?? 0);
+        $user_id = intval($user['user_id']);
+        $subcorpus_id = intval($_POST['subcorpus_id'] ?? -1);
 
         /*
          * Masowa zmiana statusu flagi i subkorpusu.
@@ -43,22 +35,14 @@ class Ajax_report_set_report_flags extends CPageCorpus {
             $records = ReportUserSelection::selectCheckedDocs($corpus_id, $user_id);
 
             foreach($records as $record){
-                $document_ids[] = $record['id'];
-            }
+                $document = $record['id'];
 
-            if(empty($document_ids)){
-                return;
-            }
-
-            foreach($document_ids as $document){
-                $params['report_id'] = $document;
-
-                if($flag_id != "" && $cflag_id != "") {
-                    ChromePhp::log($cflag_id, $flag_id, $document, $user_id);
+                // Empty selects become 0; PHP 8 considers 0 != "" true.
+                if($flag_id > 0 && $cflag_id > 0) {
                     DbReportFlag::changeFlagStatus($cflag_id, $flag_id, $document, $user_id);
                 }
 
-                if($subcorpus_id != -1){
+                if($subcorpus_id > 0){
                     DbReport::changeReportsSubcorpus($subcorpus_id, $document);
                 }
             }
@@ -66,8 +50,10 @@ class Ajax_report_set_report_flags extends CPageCorpus {
         }
         //Zmiana jednej flagi
         else {
-            if ($flag_id){
-                //$db->replace("reports_flags", $params);
+            if ($cflag_id <= 0 || $report_id <= 0){
+                throw new InvalidArgumentException("Brak identyfikatora flagi lub dokumentu");
+            }
+            if ($flag_id > 0){
                 DbReportFlag::changeFlagStatus($cflag_id, $flag_id, $report_id, $user_id);
             }
             else {
