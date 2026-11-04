@@ -22,12 +22,12 @@ class PerspectiveAgreement extends CPerspective {
 		$corpus_id = $corpus['id'];
 		$report_id = $this->document[DB_COLUMN_REPORTS__REPORT_ID];
 		
-		$annotator_a_id = intval($_COOKIE['agreement_annotations_'.$corpus_id.'_annotator_id_a']);
-		$annotator_b_id = intval($_COOKIE['agreement_annotations_'.$corpus_id.'_annotator_id_b']);
+		$annotator_a_id = intval($_COOKIE['agreement_annotations_'.$corpus_id.'_annotator_id_a'] ?? 0);
+		$annotator_b_id = intval($_COOKIE['agreement_annotations_'.$corpus_id.'_annotator_id_b'] ?? 0);
 		
 		$this->setup_annotation_type_tree($corpus_id);
 		
-		$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types']));
+		$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types'] ?? ''));
 		$annotation_types = null;
 		if ( $annotation_types_str ) {
 		    $annotation_types = array();

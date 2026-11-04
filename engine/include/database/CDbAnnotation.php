@@ -1196,7 +1196,7 @@ class DbAnnotation{
 	 * Zwraca liczbę anotacji dla każdego typu anotacji dla danego korpusu.
 	 * @param unknown $corpus_id
 	 */
-	function getAnnotationByTypeCount($corpus_id){
+	static function getAnnotationByTypeCount($corpus_id){
 		global $db;
 		$sql = "SELECT at.annotation_type_id, at.name, COUNT(an.id) AS c".
 				" FROM annotation_types at".
@@ -1214,7 +1214,7 @@ class DbAnnotation{
 	 * @param unknown $corpus_id
 	 * @return {Array}
 	 */
-	function getAnnotationByStageCount($corpus_id){
+	static function getAnnotationByStageCount($corpus_id){
 		global $db;
 		$sql = "SELECT an.stage, COUNT(*) AS c" .
 				" FROM reports_annotations_optimized an ".
@@ -1230,7 +1230,7 @@ class DbAnnotation{
 	 * @param unknown $corpus_id
 	 * @return {Array}
 	 */
-	function getAnnotationBySetCount($corpus_id){
+	static function getAnnotationBySetCount($corpus_id){
 		global $db;
 		$sql = "SELECT s.annotation_set_id, s.name AS name, COUNT(*) AS c" .
 				" FROM reports_annotations_optimized an ".
@@ -1460,7 +1460,7 @@ class DbAnnotation{
         return $groups;
     }
 
-    private function handleAnnotationAgreement($groups){
+    private static function handleAnnotationAgreement($groups){
         foreach($groups as $range => $group){
             if($group['user1'] == null){
                 $group['user1'] = array();
@@ -1498,7 +1498,7 @@ class DbAnnotation{
                     $groups[$range]['a_and_b'][] = $annotation;
                     //Mark annotation type as checked if both users agree
                     foreach($groups[$range]['available_annotation_types'] as $an_key => $annotation_type){
-                       if($annotation_type['annotation_type_id'] == $groups[$range]['all_annotations'][$key]['type_id'] && !$groups[$range]['all_annotations'][$key]['final']){
+                       if($annotation_type['annotation_type_id'] == $groups[$range]['all_annotations'][$key]['type_id'] && empty($groups[$range]['all_annotations'][$key]['final'])){
                             $groups[$range]['available_annotation_types'][$an_key]['checked'] = true;
                         }
                     }
@@ -1515,7 +1515,7 @@ class DbAnnotation{
             $all_final = true;
             if(isset($groups[$range]['a_and_b'])){
                 foreach($groups[$range]['a_and_b'] as $index => $a_b){
-                    if(!$a_b['final']){
+                    if(empty($a_b['final'])){
                         $all_final = false;
                     } else{
                         unset($groups[$range]['a_and_b'][$index]);
@@ -1532,7 +1532,7 @@ class DbAnnotation{
     }
 
 
-    private function handleFinalAnnotations($groups){
+    private static function handleFinalAnnotations($groups){
         foreach($groups as $range => $group){
             //Check which annotations exist as final annotation
             if($group['final'] != null){
