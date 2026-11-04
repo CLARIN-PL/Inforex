@@ -1,6 +1,6 @@
 {
   "date": "2026-11-04",
-  "phase": "prepared",
+  "phase": "deployed_and_verified",
   "corpus_246": {
     "documents": 44,
     "annotations": 8349,
@@ -35,9 +35,40 @@
     "mysql_repair_test": {
       "mysql": "5.7.44",
       "php": "8.4.27",
-      "checks": 22,
+      "checks": 24,
       "passed": true
-    }
+    },
+    "production_candidate": {
+      "php": "8.4.27",
+      "phpunit": "9.6.34",
+      "tests": 293,
+      "assertions": 4119,
+      "failures": 0,
+      "errors": 0,
+      "warnings": 0,
+      "skipped": 0
+    },
+    "production_runtime": {
+      "checks": 11,
+      "apache": true,
+      "production_autoload": true,
+      "database_connections": 0,
+      "passed": true
+    },
+    "data_readback": {
+      "reports_verified": 71,
+      "annotations_verified": 7373,
+      "annotations_changed": 1515,
+      "annotations_unchanged": 5858,
+      "report_content_preserved": true,
+      "all_other_annotation_fields_preserved": true
+    },
+    "corpus_246_after": {
+      "reports": 44,
+      "annotations": 8349,
+      "mismatches": 0
+    },
+    "public_https": 200
   },
   "affected_reports": [
     {
@@ -537,5 +568,41 @@
       "unresolved": 0,
       "unchanged": 26
     }
+  ],
+  "deployment": {
+    "host": "vm-inforex",
+    "source_branch": "cleanup/unused-code-20261029",
+    "commits": [
+      "dc6c9ac2",
+      "91c29a02",
+      "b170b45a"
+    ],
+    "runtime_commit": "b170b45a0f3b5fbd6a6595e74d9de3d2ea33d355",
+    "activated_utc": "2026-11-04T14:05:42.467350+00:00",
+    "runtime_files": 16,
+    "previous_image": "sha256:5aad640ef9e697740719bc26ee894c558e0c2d5a140817f69e597c10bef137de",
+    "current_image": "sha256:662b777a4f897ba42465060440cdd8d6e9ee522fd897dfdcef68184abe0f58f2",
+    "current_image_tag": "inforex-www:offsets-91c29a02",
+    "latest_tag_updated": true,
+    "sessions_preserved": true,
+    "database_repair": {
+      "committed": true,
+      "reports": 52,
+      "annotations": 1515,
+      "transaction": "InnoDB; all changes in one transaction",
+      "authorization": "User accepted the proposed correction on 2026-11-04."
+    },
+    "release_directory": "/home/tnaskret/inforex-deployments/annotation-offsets-20261104-91c29a02",
+    "host_data_backup": "backup/annotations-before.json in the release directory (private, mode 0600)",
+    "container_data_backup": "/tmp/inforex-offsets-backup-91c29a02/annotations-before.json",
+    "rollback_image_tag": "inforex-www:before-offsets-91c29a02",
+    "rollback_note": "To restore legacy rendering, first use the current local/cli-repair-annotation-offsets.php with --rollback=BACKUP --backup=NEW_PRIVATE_FILE while source checksums still match; then restore the 16 runtime files from backup/host and the container backup, restore the previous latest image tag and gracefully reload Apache. The tool refuses rollback after report content or annotation ranges/text change.",
+    "temporary_http_probe_removed": true
+  },
+  "limitations": [
+    "The site-wide scan targeted annotated documents containing a backslash. It is not a full validation of every annotation in every corpus. Corpus 246 was checked in full.",
+    "645 other mismatches remain unchanged and are listed by report; their intended ranges cannot be established by the verified backslash-only transformation.",
+    "Application code and the image were updated without recreating the running container. Its original image reference remains older, while the live files match the release manifest.",
+    "No full interactive Keycloak login or external NLP job was executed during this release."
   ]
 }
