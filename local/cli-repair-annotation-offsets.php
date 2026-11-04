@@ -18,7 +18,10 @@ function offsetWritePrivateJson($path, $value) {
         fclose($handle);
         throw new RuntimeException('Cannot persist the backup.');
     }
-    if (function_exists('fsync')) fsync($handle);
+    if (function_exists('fsync') && !fsync($handle)) {
+        fclose($handle);
+        throw new RuntimeException('Cannot sync the backup to disk.');
+    }
     fclose($handle);
 }
 
@@ -64,6 +67,11 @@ try {
     $host = explode(':', $dsn['hostspec'], 2);
     $connection = new mysqli($host[0], $dsn['username'], $dsn['password'], $dsn['database'], isset($host[1]) ? (int)$host[1] : 3306);
     $connection->set_charset('utf8mb4');
+    $tables = $connection->query("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() "
+        . "AND TABLE_NAME IN ('reports','reports_annotations_optimized')")->fetch_all(MYSQLI_ASSOC);
+    if (count($tables) !== 2 || array_unique(array_column($tables, 'ENGINE')) !== array('InnoDB')) {
+        throw new RuntimeException('Repair requires both tables to support InnoDB transactions.');
+    }
     $connection->query('SET SESSION innodb_lock_wait_timeout=5');
     $connection->begin_transaction();
     $seen = array();
