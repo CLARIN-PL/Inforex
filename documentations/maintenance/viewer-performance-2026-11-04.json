@@ -1,6 +1,6 @@
 {
   "date": "2026-11-04",
-  "status": "prepared",
+  "status": "deployed_and_verified",
   "report_id": 892185,
   "corpus_id": 158,
   "document": {
@@ -83,10 +83,42 @@
       "failures": 0,
       "warnings": 0
     },
-    "database_mutations": false
+    "database_mutations": false,
+    "production_candidate": {
+      "php": "8.4.27",
+      "tests": 293,
+      "assertions": 4119,
+      "errors": 0,
+      "failures": 0,
+      "warnings": 0
+    },
+    "apache_runtime": {
+      "checks": 8,
+      "passed": true,
+      "production_autoload": true,
+      "fresh_smarty_compilation": true,
+      "database_connections": 0
+    },
+    "production_http": 200,
+    "public_css_matches_commit": true
   },
   "limitations": [
     "The exact original hang could not be reproduced; the change removes the unnecessary legacy editor and its background work.",
     "Browser tests used the production document rendered locally with the application template/assets; no logged-in production browser session was used."
-  ]
+  ],
+  "deployment": {
+    "host": "vm-inforex",
+    "commit": "a7cb460e1826bfb95fee5627b6483b0e163dd1a3",
+    "branch": "cleanup/unused-code-20261029",
+    "activated_utc": "2026-11-04T14:40:43.134533+00:00",
+    "changed_runtime_paths": 4,
+    "previous_image": "sha256:662b777a4f897ba42465060440cdd8d6e9ee522fd897dfdcef68184abe0f58f2",
+    "candidate_image": "sha256:d1bd3cc3150dc02453ca7a461c95aeecf6c58aace7559c3bbc495c9ef65ed7b9",
+    "image_tag": "inforex-www:viewer-a7cb460e",
+    "latest_tag_updated": true,
+    "session_container_preserved": true,
+    "database_mutations": false,
+    "backup_directory": "/home/tnaskret/inforex-deployments/viewer-20261104-a7cb460e/backup",
+    "rollback_tag": "inforex-www:before-viewer-a7cb460e"
+  }
 }
