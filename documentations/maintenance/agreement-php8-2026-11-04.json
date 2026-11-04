@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-04",
+  "status": "deployed_and_verified",
+  "report_id": 819479,
+  "corpus_id": 158,
+  "perspective": "agreement",
+  "diagnosis": {
+    "reported_error": "Non-static method DbAnnotation::handleFinalAnnotations() cannot be called statically",
+    "production_reproduced_before": {
+      "read_only": true,
+      "error_class": "Error",
+      "file": "CDbAnnotation.php",
+      "line": 1458
+    },
+    "root_cause": "The static agreement grouper calls two instance helpers; three annotation distribution methods are also called statically by their page. All five methods use no instance state.",
+    "adjacent_regressions": "Pending final decisions read an unset final key; opening Agreement with no saved selection reads missing cookie keys.",
+    "fix": "Declare the five methods static, handle missing final markers as false, and default absent annotator/type selections."
+  },
+  "verification": {
+    "regression_tests_added": 11,
+    "regression_reproduced_before": {
+      "static_call_errors": 9,
+      "undefined_final_errors_after_static_fix": 2,
+      "missing_selection_cookie_errors": 1
+    },
+    "local_phpunit": {
+      "php": "8.3.6",
+      "tests": 304,
+      "assertions": 4164,
+      "errors": 0,
+      "failures": 0,
+      "warnings": 0
+    },
+    "scenarios": [
+      "empty reported selection",
+      "matching pending annotations",
+      "different types per annotator",
+      "partial final decisions",
+      "complete final decisions",
+      "separate ranges and final-only annotations",
+      "unselected annotator exclusion",
+      "three corpus distribution queries",
+      "opening Agreement with and without selection cookies"
+    ],
+    "production_candidate_phpunit": {
+      "php": "8.4.27",
+      "tests": 304,
+      "assertions": 4164,
+      "errors": 0,
+      "failures": 0,
+      "warnings": 0
+    },
+    "candidate_runtime": {
+      "checks": 20,
+      "php": "8.4.27",
+      "production_autoload": true,
+      "database_connections": 0,
+      "passed": true
+    },
+    "apache_runtime": {
+      "checks": 20,
+      "php": "8.4.27",
+      "production_autoload": true,
+      "database_connections": 0,
+      "passed": true
+    },
+    "production_document": {
+      "report_id": 819479,
+      "corpus_id": 158,
+      "perspective": "agreement",
+      "php": "8.4.27",
+      "read_only": true,
+      "queries": 3,
+      "groups": 0,
+      "errors": 0,
+      "content_preserved": true,
+      "passed": true
+    },
+    "production_http": 200,
+    "services_running": [
+      "apache2",
+      "inforex-cleanup",
+      "inforex-export",
+      "inforex-tasks"
+    ]
+  },
+  "deployment": {
+    "commit": "42cd2ef1b3691413186996ec0ea307f5f33d97d7",
+    "branch": "cleanup/unused-code-20261029",
+    "host": "vm-inforex",
+    "runtime_paths": [
+      "engine/include/database/CDbAnnotation.php",
+      "engine/page/report_perspectives/PerspectiveAgreement.php"
+    ],
+    "database_mutations": false,
+    "activated_utc": "2026-11-04T14:56:03.574478+00:00",
+    "previous_image": "sha256:d1bd3cc3150dc02453ca7a461c95aeecf6c58aace7559c3bbc495c9ef65ed7b9",
+    "candidate_image": "sha256:e0418ba9293eced7a00b937e99aae3bd054863b42018f2a54e7d80da4e337cb9",
+    "image_tag": "inforex-www:agreement-42cd2ef1",
+    "rollback_tag": "inforex-www:before-agreement-42cd2ef1",
+    "backup_directory": "/home/tnaskret/inforex-deployments/agreement-20261104-42cd2ef1/backup",
+    "latest_tag_updated": true,
+    "session_container_preserved": true
+  },
+  "limitations": [
+    "Checks execute the Agreement perspective with production autoload and a read-only query adapter; they do not use a logged-in browser session."
+  ]
+}
