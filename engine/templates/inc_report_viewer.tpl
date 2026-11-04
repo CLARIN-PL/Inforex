@@ -38,7 +38,7 @@
 							</div>
 							<div class="panel-body report-viewer-pane-body">
 								<div id="rightContent" class="annotations content rightPanel scrolling report-viewer-scrollable">
-									<textarea name="content" id="report_content" class="report-viewer-source">{$content_source|escape}</textarea>
+									<textarea name="content" id="report_content" class="report-viewer-source" readonly spellcheck="false" wrap="off" aria-label="Document source">{$content_source|escape}</textarea>
 								</div>
 							</div>
 						</div>

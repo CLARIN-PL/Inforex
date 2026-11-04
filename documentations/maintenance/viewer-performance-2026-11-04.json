@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-04",
+  "status": "prepared",
+  "report_id": 892185,
+  "corpus_id": 158,
+  "document": {
+    "format": "xml",
+    "characters": 7960,
+    "bytes": 8270,
+    "lines": 171,
+    "longest_line_characters": 368,
+    "annotations": 0
+  },
+  "diagnosis": {
+    "complete_browser_freeze_reproduced": false,
+    "production_assets_match_local": true,
+    "legacy_viewer": "CodeMirror iframe editor with lineNumbers=true, textWrapping=true and continuousScanning=500, used for a source preview with no save operation.",
+    "observed_before": "Local tests completed; some runs had main-thread tasks lasting 51-77 ms. This does not establish the cause of the reported complete browser hang.",
+    "change": "Use the existing native textarea as a readonly source preview; disable spellchecking and wrapping, size it to its pane, and remove viewer-only editor startup and resize scripts. The formatted preview and source content remain available.",
+    "tradeoff": "Raw preview no longer provides syntax highlighting or line numbers."
+  },
+  "verification": {
+    "browser_after": [
+      {
+        "scenario": "1920-resize",
+        "state": {
+          "width": 1366,
+          "height": 800,
+          "ready": "complete",
+          "ticks": 31,
+          "longTasks": [],
+          "frames": 0,
+          "initialized": false,
+          "readonly": true,
+          "sourceLength": 7960,
+          "sourceHeight": 440,
+          "containerHeight": 455,
+          "numberRows": 0
+        },
+        "javascript_errors": []
+      },
+      {
+        "scenario": "1366-initial",
+        "state": {
+          "width": 1366,
+          "height": 768,
+          "ready": "complete",
+          "ticks": 15,
+          "longTasks": [],
+          "frames": 0,
+          "initialized": false,
+          "readonly": true,
+          "sourceLength": 7960,
+          "sourceHeight": 408,
+          "containerHeight": 423,
+          "numberRows": 0
+        },
+        "javascript_errors": []
+      },
+      {
+        "scenario": "800-initial",
+        "state": {
+          "width": 800,
+          "height": 600,
+          "ready": "complete",
+          "ticks": 15,
+          "longTasks": [],
+          "frames": 0,
+          "initialized": false,
+          "readonly": true,
+          "sourceLength": 7960,
+          "sourceHeight": 197,
+          "containerHeight": 212,
+          "numberRows": 0
+        },
+        "javascript_errors": []
+      }
+    ],
+    "phpunit": {
+      "tests": 293,
+      "assertions": 4119,
+      "errors": 0,
+      "failures": 0,
+      "warnings": 0
+    },
+    "database_mutations": false
+  },
+  "limitations": [
+    "The exact original hang could not be reproduced; the change removes the unnecessary legacy editor and its background work.",
+    "Browser tests used the production document rendered locally with the application template/assets; no logged-in production browser session was used."
+  ]
+}
