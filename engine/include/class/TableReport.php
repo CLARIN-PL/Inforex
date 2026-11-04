@@ -28,6 +28,14 @@ class TableReport extends ATable{
 	var $lang = null;
 	var $parent_report_id = null;
 
+	function assign($row){
+		parent::assign($row);
+		// Source text is stored verbatim; unescaping it changes annotation offsets.
+		if (isset($row['content'])){
+			$this->content = $row['content'];
+		}
+	}
+
 	function getId(){
 		return $this->id;
 	}

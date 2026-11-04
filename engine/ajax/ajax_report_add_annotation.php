@@ -28,7 +28,7 @@ class Ajax_report_add_annotation extends CPageCorpus {
 		$type = strval($_POST['type']);
 		$from = intval($_POST['from']);
 		$to = intval($_POST['to']);
-		$text = stripslashes(strval($_POST['text']));
+		$text = strval($_POST['text']);
 		$report_id = intval($_POST['report_id']);
 		$context = strval($_POST['context']);
 		$stage = strval($_POST['stage']);
@@ -40,8 +40,7 @@ class Ajax_report_add_annotation extends CPageCorpus {
 				" JOIN reports_formats f ON (r.format_id=f.id)" .
 				" WHERE r.id=?", array($report_id));
 
-		// Use the annotator's escaping rules; PHP 8.1+ defaults also encode apostrophes.
-		$row['content'] = normalize_content($row['content']);
+		// Count the same characters as the annotator, including literal backslashes.
 		$html = ReportContent::getHtmlStr($row);
 		$text_revalidate = $html->getText($from, $to);
 		$html_revalidate = custom_html_entity_decode($text_revalidate);

@@ -57,14 +57,19 @@ class ReportAnnotationTextTest extends PHPUnit_Framework_TestCase {
             'quotes and ampersand' => array('plain', '"Rock & roll" <koncert>'),
             'literal entity text stays literal' => array('plain', "&apos; &#039; &amp; &lt; '"),
             'Unicode and emoji' => array('plain', "Żółć 😀 i muzyka z lat '90 — jesień 🍂"),
-            'XML with apostrophe' => array('xml', "<p>Koncert <b>gn'r</b> &amp; jesień.</p>")
+            'XML with apostrophe' => array('xml', "<p>Koncert <b>gn'r</b> &amp; jesień.</p>"),
+            'shrug emoticon' => array('plain', '¯\\_(ツ)_/¯'),
+            'literal paths and zero' => array('plain', 'C:\\tmp\\nowy \\0'),
+            'consecutive backslashes' => array('plain', 'A \\\\ B \\\\\\ C'),
+            'literal uppercase tags' => array('plain', '<P>tekst<BR/>dalej</P>'),
+            'XML with backslashes' => array('xml', '<p>¯\\_(ツ)_/¯ <b>C:\\tmp</b></p>')
         );
     }
 
     /** @dataProvider textCases */
     public function test_add_and_update_validate_the_text_displayed_by_the_annotator($format, $fragment) {
         // A nonzero offset and trailing text ensure we validate the selected span only.
-        $prefix = 'Wstęp 😀. ';
+        $prefix = 'Wstęp 😀. \\ ścieżka. ';
         $GLOBALS['db']->report = array('format' => $format, 'content' => $prefix . $fragment . ' Koniec.');
         $from = mb_strlen(preg_replace('/\s/u', '', $prefix), 'UTF-8');
         $text = html_entity_decode(strip_tags($format === 'plain'

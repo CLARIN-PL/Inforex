@@ -72,6 +72,14 @@ class AnnotationContextsExportTest extends PHPUnit_Framework_TestCase {
         $this->assertSame("B's <3", $rows[0][5]);
     }
 
+    public function test_backslashes_keep_the_context_aligned_with_the_annotation() {
+        $rows = $this->export(array(10=>array('content'=>'¯\\_(ツ)_/¯ marker C:\\tmp', 'format'=>'plain')),
+            array($this->annotation(1,10,9,14,'marker')));
+        $this->assertSame('¯\\_(ツ)_/¯', $rows[0][3]);
+        $this->assertSame('marker', $rows[0][4]);
+        $this->assertSame('C:\\tmp', $rows[0][5]);
+    }
+
     public function test_stale_offsets_and_empty_documents_do_not_abort_the_csv() {
         $rows = $this->export(array(10=>array('content'=>'short', 'format'=>'plain'),11=>array('content'=>'', 'format'=>'plain')),
             array($this->annotation(1,10,6528,6530,'old'),$this->annotation(2,11,0,2,'old')));

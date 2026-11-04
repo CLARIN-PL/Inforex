@@ -26,7 +26,7 @@ class Ajax_report_update_content extends CPageCorpus {
 		global $user, $corpus;
 	
 		$report_id = intval($_POST['report_id']);
-		$content = stripslashes(strval($_POST['content']));
+		$content = strval($_POST['content']);
 		
 		if (!intval($corpus['id'])){
 			throw new Exception("Brakuje identyfikatora korpusu!");

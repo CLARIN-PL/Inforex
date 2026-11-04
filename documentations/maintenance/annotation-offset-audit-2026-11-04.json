@@ -1,0 +1,541 @@
+{
+  "date": "2026-11-04",
+  "phase": "prepared",
+  "corpus_246": {
+    "documents": 44,
+    "annotations": 8349,
+    "affected_documents": [
+      891938,
+      891949
+    ],
+    "repairable_annotations": 711
+  },
+  "backslash_audit": {
+    "documents": 138367,
+    "annotations": 3264334,
+    "matching_raw_coordinates": 3262174,
+    "matching_legacy_normalization_only": 1567,
+    "other_mismatches": 593
+  },
+  "conservative_repair": {
+    "documents": 52,
+    "annotations": 1515,
+    "unresolved": 645,
+    "rule": "Only map deleted literal backslashes when the complete visible character streams match that transformation and the stored annotation text matches the legacy range. Preserve already valid raw ranges; never search for similar phrases.",
+    "notes": [
+      "All repair candidates have source=user.",
+      "52 of the 1567 legacy-normalization matches are excluded because a strict backslash-only mapping could not be established.",
+      "Two documents in corpus 161 contain malformed markup and produced parser warnings; neither is included in the repair."
+    ]
+  },
+  "verification": {
+    "local_php": "8.3.6",
+    "tests": 293,
+    "assertions": 4119,
+    "mysql_repair_test": {
+      "mysql": "5.7.44",
+      "php": "8.4.27",
+      "checks": 22,
+      "passed": true
+    }
+  },
+  "affected_reports": [
+    {
+      "report_id": 572010,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 14,
+      "unchanged": 21
+    },
+    {
+      "report_id": 572190,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 17,
+      "unchanged": 72
+    },
+    {
+      "report_id": 573116,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 46,
+      "unchanged": 102
+    },
+    {
+      "report_id": 573557,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 1,
+      "unchanged": 454
+    },
+    {
+      "report_id": 575149,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 18,
+      "unchanged": 54
+    },
+    {
+      "report_id": 639613,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 110,
+      "unchanged": 395
+    },
+    {
+      "report_id": 686889,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 69,
+      "unchanged": 334
+    },
+    {
+      "report_id": 688391,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 33,
+      "unchanged": 84
+    },
+    {
+      "report_id": 698924,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 46,
+      "unchanged": 438
+    },
+    {
+      "report_id": 719406,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 134,
+      "unchanged": 180
+    },
+    {
+      "report_id": 719686,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 44,
+      "unchanged": 196
+    },
+    {
+      "report_id": 722987,
+      "corpus_id": 104,
+      "changes": 0,
+      "unresolved": 37,
+      "unchanged": 303
+    },
+    {
+      "report_id": 822545,
+      "corpus_id": 161,
+      "changes": 0,
+      "unresolved": 1,
+      "unchanged": 0
+    },
+    {
+      "report_id": 830085,
+      "corpus_id": 161,
+      "changes": 0,
+      "unresolved": 1,
+      "unchanged": 0
+    },
+    {
+      "report_id": 846682,
+      "corpus_id": 161,
+      "changes": 0,
+      "unresolved": 1,
+      "unchanged": 0
+    },
+    {
+      "report_id": 855311,
+      "corpus_id": 163,
+      "changes": 22,
+      "unresolved": 0,
+      "unchanged": 25
+    },
+    {
+      "report_id": 855315,
+      "corpus_id": 163,
+      "changes": 31,
+      "unresolved": 0,
+      "unchanged": 75
+    },
+    {
+      "report_id": 855325,
+      "corpus_id": 163,
+      "changes": 38,
+      "unresolved": 0,
+      "unchanged": 108
+    },
+    {
+      "report_id": 855347,
+      "corpus_id": 163,
+      "changes": 64,
+      "unresolved": 0,
+      "unchanged": 168
+    },
+    {
+      "report_id": 117921,
+      "corpus_id": 24,
+      "changes": 12,
+      "unresolved": 3,
+      "unchanged": 80
+    },
+    {
+      "report_id": 140279,
+      "corpus_id": 54,
+      "changes": 0,
+      "unresolved": 37,
+      "unchanged": 13
+    },
+    {
+      "report_id": 141042,
+      "corpus_id": 54,
+      "changes": 14,
+      "unresolved": 0,
+      "unchanged": 10
+    },
+    {
+      "report_id": 141043,
+      "corpus_id": 54,
+      "changes": 0,
+      "unresolved": 15,
+      "unchanged": 3
+    },
+    {
+      "report_id": 142420,
+      "corpus_id": 54,
+      "changes": 16,
+      "unresolved": 0,
+      "unchanged": 14
+    },
+    {
+      "report_id": 142780,
+      "corpus_id": 54,
+      "changes": 34,
+      "unresolved": 1,
+      "unchanged": 26
+    },
+    {
+      "report_id": 148491,
+      "corpus_id": 54,
+      "changes": 2,
+      "unresolved": 0,
+      "unchanged": 10
+    },
+    {
+      "report_id": 148744,
+      "corpus_id": 54,
+      "changes": 8,
+      "unresolved": 0,
+      "unchanged": 16
+    },
+    {
+      "report_id": 148746,
+      "corpus_id": 54,
+      "changes": 22,
+      "unresolved": 0,
+      "unchanged": 17
+    },
+    {
+      "report_id": 149029,
+      "corpus_id": 54,
+      "changes": 24,
+      "unresolved": 0,
+      "unchanged": 27
+    },
+    {
+      "report_id": 149620,
+      "corpus_id": 54,
+      "changes": 14,
+      "unresolved": 0,
+      "unchanged": 13
+    },
+    {
+      "report_id": 149691,
+      "corpus_id": 54,
+      "changes": 12,
+      "unresolved": 0,
+      "unchanged": 12
+    },
+    {
+      "report_id": 149696,
+      "corpus_id": 54,
+      "changes": 9,
+      "unresolved": 0,
+      "unchanged": 10
+    },
+    {
+      "report_id": 149903,
+      "corpus_id": 54,
+      "changes": 22,
+      "unresolved": 0,
+      "unchanged": 17
+    },
+    {
+      "report_id": 150051,
+      "corpus_id": 54,
+      "changes": 10,
+      "unresolved": 0,
+      "unchanged": 11
+    },
+    {
+      "report_id": 150052,
+      "corpus_id": 54,
+      "changes": 10,
+      "unresolved": 0,
+      "unchanged": 11
+    },
+    {
+      "report_id": 150364,
+      "corpus_id": 54,
+      "changes": 8,
+      "unresolved": 0,
+      "unchanged": 22
+    },
+    {
+      "report_id": 150383,
+      "corpus_id": 54,
+      "changes": 8,
+      "unresolved": 0,
+      "unchanged": 13
+    },
+    {
+      "report_id": 150402,
+      "corpus_id": 54,
+      "changes": 22,
+      "unresolved": 0,
+      "unchanged": 17
+    },
+    {
+      "report_id": 150477,
+      "corpus_id": 54,
+      "changes": 16,
+      "unresolved": 0,
+      "unchanged": 14
+    },
+    {
+      "report_id": 150599,
+      "corpus_id": 54,
+      "changes": 6,
+      "unresolved": 0,
+      "unchanged": 12
+    },
+    {
+      "report_id": 150645,
+      "corpus_id": 54,
+      "changes": 10,
+      "unresolved": 0,
+      "unchanged": 11
+    },
+    {
+      "report_id": 150758,
+      "corpus_id": 54,
+      "changes": 6,
+      "unresolved": 0,
+      "unchanged": 21
+    },
+    {
+      "report_id": 150776,
+      "corpus_id": 54,
+      "changes": 4,
+      "unresolved": 0,
+      "unchanged": 35
+    },
+    {
+      "report_id": 151091,
+      "corpus_id": 54,
+      "changes": 12,
+      "unresolved": 0,
+      "unchanged": 24
+    },
+    {
+      "report_id": 151261,
+      "corpus_id": 54,
+      "changes": 2,
+      "unresolved": 0,
+      "unchanged": 13
+    },
+    {
+      "report_id": 151411,
+      "corpus_id": 54,
+      "changes": 6,
+      "unresolved": 0,
+      "unchanged": 18
+    },
+    {
+      "report_id": 151771,
+      "corpus_id": 54,
+      "changes": 16,
+      "unresolved": 0,
+      "unchanged": 14
+    },
+    {
+      "report_id": 151835,
+      "corpus_id": 54,
+      "changes": 8,
+      "unresolved": 0,
+      "unchanged": 13
+    },
+    {
+      "report_id": 163482,
+      "corpus_id": 54,
+      "changes": 34,
+      "unresolved": 0,
+      "unchanged": 26
+    },
+    {
+      "report_id": 163932,
+      "corpus_id": 54,
+      "changes": 34,
+      "unresolved": 0,
+      "unchanged": 23
+    },
+    {
+      "report_id": 753448,
+      "corpus_id": 98,
+      "changes": 2,
+      "unresolved": 0,
+      "unchanged": 147
+    },
+    {
+      "report_id": 805853,
+      "corpus_id": 142,
+      "changes": 23,
+      "unresolved": 0,
+      "unchanged": 79
+    },
+    {
+      "report_id": 805859,
+      "corpus_id": 142,
+      "changes": 15,
+      "unresolved": 0,
+      "unchanged": 389
+    },
+    {
+      "report_id": 805860,
+      "corpus_id": 142,
+      "changes": 11,
+      "unresolved": 0,
+      "unchanged": 241
+    },
+    {
+      "report_id": 855348,
+      "corpus_id": 163,
+      "changes": 84,
+      "unresolved": 0,
+      "unchanged": 98
+    },
+    {
+      "report_id": 871396,
+      "corpus_id": 164,
+      "changes": 0,
+      "unresolved": 1,
+      "unchanged": 0
+    },
+    {
+      "report_id": 888855,
+      "corpus_id": 200,
+      "changes": 0,
+      "unresolved": 16,
+      "unchanged": 0
+    },
+    {
+      "report_id": 889661,
+      "corpus_id": 200,
+      "changes": 79,
+      "unresolved": 0,
+      "unchanged": 573
+    },
+    {
+      "report_id": 877864,
+      "corpus_id": 145,
+      "changes": 4,
+      "unresolved": 0,
+      "unchanged": 2
+    },
+    {
+      "report_id": 877885,
+      "corpus_id": 145,
+      "changes": 7,
+      "unresolved": 0,
+      "unchanged": 0
+    },
+    {
+      "report_id": 877897,
+      "corpus_id": 145,
+      "changes": 4,
+      "unresolved": 0,
+      "unchanged": 0
+    },
+    {
+      "report_id": 877982,
+      "corpus_id": 145,
+      "changes": 1,
+      "unresolved": 0,
+      "unchanged": 4
+    },
+    {
+      "report_id": 878321,
+      "corpus_id": 145,
+      "changes": 2,
+      "unresolved": 0,
+      "unchanged": 0
+    },
+    {
+      "report_id": 878683,
+      "corpus_id": 145,
+      "changes": 3,
+      "unresolved": 0,
+      "unchanged": 8
+    },
+    {
+      "report_id": 879108,
+      "corpus_id": 145,
+      "changes": 4,
+      "unresolved": 0,
+      "unchanged": 2
+    },
+    {
+      "report_id": 879852,
+      "corpus_id": 145,
+      "changes": 2,
+      "unresolved": 0,
+      "unchanged": 4
+    },
+    {
+      "report_id": 879899,
+      "corpus_id": 145,
+      "changes": 2,
+      "unresolved": 0,
+      "unchanged": 4
+    },
+    {
+      "report_id": 880442,
+      "corpus_id": 145,
+      "changes": 3,
+      "unresolved": 0,
+      "unchanged": 2
+    },
+    {
+      "report_id": 881198,
+      "corpus_id": 145,
+      "changes": 2,
+      "unresolved": 0,
+      "unchanged": 5
+    },
+    {
+      "report_id": 891938,
+      "corpus_id": 246,
+      "changes": 237,
+      "unresolved": 0,
+      "unchanged": 54
+    },
+    {
+      "report_id": 891949,
+      "corpus_id": 246,
+      "changes": 474,
+      "unresolved": 0,
+      "unchanged": 26
+    }
+  ]
+}

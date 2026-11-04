@@ -21,7 +21,7 @@ class Action_document_save extends CAction{
 	function execute(){
 		global $user, $corpus;
 		$report_id = intval($_POST['report_id']);
-		$content = stripslashes(strval($_POST['content']));
+		$content = strval($_POST['content']);
 		$comment = stripslashes(strval($_POST['comment']));
 		$date = strval($_POST['date']);
 		$confirm = intval($_POST['confirm']);

@@ -57,7 +57,6 @@ function normalize_content($content){
 	$content = str_replace("<BR/>", "<br/>", $content);
 	$content = str_replace("<br>", "<br/>", $content);
 	$content = trim($content);
-	$content = stripslashes($content);
 	return $content;
 }
 

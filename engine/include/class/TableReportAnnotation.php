@@ -32,6 +32,14 @@
 
  	var $_meta_type_name = null;
 
+    function assign($row){
+        parent::assign($row);
+        // Preserve the literal surface form, including backslashes.
+        if (isset($row['text'])){
+            $this->text = $row['text'];
+        }
+    }
+
  	function getId(){
  		return $this->id;
 	}

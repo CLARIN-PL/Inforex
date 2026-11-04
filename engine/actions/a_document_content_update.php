@@ -18,7 +18,7 @@ class Action_document_content_update extends CAction{
 	function execute(){
 		global $user, $corpus;
 		$report_id = intval($_POST['report_id']);
-		$content = stripslashes(strval($_POST['content']));
+		$content = strval($_POST['content']);
 		
 		$error = null;
 		

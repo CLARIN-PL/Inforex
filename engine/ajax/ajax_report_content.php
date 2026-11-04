@@ -40,7 +40,6 @@ class Ajax_report_content extends CPageCorpus {
 
     //TODO duplicate from smarty_format_annotation
     function format_annotations($string){
-        $string = stripslashes($string);
         $string = preg_replace("/<br>|<\/br>/","<div></div>",$string);
         $string = str_replace('<an:$k>', '<span class=\'$k\'>[?]', $string);
         //$string = preg_replace('/<an#(\d+):([a-z_]+)>/', "<small title='an#$1:$2'>[#$1]</small><span id='an$1' class='$2' title='an#$1:$2'>", $string);
